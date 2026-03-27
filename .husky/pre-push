@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+set -e
+
+# Checks más pesados antes de pushear.
+pnpm -s test
+pnpm -s build
+
