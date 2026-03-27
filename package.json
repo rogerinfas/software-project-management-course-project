@@ -1,0 +1,15 @@
+{
+  "name": "software-project-management-course-project",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Academic project for the Software Project Management course. Repository for planning, development, and documentation.",
+  "scripts": {
+    "prepare": "husky install",
+    "commitlint": "commitlint --from HEAD~1 --to HEAD"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "husky": "^9.1.7"
+  }
+}
