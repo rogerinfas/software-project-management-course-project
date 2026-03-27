@@ -1,0 +1,30 @@
+---
+description: Reglas del repo: contribución, PRs y Conventional Commits
+alwaysApply: true
+---
+
+# Contribución y commits (repo)
+
+## Rama default
+- No proponer ni sugerir commits directos a `main`.
+- Todo cambio a `main` entra por **Pull Request**.
+
+## Aprobación de PR
+- Los PRs deben ser aprobados por el code owner **@rogerinfas** (no asumir bypass).
+- Al describir un PR, incluir **resumen**, **cambios**, y **cómo se verificó**.
+
+## Conventional Commits (obligatorio)
+Formato:
+`<type>(<scope>): <subject>`
+
+Types permitidos:
+- `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `build`, `ci`, `perf`, `style`, `revert`
+
+Reglas:
+- `subject` en imperativo y corto (sin punto final).
+- Si aplica, usar `!` para breaking change: `feat!: ...`
+- Si el cambio es solo docs/proceso, preferir `docs:` o `chore:`.
+
+Ejemplos:
+- `docs(contributing): add PR template and codeowners`
+- `chore: configure branch protection expectations`
