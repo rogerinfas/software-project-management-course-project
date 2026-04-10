@@ -6,9 +6,9 @@
   "packageManager": "pnpm@10.26.0",
   "scripts": {
     "prepare": "husky",
-    "lint": "pnpm -C frontend lint && pnpm -C backend lint",
+    "lint": "pnpm -C prototype lint && pnpm -C frontend lint && pnpm -C backend lint",
     "test": "pnpm -C backend test",
-    "build": "pnpm -C frontend build",
+    "build": "pnpm -C prototype build",
     "lint:staged": "lint-staged"
   },
   "devDependencies": {
@@ -18,6 +18,9 @@
     "lint-staged": "^16.1.6"
   },
   "lint-staged": {
+    "prototype/**/*.{js,jsx,ts,tsx}": [
+      "pnpm -C prototype lint"
+    ],
     "frontend/**/*.{js,jsx,ts,tsx}": [
       "pnpm -C frontend lint"
     ],
