@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+set -e
+
+ROOT="$(git rev-parse --show-toplevel)"
+FILES="$(git diff --cached --name-only --diff-filter=ACM | rg '^backend/(src|test|apps|libs)/.+\.ts$' | sed "s|^backend/||" || true)"
+if [ -z "$FILES" ]; then
+  exit 0
+fi
+
+cd "$ROOT/backend"
+echo "$FILES" | xargs pnpm exec eslint --max-warnings 0

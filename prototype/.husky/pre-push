@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+set -e
+
+pnpm -C prototype -s lint
+pnpm -C prototype -s build

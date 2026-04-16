@@ -1,2 +1,11 @@
 #!/usr/bin/env sh
-pnpm -s exec commitlint --edit "$1"
+set -e
+
+if [ -d backend/node_modules ] && [ -f backend/commitlint.config.cjs ]; then
+  pnpm -C backend -s exec commitlint --config commitlint.config.cjs --edit "$1"
+elif [ -d prototype/node_modules ] && [ -f prototype/commitlint.config.cjs ]; then
+  pnpm -C prototype -s exec commitlint --config commitlint.config.cjs --edit "$1"
+else
+  echo "commitlint: skipping (run pnpm install in backend/ or prototype/ to enforce messages)." >&2
+  exit 0
+fi

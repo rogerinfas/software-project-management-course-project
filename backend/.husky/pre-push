@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+set -e
+
+pnpm -C backend -s lint
+pnpm -C backend -s test
+pnpm -C backend -s build

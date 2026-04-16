@@ -1,7 +1,13 @@
 #!/usr/bin/env sh
 set -e
 
-# Checks más pesados antes de pushear.
-pnpm -s test
-pnpm -s build
+CHANGED="$(git diff --name-only origin/main...HEAD 2>/dev/null || git diff --name-only HEAD~1..HEAD)"
+
+if printf '%s\n' "$CHANGED" | rg -q '^backend/'; then
+  sh backend/.husky/pre-push
+fi
+
+if printf '%s\n' "$CHANGED" | rg -q '^prototype/'; then
+  sh prototype/.husky/pre-push
+fi
 
