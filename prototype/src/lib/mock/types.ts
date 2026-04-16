@@ -10,7 +10,11 @@ export type PaymentMethod = "efectivo" | "tarjeta" | "transferencia";
 
 export type ChargeStatus = "pendiente" | "pagado_parcial" | "pagado";
 
-export type BulletinCategory = "academico" | "administrativo" | "evento";
+export type BulletinCategory =
+  | "academico"
+  | "administrativo"
+  | "evento"
+  | "urgencia";
 
 export type BulletinVisibility = "publico" | "interno";
 
