@@ -1,56 +1,81 @@
 import type {
-  AuditLogEntry,
-  AttendanceMark,
+  AdmissionRequirement,
+  AdmissionStage,
   BulletinPost,
-  CashbookEntry,
   Charge,
+  Classroom,
   CollectionMonth,
+  Course,
   DiscountRule,
+  EnrollmentDocument,
+  FacialMark,
   Guardian,
-  MockNotificationEvent,
+  InternalReceipt,
   MorosityRow,
-  NotificationPreference,
   Payment,
+  PrePayrollRow,
   Prospect,
-  ScheduleRule,
+  ProspectDocument,
+  ProspectInteraction,
+  SanctionRule,
+  ScheduleSlot,
   Section,
+  StaffMember,
   Student,
   TariffConcept,
-  TardinessRow,
+  TeachingAssignment,
   TreasuryConfig,
-  VoucherUpload,
 } from "./types";
 
-// Section id "sec-full" has capacity 25 and 25 enrolled — for aforo demo
-export const initialSections: Section[] = [
+// ============================================================================
+// Admisión (M1)
+// ============================================================================
+
+export const initialAdmissionStages: AdmissionStage[] = [
   {
-    id: "sec-1a",
-    grado: "1° primaria",
-    seccion: "A",
-    capacidad: 25,
-    matriculados: 22,
+    id: "stg-1",
+    orden: 1,
+    nombre: "Contacto inicial",
+    obligatorio: true,
+    descripcion: "Primer contacto vía celular o presencial.",
   },
   {
-    id: "sec-2a",
-    grado: "2° primaria",
-    seccion: "A",
-    capacidad: 25,
-    matriculados: 18,
+    id: "stg-2",
+    orden: 2,
+    nombre: "Entrevista familiar",
+    obligatorio: true,
+    descripcion: "Reunión con apoderados y postulante.",
   },
   {
-    id: "sec-full",
-    grado: "3° primaria",
-    seccion: "A",
-    capacidad: 25,
-    matriculados: 25,
+    id: "stg-3",
+    orden: 3,
+    nombre: "Evaluación académica",
+    obligatorio: true,
+    descripcion: "Evaluación diagnóstica según nivel.",
   },
   {
-    id: "sec-ini",
-    grado: "Inicial 5 años",
-    seccion: "B",
-    capacidad: 20,
-    matriculados: 12,
+    id: "stg-4",
+    orden: 4,
+    nombre: "Psicología",
+    obligatorio: false,
+    descripcion: "Entrevista con el área psicopedagógica.",
   },
+  {
+    id: "stg-5",
+    orden: 5,
+    nombre: "Aceptado",
+    obligatorio: true,
+    descripcion: "Listo para pasar a matrícula (M2).",
+  },
+];
+
+export const initialAdmissionRequirements: AdmissionRequirement[] = [
+  { id: "req-1", nivel: "inicial", nombreDocumento: "DNI del postulante", obligatorio: true },
+  { id: "req-2", nivel: "inicial", nombreDocumento: "Partida de nacimiento", obligatorio: true },
+  { id: "req-3", nivel: "inicial", nombreDocumento: "Carné de vacunación", obligatorio: false },
+  { id: "req-4", nivel: "primaria", nombreDocumento: "DNI del postulante", obligatorio: true },
+  { id: "req-5", nivel: "primaria", nombreDocumento: "Constancia de estudios", obligatorio: true },
+  { id: "req-6", nivel: "primaria", nombreDocumento: "Libreta de notas anterior", obligatorio: true },
 ];
 
 export const initialProspects: Prospect[] = [
@@ -59,22 +84,109 @@ export const initialProspects: Prospect[] = [
     nombre: "María Fernanda Quispe",
     celular: "959123456",
     gradoPostulado: "1° primaria",
-    estado: "pendiente",
+    nivel: "primaria",
+    currentStageId: "stg-2",
+    prioridad: "alta",
+    fechaRegistro: "2026-03-20",
   },
   {
     id: "pro-2",
     nombre: "Diego Alarcón",
     celular: "954987321",
     gradoPostulado: "Inicial 5 años",
-    estado: "entrevista",
+    nivel: "inicial",
+    currentStageId: "stg-3",
+    prioridad: "media",
+    fechaRegistro: "2026-03-22",
   },
   {
     id: "pro-3",
     nombre: "Sofía Ramos",
     celular: "957111222",
     gradoPostulado: "2° primaria",
-    estado: "aceptado",
+    nivel: "primaria",
+    currentStageId: "stg-5",
+    prioridad: "alta",
+    fechaRegistro: "2026-03-18",
   },
+  {
+    id: "pro-4",
+    nombre: "Andrés Laqui",
+    celular: "955444777",
+    gradoPostulado: "3° primaria",
+    nivel: "primaria",
+    currentStageId: "stg-1",
+    prioridad: "baja",
+    fechaRegistro: "2026-04-02",
+  },
+];
+
+export const initialProspectInteractions: ProspectInteraction[] = [
+  {
+    id: "int-1",
+    prospectId: "pro-1",
+    fecha: "2026-03-21T10:00:00",
+    tipo: "llamada",
+    resumen: "Se coordinó fecha de entrevista para el 25/03.",
+    autor: "Admisión",
+  },
+  {
+    id: "int-2",
+    prospectId: "pro-1",
+    fecha: "2026-03-25T15:30:00",
+    tipo: "entrevista",
+    resumen: "Apoderados conformes; pendiente evaluación académica.",
+    autor: "Psicopedagogía",
+  },
+  {
+    id: "int-3",
+    prospectId: "pro-2",
+    fecha: "2026-03-24T09:00:00",
+    tipo: "correo",
+    resumen: "Se enviaron requisitos para inicial 5 años.",
+    autor: "Admisión",
+  },
+];
+
+export const initialProspectDocuments: ProspectDocument[] = [
+  {
+    id: "doc-1",
+    prospectId: "pro-1",
+    nombreArchivo: "dni_maria.pdf",
+    tipoDocumento: "DNI del postulante",
+    estado: "validado",
+    tamanoKb: 142,
+    subidoEn: "2026-03-21",
+  },
+  {
+    id: "doc-2",
+    prospectId: "pro-1",
+    nombreArchivo: "constancia_estudios.pdf",
+    tipoDocumento: "Constancia de estudios",
+    estado: "cargado",
+    tamanoKb: 310,
+    subidoEn: "2026-03-22",
+  },
+  {
+    id: "doc-3",
+    prospectId: "pro-2",
+    nombreArchivo: "partida_diego.jpg",
+    tipoDocumento: "Partida de nacimiento",
+    estado: "observado",
+    tamanoKb: 820,
+    subidoEn: "2026-03-24",
+  },
+];
+
+// ============================================================================
+// Matrícula (M2)
+// ============================================================================
+
+export const initialSections: Section[] = [
+  { id: "sec-1a", grado: "1° primaria", seccion: "A", nivel: "primaria", capacidad: 25, matriculados: 22 },
+  { id: "sec-2a", grado: "2° primaria", seccion: "A", nivel: "primaria", capacidad: 25, matriculados: 18 },
+  { id: "sec-full", grado: "3° primaria", seccion: "A", nivel: "primaria", capacidad: 25, matriculados: 25 },
+  { id: "sec-ini5b", grado: "Inicial 5 años", seccion: "B", nivel: "inicial", capacidad: 20, matriculados: 12 },
 ];
 
 export const initialStudents: Student[] = [
@@ -83,66 +195,42 @@ export const initialStudents: Student[] = [
     codigo: "EST-2026-0042",
     nombres: "Lucía",
     apellidos: "Vargas Huamán",
-    personal: {
-      dni: "72345678",
-      fechaNacimiento: "2018-03-12",
-      sexo: "F",
-    },
-    salud: {
-      grupoSanguineo: "O+",
-      alergias: "Ninguna",
-      seguroMedico: "SIS",
-    },
-    procedencia: {
-      colegioAnterior: "I.E. Manuel González Prada",
-      codigoModular: "1234567",
-    },
+    dni: "72345678",
+    fechaNacimiento: "2018-03-12",
+    sexo: "F",
+    salud: { grupoSanguineo: "O+", alergias: "Ninguna", seguroMedico: "SIS" },
+    hermanosIds: ["stu-2"],
     sectionId: "sec-1a",
-    documentosMatricula: ["dni_estudiante.pdf", "compromiso_honor.pdf"],
   },
   {
     id: "stu-2",
     codigo: "EST-2026-0043",
     nombres: "Mateo",
     apellidos: "Condori Flores",
-    personal: {
-      dni: "73456789",
-      fechaNacimiento: "2017-11-02",
-      sexo: "M",
-    },
-    salud: {
-      grupoSanguineo: "A+",
-      alergias: "Polen (leve)",
-      seguroMedico: "Rimac",
-    },
-    procedencia: {
-      colegioAnterior: "I.E. Simón Bolívar",
-      codigoModular: "7654321",
-    },
+    dni: "73456789",
+    fechaNacimiento: "2017-11-02",
+    sexo: "M",
+    salud: { grupoSanguineo: "A+", alergias: "Polen (leve)", seguroMedico: "Rimac" },
+    hermanosIds: ["stu-1"],
     sectionId: "sec-2a",
-    documentosMatricula: ["dni_estudiante.pdf", "contrato_servicios.pdf"],
   },
   {
     id: "stu-new",
     codigo: null,
     nombres: "Ana Paula",
     apellidos: "Medina López",
-    personal: {
-      dni: "74567890",
-      fechaNacimiento: "2019-07-21",
-      sexo: "F",
-    },
+    dni: "74567890",
+    fechaNacimiento: "2019-07-21",
+    sexo: "F",
     salud: {
       grupoSanguineo: "B+",
       alergias: "-",
       seguroMedico: "Pacífico",
+      condicionesEspeciales: "Asma leve (inhalador)",
     },
-    procedencia: {
-      colegioAnterior: "Cuna Jardín Los Rosales",
-      codigoModular: "—",
-    },
+    hermanosIds: [],
     sectionId: null,
-    documentosMatricula: [],
+    prospectId: "pro-3",
   },
 ];
 
@@ -153,7 +241,9 @@ export const initialGuardians: Guardian[] = [
     nombreCompleto: "Rosa Huamán Quispe",
     dni: "41234567",
     telefono: "959000111",
+    correo: "rosa.h@example.com",
     parentesco: "Madre",
+    ocupacion: "Comerciante",
     responsableEconomico: true,
     deudaAniosAnterioresPendiente: false,
   },
@@ -163,7 +253,9 @@ export const initialGuardians: Guardian[] = [
     nombreCompleto: "Carlos Vargas",
     dni: "40112233",
     telefono: "958444555",
+    correo: "carlos.v@example.com",
     parentesco: "Padre",
+    ocupacion: "Chofer",
     responsableEconomico: false,
     deudaAniosAnterioresPendiente: false,
   },
@@ -173,7 +265,9 @@ export const initialGuardians: Guardian[] = [
     nombreCompleto: "Elena Flores",
     dni: "42345678",
     telefono: "957333222",
+    correo: "elena.f@example.com",
     parentesco: "Madre",
+    ocupacion: "Enfermera",
     responsableEconomico: true,
     deudaAniosAnterioresPendiente: true,
   },
@@ -183,61 +277,187 @@ export const initialGuardians: Guardian[] = [
     nombreCompleto: "Miguel Medina",
     dni: "43456789",
     telefono: "956777888",
+    correo: "miguel.m@example.com",
     parentesco: "Padre",
+    ocupacion: "Ingeniero civil",
     responsableEconomico: true,
     deudaAniosAnterioresPendiente: false,
   },
 ];
 
+export const initialEnrollmentDocuments: EnrollmentDocument[] = [
+  { id: "edoc-1", studentId: "stu-1", tipo: "ficha_matricula", generadoEn: "2026-03-01", estado: "emitido" },
+  { id: "edoc-2", studentId: "stu-1", tipo: "contrato_servicios", generadoEn: "2026-03-01", estado: "emitido" },
+  { id: "edoc-3", studentId: "stu-2", tipo: "ficha_matricula", generadoEn: "2026-03-02", estado: "emitido" },
+];
+
+// ============================================================================
+// Académica y Comunicación (M3)
+// ============================================================================
+
+export const initialCourses: Course[] = [
+  { id: "crs-1", grado: "1° primaria", nombre: "Comunicación", horasSemanales: 6 },
+  { id: "crs-2", grado: "1° primaria", nombre: "Matemática", horasSemanales: 6 },
+  { id: "crs-3", grado: "1° primaria", nombre: "Ciencia y Tecnología", horasSemanales: 3 },
+  { id: "crs-4", grado: "2° primaria", nombre: "Comunicación", horasSemanales: 6 },
+  { id: "crs-5", grado: "2° primaria", nombre: "Matemática", horasSemanales: 6 },
+  { id: "crs-6", grado: "Inicial 5 años", nombre: "Psicomotricidad", horasSemanales: 4 },
+];
+
+export const initialTeachingAssignments: TeachingAssignment[] = [
+  { id: "ta-1", courseId: "crs-1", teacherId: "sta-1", sectionId: "sec-1a" },
+  { id: "ta-2", courseId: "crs-2", teacherId: "sta-2", sectionId: "sec-1a" },
+  { id: "ta-3", courseId: "crs-3", teacherId: "sta-2", sectionId: "sec-1a" },
+  { id: "ta-4", courseId: "crs-4", teacherId: "sta-1", sectionId: "sec-2a" },
+  { id: "ta-5", courseId: "crs-5", teacherId: "sta-3", sectionId: "sec-2a" },
+  { id: "ta-6", courseId: "crs-6", teacherId: "sta-4", sectionId: "sec-ini5b" },
+];
+
+export const initialClassrooms: Classroom[] = [
+  { id: "room-1", nombre: "Aula 101", capacidad: 30, piso: 1 },
+  { id: "room-2", nombre: "Aula 102", capacidad: 30, piso: 1 },
+  { id: "room-3", nombre: "Aula 201", capacidad: 25, piso: 2 },
+  { id: "room-4", nombre: "Sala de Inicial", capacidad: 20, piso: 1 },
+];
+
+export const initialScheduleSlots: ScheduleSlot[] = [
+  {
+    id: "slot-1",
+    dia: "lunes",
+    horaInicio: "08:00",
+    horaFin: "09:30",
+    courseId: "crs-1",
+    teacherId: "sta-1",
+    sectionId: "sec-1a",
+    classroomId: "room-1",
+  },
+  {
+    id: "slot-2",
+    dia: "lunes",
+    horaInicio: "09:45",
+    horaFin: "11:15",
+    courseId: "crs-2",
+    teacherId: "sta-2",
+    sectionId: "sec-1a",
+    classroomId: "room-1",
+  },
+  {
+    id: "slot-3",
+    dia: "martes",
+    horaInicio: "08:00",
+    horaFin: "09:30",
+    courseId: "crs-4",
+    teacherId: "sta-1",
+    sectionId: "sec-2a",
+    classroomId: "room-2",
+  },
+  {
+    id: "slot-4",
+    dia: "miercoles",
+    horaInicio: "08:00",
+    horaFin: "09:30",
+    courseId: "crs-6",
+    teacherId: "sta-4",
+    sectionId: "sec-ini5b",
+    classroomId: "room-4",
+  },
+  {
+    id: "slot-5",
+    dia: "jueves",
+    horaInicio: "10:00",
+    horaFin: "11:30",
+    courseId: "crs-5",
+    teacherId: "sta-3",
+    sectionId: "sec-2a",
+    classroomId: "room-2",
+  },
+];
+
+export const initialBulletins: BulletinPost[] = [
+  {
+    id: "bul-1",
+    titulo: "Reunión general de padres — abril",
+    cuerpo:
+      "Se convoca a los padres de familia el 18 de abril a las 17:00 horas en el auditorio principal para la entrega de información del primer bimestre.",
+    categoria: "administrativo",
+    visibilidad: "publico",
+    publicadoEn: "2026-04-05",
+    vigenteHasta: "2026-04-18",
+    autor: "Dirección",
+  },
+  {
+    id: "bul-2",
+    titulo: "Salida pedagógica de Inicial al Parque de la Identidad",
+    cuerpo:
+      "Las docentes de Inicial 5 años comunican la salida pedagógica del 12 de abril. Se adjunta la autorización y la lista de materiales.",
+    categoria: "academico",
+    visibilidad: "publico",
+    publicadoEn: "2026-04-07",
+    vigenteHasta: "2026-04-12",
+    autor: "Coordinación Inicial",
+  },
+  {
+    id: "bul-3",
+    titulo: "Aniversario del colegio — semana cultural",
+    cuerpo:
+      "Del 6 al 10 de mayo celebraremos la semana cultural por el aniversario institucional con actividades por grado.",
+    categoria: "evento",
+    visibilidad: "publico",
+    publicadoEn: "2026-04-10",
+    vigenteHasta: "2026-05-10",
+    autor: "Dirección",
+  },
+  {
+    id: "bul-4",
+    titulo: "Reunión interna de coordinadores",
+    cuerpo:
+      "Reunión de coordinadores el viernes 11 de abril a las 15:30 horas en la sala de profesores.",
+    categoria: "administrativo",
+    visibilidad: "interno",
+    publicadoEn: "2026-04-08",
+    vigenteHasta: "2026-04-11",
+    autor: "Dirección",
+  },
+];
+
+// ============================================================================
+// Tesorería (M4)
+// ============================================================================
+
 export const initialTariffConcepts: TariffConcept[] = [
+  { id: "t1", nombre: "Inscripción por admisión", tipo: "unico", montoBase: 150, aplicaNivel: "todos" },
+  { id: "t2", nombre: "Matrícula", tipo: "unico", montoBase: 420, aplicaNivel: "todos" },
+  { id: "t3", nombre: "Cuota de ingreso", tipo: "unico", montoBase: 850, aplicaNivel: "todos" },
   {
-    id: "t1",
-    nombre: "Matrícula",
-    tipo: "unico",
-    montoBase: 420,
-  },
-  {
-    id: "t2",
-    nombre: "Cuota de ingreso",
-    tipo: "unico",
-    montoBase: 850,
-  },
-  {
-    id: "t3",
-    nombre: "Pensión mensual",
+    id: "t4",
+    nombre: "Pensión mensual — primaria",
     tipo: "mensual",
     meses: [
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre",
+      "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
+      "Septiembre", "Octubre", "Noviembre", "Diciembre",
     ],
     montoBase: 380,
+    aplicaNivel: "primaria",
   },
+  {
+    id: "t5",
+    nombre: "Pensión mensual — inicial",
+    tipo: "mensual",
+    meses: [
+      "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto",
+      "Septiembre", "Octubre", "Noviembre", "Diciembre",
+    ],
+    montoBase: 320,
+    aplicaNivel: "inicial",
+  },
+  { id: "t6", nombre: "Material educativo (extra)", tipo: "extra", montoBase: 180, aplicaNivel: "todos" },
 ];
 
 export const initialDiscounts: DiscountRule[] = [
-  {
-    id: "d1",
-    nombre: "Descuento por hermano",
-    porcentaje: 10,
-    aplicaA: "Pensión mensual (2° hijo)",
-  },
-  {
-    id: "d2",
-    nombre: "Beca excelencia académica",
-    porcentaje: 25,
-    aplicaA: "Pensión mensual",
-  },
+  { id: "d1", nombre: "Descuento por hermano", porcentaje: 10, aplicaA: "Pensión mensual (2° hijo)" },
+  { id: "d2", nombre: "Beca excelencia académica", porcentaje: 25, aplicaA: "Pensión mensual" },
 ];
 
-/** Cuotas de ejemplo: algunas vencidas para mora */
 export const initialCharges: Charge[] = [
   {
     id: "chg-1",
@@ -287,149 +507,19 @@ export const initialPayments: Payment[] = [
     cobradorId: "usr-1",
     cobradorNombre: "Carmen Tesorería",
     fechaHora: "2026-03-08T09:15:00",
-    comprobanteSunat: {
-      json: `{"tipo":"01","serie":"B001","correlativo":42,"total":380}`,
-      xml: `<?xml version="1.0"?><Invoice><Total>380.00</Total></Invoice>`,
-    },
   },
 ];
 
-export const initialCashbook: CashbookEntry[] = [
+export const initialReceipts: InternalReceipt[] = [
   {
-    id: "cb-1",
-    cobradorNombre: "Carmen Tesorería",
-    metodo: "efectivo",
-    monto: 380,
-    hora: "09:15",
-    concepto: "Pensión Marzo — Vargas",
-  },
-  {
-    id: "cb-2",
-    cobradorNombre: "Carmen Tesorería",
-    metodo: "tarjeta",
-    monto: 420,
-    hora: "10:02",
-    concepto: "Matrícula — Condori",
-  },
-];
-
-export const initialVouchers: VoucherUpload[] = [
-  {
-    id: "vou-1",
-    apoderadoNombre: "Rosa Huamán",
-    estudianteCodigo: "EST-2026-0042",
-    monto: 120,
-    referencia: "OP 998877",
-    status: "pendiente",
-  },
-];
-
-export const initialSchedules: ScheduleRule[] = [
-  {
-    id: "sch-1",
-    rol: "docente",
-    horaEntrada: "07:30",
-    horaSalida: "14:00",
-    toleranciaMinutos: 10,
-  },
-  {
-    id: "sch-2",
-    rol: "administrativo",
-    horaEntrada: "08:00",
-    horaSalida: "17:00",
-    toleranciaMinutos: 15,
-  },
-];
-
-export const initialAttendance: AttendanceMark[] = [
-  {
-    id: "att-1",
-    dni: "41234567",
-    nombre: "Rosa Huamán (ejemplo)",
-    tipo: "entrada",
-    hora: "07:28",
-    fecha: "2026-04-09",
-  },
-];
-
-export const initialTardiness: TardinessRow[] = [
-  {
-    id: "tr-1",
-    personalNombre: "Julio Paredes (docente)",
-    diasTardanza: 2,
-    faltas: 0,
-    horasEfectivas: 118,
-  },
-  {
-    id: "tr-2",
-    personalNombre: "Luisa Rojas (admin.)",
-    diasTardanza: 0,
-    faltas: 1,
-    horasEfectivas: 152,
-  },
-];
-
-export const initialBulletins: BulletinPost[] = [
-  {
-    id: "bul-1",
-    titulo: "Reunión de padres — abril",
-    cuerpo:
-      "Se convoca a padres de familia el 18 de abril a las 17:00 en el auditorio.",
-    fecha: "2026-04-05",
-    segmento: "general",
-    adjuntos: [
-      { nombre: "convocatoria.pdf", tipo: "pdf" },
-      { nombre: "afiche.png", tipo: "imagen" },
-    ],
-  },
-  {
-    id: "bul-2",
-    titulo: "Salida pedagógica Inicial",
-    cuerpo: "Autorización y lista de útiles adjunta.",
-    fecha: "2026-04-07",
-    segmento: "inicial",
-    adjuntos: [{ nombre: "autorizacion.pdf", tipo: "pdf" }],
-  },
-];
-
-export const initialNotifPrefs: NotificationPreference[] = [
-  { canal: "push", comunicados: true, recibos: true },
-  { canal: "email", comunicados: true, recibos: false },
-];
-
-export const initialNotifEvents: MockNotificationEvent[] = [
-  {
-    id: "ne-1",
-    tipo: "comunicado",
-    mensaje: "Nuevo comunicado: Reunión de padres — abril",
-    fecha: "2026-04-05T08:00:00",
-    leido: false,
-  },
-  {
-    id: "ne-2",
-    tipo: "recibo",
-    mensaje: "Su recibo de pago de abril ya está disponible",
-    fecha: "2026-04-03T11:20:00",
-    leido: true,
-  },
-];
-
-export const initialAuditLog: AuditLogEntry[] = [
-  {
-    id: "aud-1",
-    accion: "Pago registrado",
-    usuario: "Carmen Tesorería",
-    fechaHora: "2026-03-08T09:15:00",
-    detalle: "S/ 380.00 — Efectivo — EST-2026-0042",
-    huboEdicionPosterior: false,
-  },
-  {
-    id: "aud-2",
-    accion: "Pago editado",
-    usuario: "Admin sistema",
-    fechaHora: "2026-03-08T10:01:00",
-    detalle: "Corrección de método de pago (audit trail)",
-    huboEdicionPosterior: true,
+    id: "rec-1",
+    paymentId: "pay-1",
+    serie: "R-2026",
+    numero: 1001,
+    montoTotal: 380,
+    emitidoEn: "2026-03-08T09:16:00",
+    estudianteNombre: "Lucía Vargas Huamán",
+    concepto: "Pensión Marzo 2026",
   },
 ];
 
@@ -451,4 +541,136 @@ export const initialMorosity: MorosityRow[] = [
 export const initialCollection: CollectionMonth[] = [
   { mes: "Marzo", proyectado: 45_200, recaudado: 42_100 },
   { mes: "Abril", proyectado: 45_200, recaudado: 38_400 },
+];
+
+// ============================================================================
+// Personal y Asistencia (M5)
+// ============================================================================
+
+export const initialStaff: StaffMember[] = [
+  {
+    id: "sta-1",
+    nombres: "Julio",
+    apellidos: "Paredes Aguirre",
+    dni: "40111111",
+    rol: "docente",
+    especialidad: "Comunicación — primaria",
+    horaEntrada: "07:30",
+    horaSalida: "14:00",
+    toleranciaMinutos: 10,
+    fotoReferencia: "sta-1.jpg",
+  },
+  {
+    id: "sta-2",
+    nombres: "Diana",
+    apellidos: "Chávez Rojas",
+    dni: "40222222",
+    rol: "docente",
+    especialidad: "Matemática — primaria",
+    horaEntrada: "07:30",
+    horaSalida: "14:00",
+    toleranciaMinutos: 10,
+    fotoReferencia: "sta-2.jpg",
+  },
+  {
+    id: "sta-3",
+    nombres: "Luis",
+    apellidos: "Mamani Quispe",
+    dni: "40333333",
+    rol: "docente",
+    especialidad: "Matemática — primaria",
+    horaEntrada: "07:30",
+    horaSalida: "14:00",
+    toleranciaMinutos: 10,
+    fotoReferencia: "sta-3.jpg",
+  },
+  {
+    id: "sta-4",
+    nombres: "Patricia",
+    apellidos: "Ayala Zegarra",
+    dni: "40444444",
+    rol: "docente",
+    especialidad: "Educación inicial",
+    horaEntrada: "07:30",
+    horaSalida: "13:00",
+    toleranciaMinutos: 10,
+    fotoReferencia: "sta-4.jpg",
+  },
+  {
+    id: "sta-5",
+    nombres: "Luisa",
+    apellidos: "Rojas Paniagua",
+    dni: "40555555",
+    rol: "administrativo",
+    especialidad: "Secretaría académica",
+    horaEntrada: "08:00",
+    horaSalida: "17:00",
+    toleranciaMinutos: 15,
+    fotoReferencia: "sta-5.jpg",
+  },
+  {
+    id: "sta-6",
+    nombres: "Carmen",
+    apellidos: "Tesorería Delgado",
+    dni: "40666666",
+    rol: "administrativo",
+    especialidad: "Tesorería",
+    horaEntrada: "08:00",
+    horaSalida: "17:00",
+    toleranciaMinutos: 15,
+    fotoReferencia: "sta-6.jpg",
+  },
+];
+
+export const initialFacialMarks: FacialMark[] = [
+  { id: "fm-1", staffId: "sta-1", tipo: "entrada", fecha: "2026-04-09", hora: "07:28", confianza: 97, minutosTardanza: 0 },
+  { id: "fm-2", staffId: "sta-2", tipo: "entrada", fecha: "2026-04-09", hora: "07:45", confianza: 94, minutosTardanza: 5 },
+  { id: "fm-3", staffId: "sta-5", tipo: "entrada", fecha: "2026-04-09", hora: "08:20", confianza: 96, minutosTardanza: 5 },
+];
+
+export const initialSanctionRules: SanctionRule[] = [
+  { id: "sr-1", nombre: "Descuento estándar", minutosDesde: 1, multaPorMinuto: 0.5, activa: true },
+  { id: "sr-2", nombre: "Descuento severo (tardanza > 30 min)", minutosDesde: 31, multaPorMinuto: 1.5, activa: true },
+];
+
+export const initialPrePayroll: PrePayrollRow[] = [
+  {
+    id: "pr-1",
+    staffId: "sta-1",
+    staffNombre: "Julio Paredes Aguirre",
+    rol: "docente",
+    diasLaborados: 20,
+    minutosTardanza: 12,
+    faltas: 0,
+    horasEfectivas: 130,
+    descuentoMulta: 6,
+    sueldoBase: 2800,
+    neto: 2794,
+  },
+  {
+    id: "pr-2",
+    staffId: "sta-2",
+    staffNombre: "Diana Chávez Rojas",
+    rol: "docente",
+    diasLaborados: 20,
+    minutosTardanza: 35,
+    faltas: 0,
+    horasEfectivas: 128,
+    descuentoMulta: 25.5,
+    sueldoBase: 2800,
+    neto: 2774.5,
+  },
+  {
+    id: "pr-3",
+    staffId: "sta-5",
+    staffNombre: "Luisa Rojas Paniagua",
+    rol: "administrativo",
+    diasLaborados: 20,
+    minutosTardanza: 5,
+    faltas: 1,
+    horasEfectivas: 152,
+    descuentoMulta: 2.5,
+    sueldoBase: 2400,
+    neto: 2317.5,
+  },
 ];
