@@ -2,50 +2,65 @@
 
 import * as React from "react";
 import { toast } from "sonner";
+
 import {
-  initialAttendance,
-  initialAuditLog,
+  initialAdmissionRequirements,
+  initialAdmissionStages,
   initialBulletins,
-  initialCashbook,
   initialCharges,
+  initialClassrooms,
   initialCollection,
+  initialCourses,
   initialDiscounts,
+  initialEnrollmentDocuments,
+  initialFacialMarks,
   initialGuardians,
   initialMorosity,
-  initialNotifEvents,
-  initialNotifPrefs,
   initialPayments,
+  initialPrePayroll,
+  initialProspectDocuments,
+  initialProspectInteractions,
   initialProspects,
-  initialSchedules,
+  initialReceipts,
+  initialSanctionRules,
+  initialScheduleSlots,
   initialSections,
+  initialStaff,
   initialStudents,
-  initialTardiness,
   initialTariffConcepts,
-  initialVouchers,
+  initialTeachingAssignments,
   treasuryConfig,
 } from "@/lib/mock/fixtures";
 import {
+  calcularMultaPorMinutos,
+  consolidarTardanzas,
   economicGuardianHasDebt,
   isValidDniFormat,
+  minutosTardanza,
   ordenPrelacionCharges,
-  simulateMatricula,
+  simulateEnrollment,
 } from "@/lib/mock/rules";
 import type {
-  AttendanceMark,
-  AuditLogEntry,
+  AdmissionRequirement,
+  AdmissionStage,
+  BulletinCategory,
   BulletinPost,
-  BulletinSegment,
-  CashbookEntry,
+  BulletinVisibility,
   Charge,
-  Guardian,
+  DocumentValidationStatus,
+  EnrollmentDocument,
+  FacialMark,
+  InternalReceipt,
+  NivelEducativo,
   Payment,
   PaymentAllocation,
   PaymentMethod,
+  PrePayrollRow,
   Prospect,
-  ProspectStatus,
-  Section,
-  Student,
-  VoucherStatus,
+  ProspectDocument,
+  ProspectInteraction,
+  ProspectPrioridad,
+  SanctionRule,
 } from "@/lib/mock/types";
 
 function uid(prefix: string) {
@@ -54,167 +69,249 @@ function uid(prefix: string) {
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
+// ----------------------------------------------------------------------------
+// Estado interno
+// ----------------------------------------------------------------------------
+
 type DemoDataState = {
-  sections: Section[];
+  admissionStages: AdmissionStage[];
+  admissionRequirements: AdmissionRequirement[];
   prospects: Prospect[];
-  students: Student[];
-  guardians: Guardian[];
+  prospectInteractions: ProspectInteraction[];
+  prospectDocuments: ProspectDocument[];
+
+  sections: typeof initialSections;
+  students: typeof initialStudents;
+  guardians: typeof initialGuardians;
+  enrollmentDocuments: EnrollmentDocument[];
+
+  courses: typeof initialCourses;
+  teachingAssignments: typeof initialTeachingAssignments;
+  classrooms: typeof initialClassrooms;
+  scheduleSlots: typeof initialScheduleSlots;
+  bulletins: BulletinPost[];
+
   tariffConcepts: typeof initialTariffConcepts;
   discounts: typeof initialDiscounts;
   charges: Charge[];
   payments: Payment[];
-  cashbook: CashbookEntry[];
-  vouchers: typeof initialVouchers;
-  schedules: typeof initialSchedules;
-  attendance: AttendanceMark[];
-  tardiness: typeof initialTardiness;
-  bulletins: BulletinPost[];
-  notifPrefs: typeof initialNotifPrefs;
-  notifEvents: typeof initialNotifEvents;
-  auditLog: AuditLogEntry[];
-  collection: typeof initialCollection;
+  receipts: InternalReceipt[];
   morosity: typeof initialMorosity;
-  massDebtGeneratedAt: string | null;
+  collection: typeof initialCollection;
+
+  staff: typeof initialStaff;
+  facialMarks: FacialMark[];
+  sanctionRules: SanctionRule[];
+  prePayroll: PrePayrollRow[];
 };
 
 const initialDemoState = (): DemoDataState => ({
-  sections: structuredClone(initialSections),
+  admissionStages: structuredClone(initialAdmissionStages),
+  admissionRequirements: structuredClone(initialAdmissionRequirements),
   prospects: structuredClone(initialProspects),
+  prospectInteractions: structuredClone(initialProspectInteractions),
+  prospectDocuments: structuredClone(initialProspectDocuments),
+
+  sections: structuredClone(initialSections),
   students: structuredClone(initialStudents),
   guardians: structuredClone(initialGuardians),
+  enrollmentDocuments: structuredClone(initialEnrollmentDocuments),
+
+  courses: structuredClone(initialCourses),
+  teachingAssignments: structuredClone(initialTeachingAssignments),
+  classrooms: structuredClone(initialClassrooms),
+  scheduleSlots: structuredClone(initialScheduleSlots),
+  bulletins: structuredClone(initialBulletins),
+
   tariffConcepts: structuredClone(initialTariffConcepts),
   discounts: structuredClone(initialDiscounts),
   charges: structuredClone(initialCharges),
   payments: structuredClone(initialPayments),
-  cashbook: structuredClone(initialCashbook),
-  vouchers: structuredClone(initialVouchers),
-  schedules: structuredClone(initialSchedules),
-  attendance: structuredClone(initialAttendance),
-  tardiness: structuredClone(initialTardiness),
-  bulletins: structuredClone(initialBulletins),
-  notifPrefs: structuredClone(initialNotifPrefs),
-  notifEvents: structuredClone(initialNotifEvents),
-  auditLog: structuredClone(initialAuditLog),
-  collection: structuredClone(initialCollection),
+  receipts: structuredClone(initialReceipts),
   morosity: structuredClone(initialMorosity),
-  massDebtGeneratedAt: null,
+  collection: structuredClone(initialCollection),
+
+  staff: structuredClone(initialStaff),
+  facialMarks: structuredClone(initialFacialMarks),
+  sanctionRules: structuredClone(initialSanctionRules),
+  prePayroll: structuredClone(initialPrePayroll),
 });
+
+// ----------------------------------------------------------------------------
+// Context API
+// ----------------------------------------------------------------------------
 
 type DemoDataContextValue = DemoDataState & {
   treasuryDailyRatePercent: number;
-  /** Matrícula: valida aforo y deuda del responsable */
-  tryEnroll: (studentId: string, sectionId: string) => void;
-  addProspect: (p: Omit<Prospect, "id">) => void;
-  updateProspectStatus: (id: string, estado: ProspectStatus) => void;
+
+  // M1 Admisión
+  addProspect: (
+    p: Omit<Prospect, "id" | "fechaRegistro" | "currentStageId"> & {
+      currentStageId?: string;
+    },
+  ) => void;
+  moveProspectStage: (prospectId: string, stageId: string) => void;
+  addProspectInteraction: (input: Omit<ProspectInteraction, "id">) => void;
+  addProspectDocument: (input: Omit<ProspectDocument, "id" | "subidoEn">) => void;
+  setProspectDocumentStatus: (id: string, estado: DocumentValidationStatus) => void;
+  addAdmissionStage: (input: Omit<AdmissionStage, "id" | "orden">) => void;
+  toggleAdmissionRequirement: (id: string) => void;
+
+  // M2 Matrícula
   updateStudentDni: (studentId: string, dni: string) => boolean;
   setGuardianResponsible: (guardianId: string) => void;
-  generateMassPensionDebt: () => void;
+  tryEnroll: (studentId: string, sectionId: string) => void;
+  emitEnrollmentDocs: (studentId: string) => void;
+
+  // M3 Académica y comunicación
+  addBulletin: (input: {
+    titulo: string;
+    cuerpo: string;
+    categoria: BulletinCategory;
+    visibilidad: BulletinVisibility;
+    vigenteHasta: string;
+  }) => void;
+
+  // M4 Tesorería
+  generateMassPensionDebt: (nivel: NivelEducativo) => void;
   registerWindowPayment: (
     studentId: string,
     monto: number,
     metodo: PaymentMethod,
   ) => void;
-  setVoucherStatus: (id: string, status: VoucherStatus) => void;
-  addAttendanceMark: (dni: string, nombre: string) => void;
-  addBulletin: (
-    titulo: string,
-    cuerpo: string,
-    segmento: BulletinSegment,
-  ) => void;
-  simulateDebtAlerts: () => void;
-  addAudit: (entry: Omit<AuditLogEntry, "id">) => void;
+
+  // M5 Personal y asistencia
+  simulateFacialMark: (staffId: string) => void;
+  toggleSanctionRule: (id: string) => void;
+  recomputePrePayroll: () => void;
 };
 
-const DemoDataContext = React.createContext<DemoDataContextValue | null>(
-  null,
-);
+const DemoDataContext = React.createContext<DemoDataContextValue | null>(null);
 
 export function DemoDataProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = React.useState<DemoDataState>(initialDemoState);
 
-  const tryEnroll = React.useCallback(
-    (studentId: string, sectionId: string) => {
+  // --------------------------------------------------------------------------
+  // M1 — Admisión
+  // --------------------------------------------------------------------------
+
+  const addProspect = React.useCallback<DemoDataContextValue["addProspect"]>(
+    (p) => {
       setState((prev) => {
-        const section = prev.sections.find((s) => s.id === sectionId);
-        if (!section) {
-          queueMicrotask(() => toast.error("Sección no encontrada."));
-          return prev;
-        }
-        const debt = economicGuardianHasDebt(studentId, prev.guardians);
-        const sim = simulateMatricula(section, debt);
-        if (!sim.ok) {
-          queueMicrotask(() => toast.error(sim.message));
-          return prev;
-        }
-        const code = `EST-2026-${String(Math.floor(Math.random() * 9000) + 1000)}`;
-        const students = prev.students.map((s) =>
-          s.id === studentId
-            ? {
-                ...s,
-                codigo: code,
-                sectionId,
-                documentosMatricula: [
-                  ...s.documentosMatricula,
-                  "dni_estudiante.pdf",
-                  "compromiso_honor.pdf",
-                  "contrato_servicios.pdf",
-                ],
-              }
-            : s,
-        );
-        const sections = prev.sections.map((s) =>
-          s.id === sectionId ? { ...s, matriculados: s.matriculados + 1 } : s,
-        );
-        const auditLog: AuditLogEntry[] = [
-          {
-            id: uid("aud"),
-            accion: "Matrícula completada",
-            usuario: "Secretaría (demo)",
-            fechaHora: new Date().toISOString(),
-            detalle: `Estudiante ${studentId} → ${section.grado} ${section.seccion}, código ${code}`,
-            huboEdicionPosterior: false,
-          },
-          ...prev.auditLog,
-        ];
-        queueMicrotask(() => toast.success(sim.message));
-        return { ...prev, students, sections, auditLog };
+        const stageId = p.currentStageId ?? prev.admissionStages[0]?.id ?? "";
+        const prospect: Prospect = {
+          ...p,
+          id: uid("pro"),
+          fechaRegistro: todayIso(),
+          currentStageId: stageId,
+        };
+        return { ...prev, prospects: [prospect, ...prev.prospects] };
       });
+      toast.success("Prospecto registrado en el pipeline.");
     },
     [],
   );
 
-  const addProspect = React.useCallback((p: Omit<Prospect, "id">) => {
-    setState((prev) => ({
-      ...prev,
-      prospects: [{ ...p, id: uid("pro") }, ...prev.prospects],
-    }));
-    toast.success("Prospecto registrado.");
-  }, []);
-
-  const updateProspectStatus = React.useCallback(
-    (id: string, estado: ProspectStatus) => {
+  const moveProspectStage = React.useCallback(
+    (prospectId: string, stageId: string) => {
       setState((prev) => ({
         ...prev,
-        prospects: prev.prospects.map((x) => (x.id === id ? { ...x, estado } : x)),
+        prospects: prev.prospects.map((x) =>
+          x.id === prospectId ? { ...x, currentStageId: stageId } : x,
+        ),
       }));
     },
     [],
   );
 
-  const updateStudentDni = React.useCallback((studentId: string, dni: string) => {
-    if (!isValidDniFormat(dni)) {
-      toast.error("DNI inválido: debe tener 8 dígitos.");
-      return false;
-    }
+  const addProspectInteraction = React.useCallback<
+    DemoDataContextValue["addProspectInteraction"]
+  >((input) => {
     setState((prev) => ({
       ...prev,
-      students: prev.students.map((s) =>
-        s.id === studentId ? { ...s, personal: { ...s.personal, dni } } : s,
+      prospectInteractions: [
+        { ...input, id: uid("int") },
+        ...prev.prospectInteractions,
+      ],
+    }));
+    toast.success("Interacción registrada.");
+  }, []);
+
+  const addProspectDocument = React.useCallback<
+    DemoDataContextValue["addProspectDocument"]
+  >((input) => {
+    setState((prev) => ({
+      ...prev,
+      prospectDocuments: [
+        { ...input, id: uid("doc"), subidoEn: todayIso() },
+        ...prev.prospectDocuments,
+      ],
+    }));
+    toast.success("Documento cargado al repositorio.");
+  }, []);
+
+  const setProspectDocumentStatus = React.useCallback(
+    (id: string, estado: DocumentValidationStatus) => {
+      setState((prev) => ({
+        ...prev,
+        prospectDocuments: prev.prospectDocuments.map((d) =>
+          d.id === id ? { ...d, estado } : d,
+        ),
+      }));
+      toast.success(`Documento marcado como ${estado}.`);
+    },
+    [],
+  );
+
+  const addAdmissionStage = React.useCallback<
+    DemoDataContextValue["addAdmissionStage"]
+  >((input) => {
+    setState((prev) => {
+      const maxOrden = prev.admissionStages.reduce(
+        (a, s) => Math.max(a, s.orden),
+        0,
+      );
+      return {
+        ...prev,
+        admissionStages: [
+          ...prev.admissionStages,
+          { ...input, id: uid("stg"), orden: maxOrden + 1 },
+        ],
+      };
+    });
+    toast.success("Nueva etapa agregada al proceso.");
+  }, []);
+
+  const toggleAdmissionRequirement = React.useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      admissionRequirements: prev.admissionRequirements.map((r) =>
+        r.id === id ? { ...r, obligatorio: !r.obligatorio } : r,
       ),
     }));
-    toast.success("DNI actualizado.");
-    return true;
   }, []);
+
+  // --------------------------------------------------------------------------
+  // M2 — Matrícula
+  // --------------------------------------------------------------------------
+
+  const updateStudentDni = React.useCallback(
+    (studentId: string, dni: string) => {
+      if (!isValidDniFormat(dni)) {
+        toast.error("DNI inválido: debe tener 8 dígitos.");
+        return false;
+      }
+      setState((prev) => ({
+        ...prev,
+        students: prev.students.map((s) =>
+          s.id === studentId ? { ...s, dni } : s,
+        ),
+      }));
+      toast.success("DNI actualizado.");
+      return true;
+    },
+    [],
+  );
 
   const setGuardianResponsible = React.useCallback((guardianId: string) => {
     setState((prev) => {
@@ -230,40 +327,138 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
     toast.success("Responsable económico actualizado.");
   }, []);
 
-  const generateMassPensionDebt = React.useCallback(() => {
-    setState((prev) => {
-      const active = prev.students.filter((s) => s.codigo);
-      const newCharges: Charge[] = [];
-      for (const s of active) {
-        newCharges.push({
-          id: uid("chg"),
-          studentId: s.id,
-          concepto: "Pensión Mayo 2026 (generación masiva)",
-          montoOriginal: 380,
-          montoPendiente: 380,
-          fechaVencimiento: "2026-05-10",
-          status: "pendiente",
-        });
-      }
-      toast.success(
-        `Se generaron ${newCharges.length} cuotas de pensión (demo).`,
-      );
-      return {
-        ...prev,
-        charges: [...newCharges, ...prev.charges],
-        massDebtGeneratedAt: new Date().toISOString(),
-        auditLog: [
+  const tryEnroll = React.useCallback(
+    (studentId: string, sectionId: string) => {
+      setState((prev) => {
+        const section = prev.sections.find((s) => s.id === sectionId);
+        if (!section) {
+          queueMicrotask(() => toast.error("Sección no encontrada."));
+          return prev;
+        }
+        const debt = economicGuardianHasDebt(studentId, prev.guardians);
+        const sim = simulateEnrollment(section, debt);
+        if (!sim.ok) {
+          queueMicrotask(() => toast.error(sim.message));
+          return prev;
+        }
+        const code = `EST-2026-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+        const students = prev.students.map((s) =>
+          s.id === studentId ? { ...s, codigo: code, sectionId } : s,
+        );
+        const sections = prev.sections.map((s) =>
+          s.id === sectionId ? { ...s, matriculados: s.matriculados + 1 } : s,
+        );
+        const newDocs: EnrollmentDocument[] = [
           {
-            id: uid("aud"),
-            accion: "Deuda masiva generada",
-            usuario: "Tesorería (demo)",
-            fechaHora: new Date().toISOString(),
-            detalle: `Cuotas Mayo 2026 × ${newCharges.length} alumnos`,
-            huboEdicionPosterior: false,
+            id: uid("edoc"),
+            studentId,
+            tipo: "ficha_matricula",
+            generadoEn: todayIso(),
+            estado: "emitido",
           },
-          ...prev.auditLog,
-        ],
+          {
+            id: uid("edoc"),
+            studentId,
+            tipo: "contrato_servicios",
+            generadoEn: todayIso(),
+            estado: "emitido",
+          },
+        ];
+        queueMicrotask(() => toast.success(sim.message));
+        return {
+          ...prev,
+          students,
+          sections,
+          enrollmentDocuments: [...newDocs, ...prev.enrollmentDocuments],
+        };
+      });
+    },
+    [],
+  );
+
+  const emitEnrollmentDocs = React.useCallback((studentId: string) => {
+    setState((prev) => ({
+      ...prev,
+      enrollmentDocuments: [
+        {
+          id: uid("edoc"),
+          studentId,
+          tipo: "ficha_matricula",
+          generadoEn: todayIso(),
+          estado: "emitido",
+        },
+        {
+          id: uid("edoc"),
+          studentId,
+          tipo: "contrato_servicios",
+          generadoEn: todayIso(),
+          estado: "emitido",
+        },
+        ...prev.enrollmentDocuments,
+      ],
+    }));
+    toast.success("Documentos de matrícula re-emitidos (PDF demo).");
+  }, []);
+
+  // --------------------------------------------------------------------------
+  // M3 — Comunicados
+  // --------------------------------------------------------------------------
+
+  const addBulletin = React.useCallback<DemoDataContextValue["addBulletin"]>(
+    (input) => {
+      const post: BulletinPost = {
+        id: uid("bul"),
+        titulo: input.titulo,
+        cuerpo: input.cuerpo,
+        categoria: input.categoria,
+        visibilidad: input.visibilidad,
+        publicadoEn: todayIso(),
+        vigenteHasta: input.vigenteHasta,
+        autor: "Dirección",
       };
+      setState((prev) => ({ ...prev, bulletins: [post, ...prev.bulletins] }));
+      toast.success("Comunicado publicado.");
+    },
+    [],
+  );
+
+  // --------------------------------------------------------------------------
+  // M4 — Tesorería
+  // --------------------------------------------------------------------------
+
+  const generateMassPensionDebt = React.useCallback((nivel: NivelEducativo) => {
+    setState((prev) => {
+      const targets = prev.students.filter((s) => {
+        if (!s.codigo || !s.sectionId) return false;
+        const section = prev.sections.find((x) => x.id === s.sectionId);
+        return section?.nivel === nivel;
+      });
+      const concepto = prev.tariffConcepts.find(
+        (t) => t.tipo === "mensual" && t.aplicaNivel === nivel,
+      );
+      if (!concepto) {
+        queueMicrotask(() =>
+          toast.error(
+            `No hay concepto mensual configurado para el nivel ${nivel}.`,
+          ),
+        );
+        return prev;
+      }
+      const newCharges: Charge[] = targets.map((s) => ({
+        id: uid("chg"),
+        studentId: s.id,
+        concepto: `Pensión Mayo 2026 — ${nivel}`,
+        montoOriginal: concepto.montoBase,
+        montoPendiente: concepto.montoBase,
+        fechaVencimiento: "2026-05-10",
+        status: "pendiente",
+      }));
+      queueMicrotask(() =>
+        toast.success(
+          `Se generaron ${newCharges.length} cuotas de pensión (${nivel}).`,
+        ),
+      );
+      return { ...prev, charges: [...newCharges, ...prev.charges] };
     });
   }, []);
 
@@ -304,9 +499,9 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
         }
 
         const payId = uid("pay");
-        const cobradorNombre = "Carmen Tesorería";
         const now = new Date().toISOString();
         const montoUsado = monto - rest;
+        const student = prev.students.find((s) => s.id === studentId);
         const payment: Payment = {
           id: payId,
           studentId,
@@ -314,178 +509,157 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
           montoTotal: montoUsado,
           metodo,
           cobradorId: "usr-1",
-          cobradorNombre,
+          cobradorNombre: "Carmen Tesorería",
           fechaHora: now,
-          comprobanteSunat: {
-            json: JSON.stringify(
-              {
-                tipo: "03",
-                serie: "B001",
-                estudiante: studentId,
-                total: montoUsado,
-                pagoId: payId,
-              },
-              null,
-              2,
-            ),
-            xml: `<?xml version="1.0" encoding="UTF-8"?><Invoice><Id>${payId}</Id><Total>${montoUsado}</Total></Invoice>`,
-          },
         };
-
-        const hora = now.slice(11, 16);
-        const entry: CashbookEntry = {
-          id: uid("cb"),
-          cobradorNombre,
-          metodo,
-          monto: montoUsado,
-          hora,
-          concepto: `Pago (${metodo}) — demo`,
+        const lastReceipt = prev.receipts.reduce(
+          (m, r) => Math.max(m, r.numero),
+          1000,
+        );
+        const receipt: InternalReceipt = {
+          id: uid("rec"),
+          paymentId: payId,
+          serie: "R-2026",
+          numero: lastReceipt + 1,
+          montoTotal: montoUsado,
+          emitidoEn: now,
+          estudianteNombre: student
+            ? `${student.nombres} ${student.apellidos}`
+            : studentId,
+          concepto: allocations
+            .map((a) => chargeUpdates.get(a.chargeId)?.concepto)
+            .filter(Boolean)
+            .join(" + "),
         };
 
         queueMicrotask(() =>
           toast.success(
-            `Pago aplicado por prelación (monto usado: S/ ${montoUsado}).`,
+            `Pago aplicado por prelación (monto usado: S/ ${montoUsado.toFixed(2)}).`,
           ),
         );
         return {
           ...prev,
           charges: Array.from(chargeUpdates.values()),
           payments: [payment, ...prev.payments],
-          cashbook: [entry, ...prev.cashbook],
-          auditLog: [
-            {
-              id: uid("aud"),
-              accion: "Pago en ventanilla",
-              usuario: cobradorNombre,
-              fechaHora: now,
-              detalle: `S/ ${montoUsado} — ${metodo} — estudiante ${studentId}`,
-              huboEdicionPosterior: false,
-            },
-            ...prev.auditLog,
-          ],
+          receipts: [receipt, ...prev.receipts],
         };
       });
     },
     [],
   );
 
-  const setVoucherStatus = React.useCallback((id: string, status: VoucherStatus) => {
-    setState((prev) => ({
-      ...prev,
-      vouchers: prev.vouchers.map((v) => (v.id === id ? { ...v, status } : v)),
-    }));
-    toast.success(`Voucher ${status}.`);
-  }, []);
+  // --------------------------------------------------------------------------
+  // M5 — Personal y asistencia
+  // --------------------------------------------------------------------------
 
-  const addAttendanceMark = React.useCallback((dni: string, nombre: string) => {
-    const d = dni.trim();
-    if (!/^\d{8}$/.test(d)) {
-      toast.error("DNI debe tener 8 dígitos.");
-      return;
-    }
-    const now = new Date();
-    setState((prev) => ({
-      ...prev,
-      attendance: [
-        {
-          id: uid("att"),
-          dni: d,
-          nombre: nombre || "Personal",
-          tipo: "entrada",
-          hora: now.toTimeString().slice(0, 5),
-          fecha: todayIso(),
-        },
-        ...prev.attendance,
-      ],
-    }));
-    toast.success("Marcación registrada.");
-  }, []);
-
-  const addBulletin = React.useCallback(
-    (titulo: string, cuerpo: string, segmento: BulletinSegment) => {
-      const post: BulletinPost = {
-        id: uid("bul"),
-        titulo,
-        cuerpo,
-        segmento,
+  const simulateFacialMark = React.useCallback((staffId: string) => {
+    setState((prev) => {
+      const staff = prev.staff.find((s) => s.id === staffId);
+      if (!staff) {
+        queueMicrotask(() => toast.error("Personal no encontrado."));
+        return prev;
+      }
+      const now = new Date();
+      const hora = now.toTimeString().slice(0, 5);
+      const tardanza = minutosTardanza(
+        hora,
+        staff.horaEntrada,
+        staff.toleranciaMinutos,
+      );
+      const mark: FacialMark = {
+        id: uid("fm"),
+        staffId,
+        tipo: "entrada",
         fecha: todayIso(),
-        adjuntos: [],
+        hora,
+        confianza: 90 + Math.floor(Math.random() * 10),
+        minutosTardanza: tardanza,
       };
-      setState((prev) => ({
-        ...prev,
-        bulletins: [post, ...prev.bulletins],
-        notifEvents: [
-          {
-            id: uid("ne"),
-            tipo: "comunicado",
-            mensaje: `Nuevo comunicado: ${titulo}`,
-            fecha: new Date().toISOString(),
-            leido: false,
-          },
-          ...prev.notifEvents,
-        ],
-      }));
-      toast.success("Comunicado publicado (demo).");
-    },
-    [],
-  );
-
-  const simulateDebtAlerts = React.useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      notifEvents: [
-        {
-          id: uid("ne"),
-          tipo: "alerta_deuda",
-          mensaje:
-            "Recordatorio: su cuota vence en 3 días (simulación masiva)",
-          fecha: new Date().toISOString(),
-          leido: false,
-        },
-        ...prev.notifEvents,
-      ],
-    }));
-    toast.success("Alertas de deuda simuladas enviadas.");
+      queueMicrotask(() =>
+        tardanza > 0
+          ? toast.warning(
+              `Marcación ok, pero con ${tardanza} min de tardanza acumulada.`,
+            )
+          : toast.success("Marcación ok — sin tardanza."),
+      );
+      return { ...prev, facialMarks: [mark, ...prev.facialMarks] };
+    });
   }, []);
 
-  const addAudit = React.useCallback((entry: Omit<AuditLogEntry, "id">) => {
+  const toggleSanctionRule = React.useCallback((id: string) => {
     setState((prev) => ({
       ...prev,
-      auditLog: [{ ...entry, id: uid("aud") }, ...prev.auditLog],
+      sanctionRules: prev.sanctionRules.map((r) =>
+        r.id === id ? { ...r, activa: !r.activa } : r,
+      ),
     }));
   }, []);
+
+  const recomputePrePayroll = React.useCallback(() => {
+    setState((prev) => {
+      const tardanzas = consolidarTardanzas(prev.staff, prev.facialMarks);
+      const rows: PrePayrollRow[] = prev.prePayroll.map((r) => {
+        const min =
+          tardanzas.find((t) => t.staffId === r.staffId)?.minutos ??
+          r.minutosTardanza;
+        const multa = calcularMultaPorMinutos(min, prev.sanctionRules);
+        return {
+          ...r,
+          minutosTardanza: min,
+          descuentoMulta: multa,
+          neto: Math.round((r.sueldoBase - multa) * 100) / 100,
+        };
+      });
+      queueMicrotask(() =>
+        toast.success("Pre-planilla recalculada con las reglas vigentes."),
+      );
+      return { ...prev, prePayroll: rows };
+    });
+  }, []);
+
+  // --------------------------------------------------------------------------
 
   const value = React.useMemo<DemoDataContextValue>(
     () => ({
       ...state,
       treasuryDailyRatePercent: treasuryConfig.tasaInteresDiariaPorcentaje,
-      tryEnroll,
       addProspect,
-      updateProspectStatus,
+      moveProspectStage,
+      addProspectInteraction,
+      addProspectDocument,
+      setProspectDocumentStatus,
+      addAdmissionStage,
+      toggleAdmissionRequirement,
       updateStudentDni,
       setGuardianResponsible,
+      tryEnroll,
+      emitEnrollmentDocs,
+      addBulletin,
       generateMassPensionDebt,
       registerWindowPayment,
-      setVoucherStatus,
-      addAttendanceMark,
-      addBulletin,
-      simulateDebtAlerts,
-      addAudit,
+      simulateFacialMark,
+      toggleSanctionRule,
+      recomputePrePayroll,
     }),
     [
       state,
-      tryEnroll,
       addProspect,
-      updateProspectStatus,
+      moveProspectStage,
+      addProspectInteraction,
+      addProspectDocument,
+      setProspectDocumentStatus,
+      addAdmissionStage,
+      toggleAdmissionRequirement,
       updateStudentDni,
       setGuardianResponsible,
+      tryEnroll,
+      emitEnrollmentDocs,
+      addBulletin,
       generateMassPensionDebt,
       registerWindowPayment,
-      setVoucherStatus,
-      addAttendanceMark,
-      addBulletin,
-      simulateDebtAlerts,
-      addAudit,
+      simulateFacialMark,
+      toggleSanctionRule,
+      recomputePrePayroll,
     ],
   );
 
@@ -501,3 +675,12 @@ export function useDemoData() {
   }
   return ctx;
 }
+
+export type {
+  ProspectPrioridad,
+  BulletinCategory,
+  BulletinVisibility,
+  NivelEducativo,
+  PaymentMethod,
+  DocumentValidationStatus,
+};

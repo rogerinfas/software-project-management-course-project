@@ -1,40 +1,99 @@
-export type ProspectStatus =
-  | "pendiente"
-  | "entrevista"
-  | "aceptado"
-  | "retirado";
+// Tipos del modelo del prototipo. Alineados 1:1 con el EDT (alcance.md).
 
-export type BulletinSegment = "inicial" | "primaria" | "general";
+// ============================================================================
+// Compartidos
+// ============================================================================
+
+export type NivelEducativo = "inicial" | "primaria";
 
 export type PaymentMethod = "efectivo" | "tarjeta" | "transferencia";
 
-export type VoucherStatus = "pendiente" | "aprobado" | "rechazado";
-
 export type ChargeStatus = "pendiente" | "pagado_parcial" | "pagado";
 
+export type BulletinCategory = "academico" | "administrativo" | "evento";
+
+export type BulletinVisibility = "publico" | "interno";
+
+// ============================================================================
+// MÓDULO 1 — Admisión (CRM)
+// ============================================================================
+
+/** A-1. Etapa configurable del proceso de admisión. */
+export interface AdmissionStage {
+  id: string;
+  orden: number;
+  nombre: string;
+  obligatorio: boolean;
+  descripcion?: string;
+}
+
+/** A-1. Requisito/documento obligatorio por nivel educativo. */
+export interface AdmissionRequirement {
+  id: string;
+  nivel: NivelEducativo;
+  nombreDocumento: string;
+  obligatorio: boolean;
+}
+
+export type ProspectPrioridad = "alta" | "media" | "baja";
+
+/** A-2. Prospecto (postulante en el pipeline). */
 export interface Prospect {
   id: string;
   nombre: string;
   celular: string;
   gradoPostulado: string;
-  estado: ProspectStatus;
+  nivel: NivelEducativo;
+  /** Etapa actual en el pipeline (AdmissionStage.id). */
+  currentStageId: string;
+  prioridad: ProspectPrioridad;
+  fechaRegistro: string;
 }
 
-export interface StudentPersonal {
-  dni: string;
-  fechaNacimiento: string;
-  sexo: "M" | "F";
+/** A-2. Interacción registrada con un prospecto. */
+export interface ProspectInteraction {
+  id: string;
+  prospectId: string;
+  fecha: string;
+  tipo: "llamada" | "correo" | "entrevista" | "nota";
+  resumen: string;
+  autor: string;
+}
+
+export type DocumentValidationStatus =
+  | "cargado"
+  | "validado"
+  | "observado";
+
+/** A-3. Documento del prospecto en el repositorio. */
+export interface ProspectDocument {
+  id: string;
+  prospectId: string;
+  nombreArchivo: string;
+  tipoDocumento: string;
+  estado: DocumentValidationStatus;
+  tamanoKb: number;
+  subidoEn: string;
+}
+
+// ============================================================================
+// MÓDULO 2 — Matrícula
+// ============================================================================
+
+export interface Section {
+  id: string;
+  grado: string;
+  seccion: string;
+  nivel: NivelEducativo;
+  capacidad: number;
+  matriculados: number;
 }
 
 export interface StudentHealth {
   grupoSanguineo: string;
   alergias: string;
   seguroMedico: string;
-}
-
-export interface StudentOrigin {
-  colegioAnterior: string;
-  codigoModular: string;
+  condicionesEspeciales?: string;
 }
 
 export interface Student {
@@ -42,11 +101,15 @@ export interface Student {
   codigo: string | null;
   nombres: string;
   apellidos: string;
-  personal: StudentPersonal;
+  dni: string;
+  fechaNacimiento: string;
+  sexo: "M" | "F";
   salud: StudentHealth;
-  procedencia: StudentOrigin;
+  /** B-1: hermanos matriculados en la institución. */
+  hermanosIds: string[];
   sectionId: string | null;
-  documentosMatricula: string[];
+  /** Etapa actual si todavía es postulante. */
+  prospectId?: string;
 }
 
 export interface Guardian {
@@ -55,26 +118,93 @@ export interface Guardian {
   nombreCompleto: string;
   dni: string;
   telefono: string;
+  correo: string;
   parentesco: string;
+  ocupacion: string;
   responsableEconomico: boolean;
-  /** Deuda pendiente de años anteriores (bloquea matrícula si es responsable) */
+  /** Bloquea matrícula si es el responsable económico. */
   deudaAniosAnterioresPendiente: boolean;
 }
 
-export interface Section {
+/** B-3. Documento emitido de matrícula. */
+export interface EnrollmentDocument {
+  id: string;
+  studentId: string;
+  tipo: "ficha_matricula" | "contrato_servicios";
+  generadoEn: string;
+  estado: "borrador" | "emitido";
+}
+
+// ============================================================================
+// MÓDULO 3 — Académica y Comunicación
+// ============================================================================
+
+/** C-1. Curso de la malla curricular. */
+export interface Course {
   id: string;
   grado: string;
-  seccion: string;
-  capacidad: number;
-  matriculados: number;
+  nombre: string;
+  horasSemanales: number;
 }
+
+/** C-1. Carga docente (curso asignado a una sección con un profesor). */
+export interface TeachingAssignment {
+  id: string;
+  courseId: string;
+  teacherId: string;
+  sectionId: string;
+}
+
+/** C-2. Aula física. */
+export interface Classroom {
+  id: string;
+  nombre: string;
+  capacidad: number;
+  piso: number;
+}
+
+export type WeekDay =
+  | "lunes"
+  | "martes"
+  | "miercoles"
+  | "jueves"
+  | "viernes";
+
+/** C-2. Bloque horario en el calendario de clases. */
+export interface ScheduleSlot {
+  id: string;
+  dia: WeekDay;
+  horaInicio: string;
+  horaFin: string;
+  courseId: string;
+  teacherId: string;
+  sectionId: string;
+  classroomId: string;
+}
+
+/** C-3. Comunicado publicado en el panel. */
+export interface BulletinPost {
+  id: string;
+  titulo: string;
+  cuerpo: string;
+  categoria: BulletinCategory;
+  visibilidad: BulletinVisibility;
+  publicadoEn: string;
+  vigenteHasta: string;
+  autor: string;
+}
+
+// ============================================================================
+// MÓDULO 4 — Tesorería
+// ============================================================================
 
 export interface TariffConcept {
   id: string;
   nombre: string;
-  tipo: "unico" | "mensual";
+  tipo: "unico" | "mensual" | "extra";
   meses?: string[];
   montoBase: number;
+  aplicaNivel: NivelEducativo | "todos";
 }
 
 export interface DiscountRule {
@@ -108,86 +238,18 @@ export interface Payment {
   cobradorId: string;
   cobradorNombre: string;
   fechaHora: string;
-  comprobanteSunat?: { json: string; xml: string };
 }
 
-export interface CashbookEntry {
+/** D-3. Recibo interno generado. */
+export interface InternalReceipt {
   id: string;
-  cobradorNombre: string;
-  metodo: PaymentMethod;
-  monto: number;
-  hora: string;
+  paymentId: string;
+  serie: string;
+  numero: number;
+  montoTotal: number;
+  emitidoEn: string;
+  estudianteNombre: string;
   concepto: string;
-}
-
-export interface VoucherUpload {
-  id: string;
-  apoderadoNombre: string;
-  estudianteCodigo: string;
-  monto: number;
-  referencia: string;
-  status: VoucherStatus;
-}
-
-export interface ScheduleRule {
-  id: string;
-  rol: "docente" | "administrativo";
-  horaEntrada: string;
-  horaSalida: string;
-  toleranciaMinutos: number;
-}
-
-export interface AttendanceMark {
-  id: string;
-  dni: string;
-  nombre: string;
-  tipo: "entrada" | "salida";
-  hora: string;
-  fecha: string;
-}
-
-export interface TardinessRow {
-  id: string;
-  personalNombre: string;
-  diasTardanza: number;
-  faltas: number;
-  horasEfectivas: number;
-}
-
-export interface BulletinPost {
-  id: string;
-  titulo: string;
-  cuerpo: string;
-  fecha: string;
-  segmento: BulletinSegment;
-  adjuntos: { nombre: string; tipo: "pdf" | "imagen" }[];
-}
-
-export interface NotificationPreference {
-  canal: "push" | "email";
-  comunicados: boolean;
-  recibos: boolean;
-}
-
-export interface MockNotificationEvent {
-  id: string;
-  tipo: string;
-  mensaje: string;
-  fecha: string;
-  leido: boolean;
-}
-
-export interface AuditLogEntry {
-  id: string;
-  accion: string;
-  usuario: string;
-  fechaHora: string;
-  detalle: string;
-  huboEdicionPosterior: boolean;
-}
-
-export interface TreasuryConfig {
-  tasaInteresDiariaPorcentaje: number;
 }
 
 export interface MorosityRow {
@@ -204,6 +266,74 @@ export interface CollectionMonth {
   proyectado: number;
   recaudado: number;
 }
+
+export interface TreasuryConfig {
+  tasaInteresDiariaPorcentaje: number;
+}
+
+// ============================================================================
+// MÓDULO 5 — Personal y Asistencia
+// ============================================================================
+
+export type StaffRole = "docente" | "administrativo" | "directivo";
+
+/** E-1. Miembro del personal. */
+export interface StaffMember {
+  id: string;
+  nombres: string;
+  apellidos: string;
+  dni: string;
+  rol: StaffRole;
+  especialidad: string;
+  horaEntrada: string;
+  horaSalida: string;
+  toleranciaMinutos: number;
+  /** Referencia a una foto de muestra para el reconocimiento facial (mock). */
+  fotoReferencia: string;
+}
+
+export type FacialMarkType = "entrada" | "salida";
+
+/** E-2. Marcación biométrica por reconocimiento facial. */
+export interface FacialMark {
+  id: string;
+  staffId: string;
+  tipo: FacialMarkType;
+  fecha: string;
+  hora: string;
+  /** Confianza del match facial (0-100). */
+  confianza: number;
+  /** Minutos de tardanza respecto al horario del personal (0 si llegó a tiempo). */
+  minutosTardanza: number;
+}
+
+/** E-3. Regla de sanción por minuto de tardanza acumulado. */
+export interface SanctionRule {
+  id: string;
+  nombre: string;
+  minutosDesde: number;
+  multaPorMinuto: number;
+  activa: boolean;
+}
+
+/** E-4. Fila consolidada de pre-planilla. */
+export interface PrePayrollRow {
+  id: string;
+  staffId: string;
+  staffNombre: string;
+  rol: StaffRole;
+  diasLaborados: number;
+  minutosTardanza: number;
+  faltas: number;
+  horasEfectivas: number;
+  descuentoMulta: number;
+  sueldoBase: number;
+  neto: number;
+}
+
+// ============================================================================
+// Utilidades
+// ============================================================================
 
 export type SimulationResult =
   | { ok: true; message: string }
