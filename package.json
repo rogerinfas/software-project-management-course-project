@@ -5,27 +5,9 @@
   "description": "Academic project for the Software Project Management course. Repository for planning, development, and documentation.",
   "packageManager": "pnpm@10.26.0",
   "scripts": {
-    "prepare": "husky",
-    "lint": "pnpm -C prototype lint && pnpm -C frontend lint && pnpm -C backend lint",
-    "test": "pnpm -C backend test",
-    "build": "pnpm -C prototype build",
-    "lint:staged": "lint-staged"
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.0",
-    "@commitlint/config-conventional": "^19.8.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.6"
-  },
-  "lint-staged": {
-    "prototype/**/*.{js,jsx,ts,tsx}": [
-      "pnpm -C prototype lint"
-    ],
-    "frontend/**/*.{js,jsx,ts,tsx}": [
-      "pnpm -C frontend lint"
-    ],
-    "backend/**/*.{js,ts}": [
-      "pnpm -C backend lint"
-    ]
+    "husky": "^9.1.7"
   }
 }

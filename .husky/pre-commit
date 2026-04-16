@@ -1,6 +1,13 @@
 #!/usr/bin/env sh
 set -e
 
-# Corre solo sobre staged files (rápido).
-pnpm -s lint:staged
+CHANGED="$(git diff --cached --name-only)"
+
+if printf '%s\n' "$CHANGED" | rg -q '^backend/'; then
+  sh backend/.husky/pre-commit
+fi
+
+if printf '%s\n' "$CHANGED" | rg -q '^prototype/'; then
+  sh prototype/.husky/pre-commit
+fi
 
