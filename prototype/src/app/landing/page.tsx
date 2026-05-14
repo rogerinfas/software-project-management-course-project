@@ -2,9 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import {
+  Award,
+  CheckCircle,
+  Mail,
+  MapPin,
+  Phone,
+  Users,
+  ArrowRight,
+  GraduationCap,
+  Calendar,
+  MessageSquare,
+  ShieldCheck,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -23,6 +36,13 @@ const CATEGORY_LABEL: Record<BulletinCategory, string> = {
   urgencia: "Urgente",
 };
 
+const CATEGORY_COLOR: Record<BulletinCategory, string> = {
+  administrativo: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
+  academico: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+  evento: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20",
+  urgencia: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
+};
+
 export default function LandingPage() {
   const { bulletins } = useDemoData();
   const hoy = new Date().toISOString().slice(0, 10);
@@ -31,98 +51,293 @@ export default function LandingPage() {
     .sort((a, b) => (a.publicadoEn < b.publicadoEn ? 1 : -1));
 
   return (
-    <div className="bg-background min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4">
-          <Link href="/landing" className="flex items-center gap-3">
-            <Image
-              src="/logo-iep-madre-santa-beatriz.png"
-              alt="IEP Madre Santa Beatriz"
-              width={48}
-              height={48}
-              className="size-10 object-contain"
-            />
-            <div>
-              <p className="text-sm font-semibold">IEP Madre Santa Beatriz</p>
-              <p className="text-muted-foreground text-xs">
-                Inicial y Primaria · Arequipa
+    <div className="bg-background min-h-screen font-sans selection:bg-primary/10">
+      {/* Header */}
+      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 h-16 md:px-8">
+          <Link href="/landing" className="flex items-center gap-3 group">
+            <div className="relative">
+              <Image
+                src="/logo-iep-madre-santa-beatriz.png"
+                alt="IEP Madre Santa Beatriz"
+                width={40}
+                height={40}
+                className="size-10 object-contain transition-transform group-hover:scale-110"
+              />
+            </div>
+            <div className="hidden sm:block">
+              <p className="text-sm font-bold tracking-tight">IEP Madre Santa Beatriz</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">
+                Arequipa · Excelencia Educativa
               </p>
             </div>
           </Link>
-          <Link
-            href="/login"
-            className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
-          >
-            Acceso interno
-          </Link>
+          
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+            <Link href="#inicio" className="hover:text-primary transition-colors">Inicio</Link>
+            <Link href="#comunicados" className="hover:text-primary transition-colors">Comunicados</Link>
+            <Link href="#admision" className="hover:text-primary transition-colors">Admisión</Link>
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <Link
+              href="/login"
+              className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "hidden sm:inline-flex")}
+            >
+              Intranet
+            </Link>
+            <Link
+              href="/login"
+              className={cn(buttonVariants({ size: "sm", variant: "default" }), "shadow-lg shadow-primary/20")}
+            >
+              Iniciar Sesión
+            </Link>
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl space-y-8 px-4 py-10">
-        <section className="grid gap-6 md:grid-cols-[2fr_1fr]">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight">
-              Comunicados para la comunidad educativa
-            </h1>
-            <p className="text-muted-foreground mt-2 text-sm">
-              Avisos públicos vigentes. Para información personal de cada
-              familia, usa el acceso interno.
-            </p>
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section id="inicio" className="relative pt-12 pb-20 md:pt-24 md:pb-32 overflow-hidden">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(45%_40%_at_50%_60%,var(--color-primary)_0%,transparent_100%)] opacity-5"></div>
+          <div className="mx-auto max-w-7xl px-4 md:px-8">
+            <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+              <div className="space-y-8 text-center lg:text-left">
+                <div className="inline-flex items-center rounded-full border bg-muted/50 px-3 py-1 text-sm font-medium text-muted-foreground animate-in fade-in slide-in-from-bottom-3">
+                  <Badge variant="secondary" className="mr-2 px-1 py-0 h-5">Nuevo</Badge>
+                  <span>Admisiones Abiertas 2026</span>
+                </div>
+                <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl animate-in fade-in slide-in-from-bottom-5 duration-500">
+                  Forjando el <span className="text-primary bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">Futuro</span> de tus hijos
+                </h1>
+                <p className="mx-auto max-w-2xl text-lg text-muted-foreground lg:mx-0 animate-in fade-in slide-in-from-bottom-7 duration-700">
+                  En IEP Madre Santa Beatriz, combinamos tradición académica con tecnología moderna para brindar una educación integral de calidad en Arequipa.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+                  <Link href="#admision" className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto h-12 px-8 text-base shadow-xl shadow-primary/20")}>
+                    Solicitar Información
+                  </Link>
+                  <Link href="#comunicados" className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-full sm:w-auto h-12 px-8 text-base")}>
+                    Ver Comunicados
+                  </Link>
+                </div>
+              </div>
+              <div className="relative aspect-square lg:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-1000">
+                <Image
+                  src="/school-hero.png"
+                  alt="Estudiantes en el campus"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              </div>
+            </div>
           </div>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Admisión abierta</CardTitle>
-              <CardDescription>
-                Matrícula y admisión Inicial/Primaria.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-sm">
-              <p>
-                Acércate a secretaría o regístrate como prospecto para iniciar el
-                proceso de admisión.
-              </p>
-            </CardContent>
-          </Card>
         </section>
 
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Avisos vigentes</h2>
-          {publicos.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
-              No hay avisos vigentes por ahora.
-            </p>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {publicos.map((b) => (
-                <Card key={b.id}>
-                  <CardHeader>
-                    <div className="flex items-center justify-between gap-2">
-                      <Badge variant="outline" className="capitalize">
-                        {CATEGORY_LABEL[b.categoria]}
-                      </Badge>
-                      <span className="text-muted-foreground text-xs">
-                        Vigente hasta {b.vigenteHasta}
-                      </span>
-                    </div>
-                    <CardTitle className="mt-2 text-base">{b.titulo}</CardTitle>
-                    <CardDescription>
-                      Publicado el {b.publicadoEn} por {b.autor}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-sm whitespace-pre-line">
-                    {b.cuerpo}
-                  </CardContent>
-                </Card>
-              ))}
+        {/* Stats Section */}
+        <section className="py-12 bg-muted/30">
+          <div className="mx-auto max-w-7xl px-4 md:px-8">
+            <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+              <div className="space-y-2 text-center">
+                <div className="flex justify-center">
+                  <div className="rounded-2xl bg-primary/10 p-3">
+                    <Users className="size-6 text-primary" />
+                  </div>
+                </div>
+                <p className="text-3xl font-bold">450+</p>
+                <p className="text-sm text-muted-foreground font-medium">Alumnos Felices</p>
+              </div>
+              <div className="space-y-2 text-center">
+                <div className="flex justify-center">
+                  <div className="rounded-2xl bg-primary/10 p-3">
+                    <GraduationCap className="size-6 text-primary" />
+                  </div>
+                </div>
+                <p className="text-3xl font-bold">25+</p>
+                <p className="text-sm text-muted-foreground font-medium">Años de Excelencia</p>
+              </div>
+              <div className="space-y-2 text-center">
+                <div className="flex justify-center">
+                  <div className="rounded-2xl bg-primary/10 p-3">
+                    <Award className="size-6 text-primary" />
+                  </div>
+                </div>
+                <p className="text-3xl font-bold">100%</p>
+                <p className="text-sm text-muted-foreground font-medium">Calidad Académica</p>
+              </div>
+              <div className="space-y-2 text-center">
+                <div className="flex justify-center">
+                  <div className="rounded-2xl bg-primary/10 p-3">
+                    <ShieldCheck className="size-6 text-primary" />
+                  </div>
+                </div>
+                <p className="text-3xl font-bold">Cert.</p>
+                <p className="text-sm text-muted-foreground font-medium">Entorno Seguro</p>
+              </div>
             </div>
-          )}
+          </div>
+        </section>
+
+        {/* Bulletins Section */}
+        <section id="comunicados" className="py-20 md:py-32">
+          <div className="mx-auto max-w-7xl px-4 md:px-8">
+            <div className="flex flex-col items-center text-center space-y-4 mb-16">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Comunicados Recientes</h2>
+              <p className="max-w-2xl text-muted-foreground text-lg">
+                Mantente informado sobre las últimas novedades, eventos y avisos importantes de nuestra institución.
+              </p>
+            </div>
+
+            {publicos.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
+                <MessageSquare className="size-12 text-muted-foreground/50 mb-4" />
+                <p className="text-muted-foreground font-medium">No hay avisos vigentes en este momento.</p>
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {publicos.map((b) => (
+                  <Card key={b.id} className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/20 overflow-hidden">
+                    <CardHeader className="pb-4">
+                      <div className="flex items-center justify-between gap-2 mb-4">
+                        <Badge variant="outline" className={cn("px-2 py-0.5 text-xs font-semibold", CATEGORY_COLOR[b.categoria])}>
+                          {CATEGORY_LABEL[b.categoria]}
+                        </Badge>
+                        <div className="flex items-center text-muted-foreground text-[10px] uppercase tracking-wider font-bold">
+                          <Calendar className="mr-1 size-3" />
+                          {b.publicadoEn}
+                        </div>
+                      </div>
+                      <CardTitle className="text-xl group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                        {b.titulo}
+                      </CardTitle>
+                      <CardDescription className="flex items-center gap-1.5 pt-1">
+                        <span className="font-semibold text-foreground/80">{b.autor}</span>
+                        <span className="size-1 rounded-full bg-muted-foreground/30"></span>
+                        <span>Secretaría</span>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-sm text-muted-foreground leading-relaxed line-clamp-4">
+                      {b.cuerpo}
+                    </CardContent>
+                    <div className="px-6 pb-6 pt-2">
+                      <button className="text-xs font-bold text-primary flex items-center gap-1 hover:gap-2 transition-all">
+                        Leer más <ArrowRight className="size-3" />
+                      </button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* CTA Admission */}
+        <section id="admision" className="py-20">
+          <div className="mx-auto max-w-7xl px-4 md:px-8">
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-primary px-8 py-16 md:px-16 md:py-20 text-primary-foreground shadow-2xl">
+              <div className="absolute right-0 top-0 -translate-y-1/4 translate-x-1/4 opacity-20">
+                <GraduationCap size={400} strokeWidth={1} />
+              </div>
+              <div className="relative z-10 grid gap-12 lg:grid-cols-[1fr_auto] lg:items-center">
+                <div className="space-y-6">
+                  <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
+                    Inicia el camino al éxito académico de tus hijos
+                  </h2>
+                  <p className="max-w-2xl text-lg text-primary-foreground/80">
+                    Nuestro proceso de admisión 2026 ya está abierto. Contamos con vacantes limitadas para Inicial y Primaria. Únete a una comunidad que prioriza los valores y la formación integral.
+                  </p>
+                  <ul className="grid gap-3 sm:grid-cols-2">
+                    {[
+                      "Excelencia académica demostrada",
+                      "Plana docente altamente calificada",
+                      "Infraestructura moderna y segura",
+                      "Talleres extracurriculares variados",
+                    ].map((item) => (
+                      <li key={item} className="flex items-center gap-3 text-sm font-medium">
+                        <CheckCircle className="size-5 shrink-0 text-primary-foreground" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="flex flex-col gap-4">
+                  <Button size="lg" variant="secondary" className="h-14 px-10 text-base font-bold shadow-xl">
+                    Registrarse como Prospecto
+                  </Button>
+                  <p className="text-center text-xs text-primary-foreground/60 font-medium">
+                    O visítanos en Calle San Agustín 123, Arequipa.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
       </main>
 
-      <footer className="border-t py-6">
-        <div className="text-muted-foreground mx-auto max-w-5xl px-4 text-xs">
-          © {new Date().getFullYear()} IEP Madre Santa Beatriz — Sitio público
-          (demo).
+      {/* Footer */}
+      <footer className="bg-muted/50 border-t pt-16 pb-12">
+        <div className="mx-auto max-w-7xl px-4 md:px-8">
+          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4 mb-16">
+            <div className="space-y-4">
+              <Link href="/landing" className="flex items-center gap-3 group">
+                <Image
+                  src="/logo-iep-madre-santa-beatriz.png"
+                  alt="IEP Madre Santa Beatriz"
+                  width={32}
+                  height={32}
+                  className="size-8 object-contain"
+                />
+                <span className="font-bold">Madre Santa Beatriz</span>
+              </Link>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Comprometidos con la formación integral de líderes con valores sólidos y excelencia académica en la ciudad de Arequipa.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider">Enlaces Rápidos</h3>
+              <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
+                <Link href="#inicio" className="hover:text-primary transition-colors">Inicio</Link>
+                <Link href="#comunicados" className="hover:text-primary transition-colors">Comunicados</Link>
+                <Link href="#admision" className="hover:text-primary transition-colors">Admisión 2026</Link>
+                <Link href="/login" className="hover:text-primary transition-colors">Acceso Intranet</Link>
+              </nav>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider">Contacto</h3>
+              <div className="flex flex-col gap-3 text-sm text-muted-foreground">
+                <div className="flex items-center gap-3">
+                  <Phone className="size-4 text-primary" />
+                  <span>+51 (054) 123456</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="size-4 text-primary" />
+                  <span>informes@madresantabeatriz.edu.pe</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <MapPin className="size-4 text-primary" />
+                  <span>Calle San Agustín 123, Arequipa</span>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold uppercase tracking-wider">Horario de Atención</h3>
+              <div className="text-sm text-muted-foreground space-y-1">
+                <p>Lunes a Viernes</p>
+                <p className="text-foreground font-semibold text-base">08:00 AM - 04:00 PM</p>
+                <p className="pt-2 text-xs opacity-70 italic">Previa cita para entrevistas de admisión.</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-t pt-8 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
+            <p>© {new Date().getFullYear()} IEP Madre Santa Beatriz — Todos los derechos reservados.</p>
+            <div className="flex items-center gap-6">
+              <span>Prototipo Académico</span>
+              <span className="size-1 rounded-full bg-muted-foreground/30"></span>
+              <span>Software Project Management</span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
