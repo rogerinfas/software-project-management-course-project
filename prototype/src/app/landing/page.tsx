@@ -14,6 +14,9 @@ import {
   Calendar,
   MessageSquare,
   ShieldCheck,
+  Camera,
+  MessageCircle,
+  Globe,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -111,7 +114,7 @@ export default function LandingPage() {
                   Forjando el <span className="text-primary bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">Futuro</span> de tus hijos
                 </h1>
                 <p className="mx-auto max-w-2xl text-lg text-muted-foreground lg:mx-0 animate-in fade-in slide-in-from-bottom-7 duration-700">
-                  En IEP Madre Santa Beatriz, combinamos tradición académica con tecnología moderna para brindar una educación integral de calidad en Arequipa.
+                  Formamos niños y jóvenes en un entorno educativo que promueve el desarrollo académico, humano y moral, basado en valores sólidos, acompañamiento cercano y una comunidad educativa comprometida. Sé parte de nuestra familia beatina.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4 animate-in fade-in slide-in-from-bottom-10 duration-1000">
                   <Link href="#admision" className={cn(buttonVariants({ size: "lg" }), "w-full sm:w-auto h-12 px-8 text-base shadow-xl shadow-primary/20")}>
@@ -267,7 +270,7 @@ export default function LandingPage() {
                     Registrarse como Prospecto
                   </Button>
                   <p className="text-center text-xs text-primary-foreground/60 font-medium">
-                    O visítanos en Calle San Agustín 123, Arequipa.
+                    Urb. La Estrella s/n J. L. B. y R., Arequipa, Peru.
                   </p>
                 </div>
               </div>
@@ -292,8 +295,11 @@ export default function LandingPage() {
                 <span className="font-bold">Madre Santa Beatriz</span>
               </Link>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Comprometidos con la formación integral de líderes con valores sólidos y excelencia académica en la ciudad de Arequipa.
+                Formamos niños y jóvenes en un entorno que promueve el desarrollo académico y moral. Sé parte de nuestra familia beatina.
               </p>
+              <div className="flex items-center gap-2 pt-2">
+                <Badge variant="secondary" className="text-[10px] uppercase tracking-wider px-2 py-0">Página · Educación</Badge>
+              </div>
             </div>
             <div className="space-y-4">
               <h3 className="text-sm font-bold uppercase tracking-wider">Enlaces Rápidos</h3>
@@ -309,15 +315,26 @@ export default function LandingPage() {
               <div className="flex flex-col gap-3 text-sm text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <Phone className="size-4 text-primary" />
-                  <span>+51 (054) 123456</span>
+                  <span>941 856 390</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="size-4 text-primary" />
-                  <span>informes@madresantabeatriz.edu.pe</span>
+                  <span>secretaria@iepsantabeatriz.edu.pe</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <MapPin className="size-4 text-primary" />
-                  <span>Calle San Agustín 123, Arequipa</span>
+                  <span className="leading-tight">Urb. La Estrella s/n J. L. B. y R., Arequipa</span>
+                </div>
+                <div className="flex items-center gap-3 pt-2">
+                  <Link href="https://madresantabeatriz.com" target="_blank" className="p-2 bg-muted rounded-full hover:text-primary transition-colors">
+                    <Globe className="size-4" />
+                  </Link>
+                  <Link href="https://instagram.com/msb_arequipa" target="_blank" className="p-2 bg-muted rounded-full hover:text-primary transition-colors">
+                    <Camera className="size-4" />
+                  </Link>
+                  <Link href="https://wa.link/4g1tzo" target="_blank" className="p-2 bg-muted rounded-full hover:text-primary transition-colors">
+                    <MessageCircle className="size-4" />
+                  </Link>
                 </div>
               </div>
             </div>
