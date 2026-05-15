@@ -173,6 +173,9 @@ type DemoDataContextValue = DemoDataState & {
   // M2 Matrícula
   updateStudentDni: (studentId: string, dni: string) => boolean;
   setGuardianResponsible: (guardianId: string) => void;
+  addGuardian: (input: Omit<Guardian, "id">) => void;
+  updateGuardian: (id: string, fields: Partial<Pick<Guardian, "dni" | "telefono" | "correo" | "ocupacion">>) => void;
+  linkSibling: (studentId: string, siblingId: string) => void;
   tryEnroll: (studentId: string, sectionId: string) => void;
   emitEnrollmentDocs: (studentId: string) => void;
 
@@ -396,6 +399,44 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       return { ...prev, guardians };
     });
     toast.success("Responsable económico actualizado.");
+  }, []);
+
+  const addGuardian = React.useCallback((input: Omit<Guardian, "id">) => {
+    setState((prev) => ({
+      ...prev,
+      guardians: [{ ...input, id: uid("gua") }, ...prev.guardians],
+    }));
+    toast.success("Apoderado registrado.");
+  }, []);
+
+  const updateGuardian = React.useCallback(
+    (id: string, fields: Partial<Pick<Guardian, "dni" | "telefono" | "correo" | "ocupacion">>) => {
+      setState((prev) => ({
+        ...prev,
+        guardians: prev.guardians.map((g) =>
+          g.id === id ? { ...g, ...fields } : g,
+        ),
+      }));
+      toast.success("Datos del apoderado actualizados.");
+    },
+    [],
+  );
+
+  const linkSibling = React.useCallback((studentId: string, siblingId: string) => {
+    if (studentId === siblingId) return;
+    setState((prev) => ({
+      ...prev,
+      students: prev.students.map((s) => {
+        if (s.id === studentId && !s.hermanosIds.includes(siblingId)) {
+          return { ...s, hermanosIds: [...s.hermanosIds, siblingId] };
+        }
+        if (s.id === siblingId && !s.hermanosIds.includes(studentId)) {
+          return { ...s, hermanosIds: [...s.hermanosIds, studentId] };
+        }
+        return s;
+      }),
+    }));
+    toast.success("Vinculación familiar registrada.");
   }, []);
 
   const tryEnroll = React.useCallback(
@@ -706,6 +747,9 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       setEvaluationResult,
       updateStudentDni,
       setGuardianResponsible,
+      addGuardian,
+      updateGuardian,
+      linkSibling,
       tryEnroll,
       emitEnrollmentDocs,
       addBulletin,
@@ -729,6 +773,9 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       setEvaluationResult,
       updateStudentDni,
       setGuardianResponsible,
+      addGuardian,
+      updateGuardian,
+      linkSibling,
       tryEnroll,
       emitEnrollmentDocs,
       addBulletin,

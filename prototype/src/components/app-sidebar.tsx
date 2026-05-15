@@ -23,6 +23,7 @@ import {
   School,
   ScrollText,
   Settings2,
+  UserCheck,
   UserCog,
   UserPlus,
   Users,
@@ -64,9 +65,10 @@ const nav = [
   {
     label: "Matrícula (M2)",
     items: [
-      { href: "/matricula/expediente", title: "Expediente", icon: Users },
-      { href: "/matricula/formalizacion", title: "Formalización", icon: ClipboardList },
-      { href: "/matricula/documentos", title: "Docs. matrícula", icon: FileBadge },
+      { href: "/matricula/expediente", title: "Expediente familiar", icon: Users },
+      { href: "/matricula/apoderados", title: "Gestión de Apoderados", icon: UserCheck },
+      { href: "/matricula/formalizacion", title: "Formalización / Asignación", icon: ClipboardList },
+      { href: "/matricula/documentos", title: "Ficha de Matrícula", icon: FileBadge },
     ],
   },
   {
