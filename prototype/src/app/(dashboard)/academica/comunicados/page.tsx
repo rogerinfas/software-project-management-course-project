@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Megaphone, Plus, Eye, EyeOff, Trash2, Calendar, AlertTriangle, Info, CalendarDays } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
   TableBody,
@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 import { useDemoData } from "@/context/demo-data-context";
 import type {
   BulletinCategory,
@@ -29,104 +30,103 @@ import type {
 } from "@/lib/mock/types";
 
 const VISIBILIDAD: BulletinVisibility[] = ["publico", "interno"];
-const CATEGORIAS: BulletinCategory[] = [
-  "administrativo",
-  "academico",
-  "evento",
-  "urgencia",
-];
 
 export default function ComunicadosPage() {
-  const { bulletins, addBulletin } = useDemoData();
+  const { bulletins, addBulletin, updateBulletin } = useDemoData();
 
   const [titulo, setTitulo] = React.useState("");
   const [cuerpo, setCuerpo] = React.useState("");
-  const [categoria, setCategoria] = React.useState<BulletinCategory>("academico");
-  const [visibilidad, setVisibilidad] = React.useState<BulletinVisibility>("publico");
-  const [vigenteHasta, setVigenteHasta] = React.useState("");
+  const [categoria, setCategoria] = React.useState<BulletinCategory>("administrativo");  const [visibilidad, setVisibilidad] = React.useState<BulletinVisibility>("publico");
+  const [vigenteHasta, setVigenteHasta] = React.useState("2026-12-31");
 
-  React.useEffect(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 7);
-    setVigenteHasta(d.toISOString().slice(0, 10));
-  }, []);
+  const getCategoryIcon = (cat: string) => {
+    switch (cat) {
+      case "urgencia": return <AlertTriangle className="size-3 text-destructive" />;
+      case "evento": return <CalendarDays className="size-3 text-blue-500" />;
+      default: return <Info className="size-3 text-primary" />;
+    }
+  };
+
+  const toggleVisibility = (id: string, current: string) => {
+    updateBulletin(id, { visibilidad: current === "publico" ? "interno" : "publico" });
+  };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">C-3 · Panel de comunicados</h1>
+        <h1 className="text-2xl font-semibold">C-5 · Panel de comunicados</h1>
         <p className="text-muted-foreground text-sm">
-          Publica avisos por categoría y controla su visibilidad (interna o
-          pública).
+          Editor central para anuncios informativos, eventos y urgencias.
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Nuevo comunicado</CardTitle>
-          <CardDescription>
-            Los comunicados públicos se muestran en la{" "}
-            <code className="text-xs">/landing</code>.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
-          <div className="grid gap-2 md:col-span-2">
-            <Label>Título</Label>
-            <Input
-              value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
-            />
-          </div>
-          <div className="grid gap-2 md:col-span-2">
-            <Label>Cuerpo</Label>
-            <Textarea
-              rows={4}
-              value={cuerpo}
-              onChange={(e) => setCuerpo(e.target.value)}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label>Categoría</Label>
-            <select
-              className="border-input h-8 rounded-lg border px-2 text-sm capitalize"
-              value={categoria}
-              onChange={(e) =>
-                setCategoria(e.target.value as BulletinCategory)
-              }
-            >
-              {CATEGORIAS.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="grid gap-2">
-            <Label>Visibilidad</Label>
-            <select
-              className="border-input h-8 rounded-lg border px-2 text-sm capitalize"
-              value={visibilidad}
-              onChange={(e) =>
-                setVisibilidad(e.target.value as BulletinVisibility)
-              }
-            >
-              {VISIBILIDAD.map((v) => (
-                <option key={v} value={v}>
-                  {v}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="grid gap-2">
-            <Label>Vigente hasta</Label>
-            <Input
-              type="date"
-              value={vigenteHasta}
-              onChange={(e) => setVigenteHasta(e.target.value)}
-            />
-          </div>
-          <div className="md:col-span-2">
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Plus className="size-5 text-primary" />
+              <CardTitle className="text-base">Redactar comunicado</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-2">
+              <Label>Título</Label>
+              <Input
+                value={titulo}
+                onChange={(e) => setTitulo(e.target.value)}
+                placeholder="Ej. Suspensión de labores..."
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Cuerpo del mensaje</Label>
+              <Textarea
+                value={cuerpo}
+                onChange={(e) => setCuerpo(e.target.value)}
+                placeholder="Escribe el contenido aquí..."
+                className="min-h-[120px]"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Categoría</Label>
+                <select
+                  className="border-input h-9 rounded-lg border px-2 text-sm capitalize"
+                  value={categoria}
+                  onChange={(e) => setCategoria(e.target.value as BulletinCategory)}
+                >
+                  <option value="administrativo">Administrativo</option>
+                  <option value="academico">Académico</option>
+                  <option value="evento">Evento</option>
+                  <option value="urgencia">Urgencia</option>
+                </select>
+              </div>
+              <div className="grid gap-2">
+                <Label>Visibilidad inicial</Label>
+                <select
+                  className="border-input h-9 rounded-lg border px-2 text-sm capitalize"
+                  value={visibilidad}
+                  onChange={(e) => setVisibilidad(e.target.value as BulletinVisibility)}
+                >
+                  {VISIBILIDAD.map((v) => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="grid gap-2">
+              <Label>Fecha de caducidad</Label>
+              <div className="relative">
+                <Calendar className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+                <Input
+                  type="date"
+                  className="pl-9 h-9"
+                  value={vigenteHasta}
+                  onChange={(e) => setVigenteHasta(e.target.value)}
+                />
+              </div>
+            </div>
             <Button
+              className="w-full"
               onClick={() => {
                 if (!titulo.trim() || !cuerpo.trim()) return;
                 addBulletin({
@@ -140,52 +140,93 @@ export default function ComunicadosPage() {
                 setCuerpo("");
               }}
             >
-              Publicar comunicado
+              Publicar ahora
             </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Comunicados recientes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Título</TableHead>
-                <TableHead>Categoría</TableHead>
-                <TableHead>Visibilidad</TableHead>
-                <TableHead>Publicado</TableHead>
-                <TableHead>Vigente hasta</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {bulletins.map((b) => (
-                <TableRow key={b.id}>
-                  <TableCell className="max-w-[360px]">
-                    <div className="font-medium">{b.titulo}</div>
-                    <div className="text-muted-foreground line-clamp-2 text-xs">
-                      {b.cuerpo}
-                    </div>
-                  </TableCell>
-                  <TableCell className="capitalize">{b.categoria}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={b.visibilidad === "publico" ? "default" : "outline"}
-                    >
-                      {b.visibilidad}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{b.publicadoEn}</TableCell>
-                  <TableCell>{b.vigenteHasta}</TableCell>
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Megaphone className="size-5 text-primary" />
+              <CardTitle className="text-base">Gestión de visibilidad</CardTitle>
+            </div>
+            <CardDescription>
+              Controla qué anuncios son visibles para los padres de familia.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Comunicado</TableHead>
+                  <TableHead>Categoría / Vigencia</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {bulletins.map((b) => (
+                  <TableRow key={b.id} className={b.visibilidad === "interno" ? "opacity-60 bg-muted/20" : ""}>
+                    <TableCell className="max-w-[280px]">
+                      <div className="font-semibold text-sm truncate">{b.titulo}</div>
+                      <div className="text-muted-foreground line-clamp-1 text-[11px]">
+                        {b.cuerpo}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground mt-1">
+                        Publicado: {b.publicadoEn}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-1.5 text-xs capitalize font-medium">
+                          {getCategoryIcon(b.categoria)}
+                          {b.categoria}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground">
+                          Expira: {b.vigenteHasta}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={b.visibilidad === "publico" ? "default" : "secondary"}
+                        className={b.visibilidad === "publico" ? "bg-green-500 hover:bg-green-600" : ""}
+                      >
+                        {b.visibilidad === "publico" ? "Público" : "Oculto"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right space-x-1">
+                      <Button
+                        size="icon-xs"
+                        variant="outline"
+                        title={b.visibilidad === "publico" ? "Ocultar" : "Publicar"}
+                        onClick={() => toggleVisibility(b.id, b.visibilidad as string)}
+                      >
+                        {b.visibilidad === "publico" ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
+                      </Button>
+                      <Button
+                        size="icon-xs"
+                        variant="ghost"
+                        className="text-destructive"
+                      >
+                        <Trash2 className="size-3" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {bulletins.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                      No hay comunicados registrados.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

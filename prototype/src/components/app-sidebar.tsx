@@ -18,6 +18,7 @@ import {
   Globe2,
   GraduationCap,
   LayoutDashboard,
+  LayoutGrid,
   Megaphone,
   Receipt,
   School,
@@ -75,8 +76,10 @@ const nav = [
     label: "Académica & Comunicación (M3)",
     items: [
       { href: "/academica/malla", title: "Malla curricular", icon: BookOpen },
-      { href: "/academica/horarios", title: "Horarios", icon: CalendarClock },
-      { href: "/academica/comunicados", title: "Comunicados", icon: Megaphone },
+      { href: "/academica/carga-docente", title: "Carga docente", icon: GraduationCap },
+      { href: "/academica/secciones", title: "Registro de Secciones", icon: LayoutGrid },
+      { href: "/academica/horarios", title: "Gestión de Horarios", icon: CalendarClock },
+      { href: "/academica/comunicados", title: "Panel de Comunicados", icon: Megaphone },
     ],
   },
   {

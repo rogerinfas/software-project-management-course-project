@@ -123,6 +123,7 @@ export interface Section {
   nivel: NivelEducativo;
   capacidad: number;
   matriculados: number;
+  status: "abierta" | "cerrada";
 }
 
 export interface StudentHealth {
