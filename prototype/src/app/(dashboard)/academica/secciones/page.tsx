@@ -70,11 +70,13 @@ export default function SeccionesPage() {
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <Plus className="size-4" /> Abrir sección
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button className="flex items-center gap-2">
+                <Plus className="size-4" /> Abrir sección
+              </Button>
+            }
+          />
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Abrir nueva sección</DialogTitle>

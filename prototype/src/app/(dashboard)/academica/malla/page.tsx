@@ -84,11 +84,13 @@ export default function MallaPage() {
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <Plus className="size-4" /> Nuevo curso
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button className="flex items-center gap-2">
+                <Plus className="size-4" /> Nuevo curso
+              </Button>
+            }
+          />
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Agregar nuevo curso</DialogTitle>
