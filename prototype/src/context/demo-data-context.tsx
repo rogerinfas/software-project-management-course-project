@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import {
   initialAdmissionRequirements,
   initialAdmissionStages,
+  initialAppointments,
   initialBulletins,
   initialCharges,
   initialClassrooms,
@@ -13,6 +14,7 @@ import {
   initialCourses,
   initialDiscounts,
   initialEnrollmentDocuments,
+  initialEvaluationResults,
   initialFacialMarks,
   initialGuardians,
   initialMorosity,
@@ -43,13 +45,18 @@ import {
 import type {
   AdmissionRequirement,
   AdmissionStage,
+  AppointmentSlot,
+  AppointmentStatus,
   BulletinCategory,
   BulletinPost,
   BulletinVisibility,
   Charge,
   DocumentValidationStatus,
   EnrollmentDocument,
+  EvaluationAptitud,
+  EvaluationResult,
   FacialMark,
+  Guardian,
   InternalReceipt,
   NivelEducativo,
   Payment,
@@ -79,6 +86,8 @@ type DemoDataState = {
   prospects: Prospect[];
   prospectInteractions: ProspectInteraction[];
   prospectDocuments: ProspectDocument[];
+  appointments: AppointmentSlot[];
+  evaluationResults: EvaluationResult[];
 
   sections: typeof initialSections;
   students: typeof initialStudents;
@@ -111,6 +120,8 @@ const initialDemoState = (): DemoDataState => ({
   prospects: structuredClone(initialProspects),
   prospectInteractions: structuredClone(initialProspectInteractions),
   prospectDocuments: structuredClone(initialProspectDocuments),
+  appointments: structuredClone(initialAppointments),
+  evaluationResults: structuredClone(initialEvaluationResults),
 
   sections: structuredClone(initialSections),
   students: structuredClone(initialStudents),
@@ -156,10 +167,16 @@ type DemoDataContextValue = DemoDataState & {
   setProspectDocumentStatus: (id: string, estado: DocumentValidationStatus) => void;
   addAdmissionStage: (input: Omit<AdmissionStage, "id" | "orden">) => void;
   toggleAdmissionRequirement: (id: string) => void;
+  addAppointment: (input: Omit<AppointmentSlot, "id">) => void;
+  updateAppointmentStatus: (id: string, estado: AppointmentStatus) => void;
+  setEvaluationResult: (input: { prospectId: string; aptitud: EvaluationAptitud; comentarios: string; evaluador: string }) => void;
 
   // M2 Matrícula
   updateStudentDni: (studentId: string, dni: string) => boolean;
   setGuardianResponsible: (guardianId: string) => void;
+  addGuardian: (input: Omit<Guardian, "id">) => void;
+  updateGuardian: (id: string, fields: Partial<Pick<Guardian, "dni" | "telefono" | "correo" | "ocupacion">>) => void;
+  linkSibling: (studentId: string, siblingId: string) => void;
   tryEnroll: (studentId: string, sectionId: string) => void;
   emitEnrollmentDocs: (studentId: string) => void;
 
@@ -291,6 +308,64 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
+  const addAppointment = React.useCallback<DemoDataContextValue["addAppointment"]>(
+    (input) => {
+      setState((prev) => ({
+        ...prev,
+        appointments: [{ ...input, id: uid("apt") }, ...prev.appointments],
+      }));
+      toast.success("Cita agendada correctamente.");
+    },
+    [],
+  );
+
+  const updateAppointmentStatus = React.useCallback(
+    (id: string, estado: AppointmentStatus) => {
+      setState((prev) => ({
+        ...prev,
+        appointments: prev.appointments.map((a) =>
+          a.id === id ? { ...a, estado } : a,
+        ),
+      }));
+      const label = estado === "realizada" ? "marcada como realizada" : "cancelada";
+      toast.success(`Cita ${label}.`);
+    },
+    [],
+  );
+
+  const setEvaluationResult = React.useCallback<DemoDataContextValue["setEvaluationResult"]>(
+    (input) => {
+      setState((prev) => {
+        const existing = prev.evaluationResults.find((e) => e.prospectId === input.prospectId);
+        let evaluationResults: EvaluationResult[];
+        const record: EvaluationResult = {
+          id: existing?.id ?? uid("evr"),
+          prospectId: input.prospectId,
+          aptitud: input.aptitud,
+          comentarios: input.comentarios,
+          evaluador: input.evaluador,
+          fechaDictamen: new Date().toISOString().slice(0, 10),
+        };
+        if (existing) {
+          evaluationResults = prev.evaluationResults.map((e) =>
+            e.prospectId === input.prospectId ? record : e,
+          );
+        } else {
+          evaluationResults = [record, ...prev.evaluationResults];
+        }
+        // Si es APTO, avanzar automáticamente al stage "Aceptado" (stg-5)
+        const prospects = input.aptitud === "apto"
+          ? prev.prospects.map((p) =>
+              p.id === input.prospectId ? { ...p, currentStageId: "stg-5" } : p,
+            )
+          : prev.prospects;
+        return { ...prev, evaluationResults, prospects };
+      });
+      toast.success("Dictamen registrado.");
+    },
+    [],
+  );
+
   // --------------------------------------------------------------------------
   // M2 — Matrícula
   // --------------------------------------------------------------------------
@@ -325,6 +400,44 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       return { ...prev, guardians };
     });
     toast.success("Responsable económico actualizado.");
+  }, []);
+
+  const addGuardian = React.useCallback((input: Omit<Guardian, "id">) => {
+    setState((prev) => ({
+      ...prev,
+      guardians: [{ ...input, id: uid("gua") }, ...prev.guardians],
+    }));
+    toast.success("Apoderado registrado.");
+  }, []);
+
+  const updateGuardian = React.useCallback(
+    (id: string, fields: Partial<Pick<Guardian, "dni" | "telefono" | "correo" | "ocupacion">>) => {
+      setState((prev) => ({
+        ...prev,
+        guardians: prev.guardians.map((g) =>
+          g.id === id ? { ...g, ...fields } : g,
+        ),
+      }));
+      toast.success("Datos del apoderado actualizados.");
+    },
+    [],
+  );
+
+  const linkSibling = React.useCallback((studentId: string, siblingId: string) => {
+    if (studentId === siblingId) return;
+    setState((prev) => ({
+      ...prev,
+      students: prev.students.map((s) => {
+        if (s.id === studentId && !s.hermanosIds.includes(siblingId)) {
+          return { ...s, hermanosIds: [...s.hermanosIds, siblingId] };
+        }
+        if (s.id === siblingId && !s.hermanosIds.includes(studentId)) {
+          return { ...s, hermanosIds: [...s.hermanosIds, studentId] };
+        }
+        return s;
+      }),
+    }));
+    toast.success("Vinculación familiar registrada.");
   }, []);
 
   const tryEnroll = React.useCallback(
@@ -630,8 +743,14 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       setProspectDocumentStatus,
       addAdmissionStage,
       toggleAdmissionRequirement,
+      addAppointment,
+      updateAppointmentStatus,
+      setEvaluationResult,
       updateStudentDni,
       setGuardianResponsible,
+      addGuardian,
+      updateGuardian,
+      linkSibling,
       tryEnroll,
       emitEnrollmentDocs,
       addBulletin,
@@ -650,8 +769,14 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       setProspectDocumentStatus,
       addAdmissionStage,
       toggleAdmissionRequirement,
+      addAppointment,
+      updateAppointmentStatus,
+      setEvaluationResult,
       updateStudentDni,
       setGuardianResponsible,
+      addGuardian,
+      updateGuardian,
+      linkSibling,
       tryEnroll,
       emitEnrollmentDocs,
       addBulletin,

@@ -5,7 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BookOpen,
+  CalendarCheck,
   CalendarClock,
+  ClipboardCheck,
   ClipboardList,
   Coins,
   FileBadge,
@@ -21,6 +23,7 @@ import {
   School,
   ScrollText,
   Settings2,
+  UserCheck,
   UserCog,
   UserPlus,
   Users,
@@ -54,15 +57,18 @@ const nav = [
     items: [
       { href: "/admision/config", title: "Config. proceso", icon: Settings2 },
       { href: "/admision/pipeline", title: "CRM / Pipeline", icon: UserPlus },
+      { href: "/admision/citas", title: "Agenda de Citas", icon: CalendarCheck },
       { href: "/admision/documentos", title: "Documentos", icon: FolderOpen },
+      { href: "/admision/evaluacion", title: "Evaluación / Dictamen", icon: ClipboardCheck },
     ],
   },
   {
     label: "Matrícula (M2)",
     items: [
-      { href: "/matricula/expediente", title: "Expediente", icon: Users },
-      { href: "/matricula/formalizacion", title: "Formalización", icon: ClipboardList },
-      { href: "/matricula/documentos", title: "Docs. matrícula", icon: FileBadge },
+      { href: "/matricula/expediente", title: "Expediente familiar", icon: Users },
+      { href: "/matricula/apoderados", title: "Gestión de Apoderados", icon: UserCheck },
+      { href: "/matricula/formalizacion", title: "Formalización / Asignación", icon: ClipboardList },
+      { href: "/matricula/documentos", title: "Ficha de Matrícula", icon: FileBadge },
     ],
   },
   {
