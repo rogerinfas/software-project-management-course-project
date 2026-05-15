@@ -51,6 +51,7 @@ import type {
   BulletinPost,
   BulletinVisibility,
   Charge,
+  Course,
   DocumentValidationStatus,
   EnrollmentDocument,
   EvaluationAptitud,
@@ -68,6 +69,9 @@ import type {
   ProspectInteraction,
   ProspectPrioridad,
   SanctionRule,
+  ScheduleSlot,
+  Section,
+  TeachingAssignment,
 } from "@/lib/mock/types";
 
 function uid(prefix: string) {
@@ -188,6 +192,15 @@ type DemoDataContextValue = DemoDataState & {
     visibilidad: BulletinVisibility;
     vigenteHasta: string;
   }) => void;
+  updateBulletin: (id: string, fields: Partial<BulletinPost>) => void;
+  addCourse: (input: Omit<Course, "id">) => void;
+  updateCourse: (id: string, fields: Partial<Course>) => void;
+  deleteCourse: (id: string) => void;
+  addScheduleSlot: (input: Omit<ScheduleSlot, "id">) => void;
+  deleteScheduleSlot: (id: string) => void;
+  assignTeacher: (input: Omit<TeachingAssignment, "id">) => void;
+  addSection: (input: Omit<Section, "id" | "matriculados">) => void;
+  updateSection: (id: string, fields: Partial<Section>) => void;
 
   // M4 Tesorería
   generateMassPensionDebt: (nivel: NivelEducativo) => void;
@@ -535,6 +548,89 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const updateBulletin = React.useCallback(
+    (id: string, fields: Partial<BulletinPost>) => {
+      setState((prev) => ({
+        ...prev,
+        bulletins: prev.bulletins.map((b) => (b.id === id ? { ...b, ...fields } : b)),
+      }));
+      toast.success("Comunicado actualizado.");
+    },
+    [],
+  );
+
+  const addCourse = React.useCallback((input: Omit<Course, "id">) => {
+    setState((prev) => ({
+      ...prev,
+      courses: [...prev.courses, { ...input, id: uid("crs") }],
+    }));
+    toast.success("Curso creado.");
+  }, []);
+
+  const updateCourse = React.useCallback((id: string, fields: Partial<Course>) => {
+    setState((prev) => ({
+      ...prev,
+      courses: prev.courses.map((c) => (c.id === id ? { ...c, ...fields } : c)),
+    }));
+    toast.success("Curso actualizado.");
+  }, []);
+
+  const deleteCourse = React.useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      courses: prev.courses.filter((c) => c.id !== id),
+    }));
+    toast.success("Curso eliminado.");
+  }, []);
+
+  const addScheduleSlot = React.useCallback((input: Omit<ScheduleSlot, "id">) => {
+    setState((prev) => ({
+      ...prev,
+      scheduleSlots: [...prev.scheduleSlots, { ...input, id: uid("sch") }],
+    }));
+    toast.success("Bloque horario programado.");
+  }, []);
+
+  const deleteScheduleSlot = React.useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      scheduleSlots: prev.scheduleSlots.filter((s) => s.id !== id),
+    }));
+    toast.success("Bloque eliminado.");
+  }, []);
+
+  const assignTeacher = React.useCallback((input: Omit<TeachingAssignment, "id">) => {
+    setState((prev) => {
+      const existing = prev.teachingAssignments.findIndex(
+        (ta) => ta.courseId === input.courseId && ta.sectionId === input.sectionId,
+      );
+      const newAssignments = [...prev.teachingAssignments];
+      if (existing !== -1) {
+        newAssignments[existing] = { ...newAssignments[existing], teacherId: input.teacherId };
+      } else {
+        newAssignments.push({ ...input, id: uid("ta") });
+      }
+      return { ...prev, teachingAssignments: newAssignments };
+    });
+    toast.success("Docente asignado.");
+  }, []);
+
+  const addSection = React.useCallback((input: Omit<Section, "id" | "matriculados">) => {
+    setState((prev) => ({
+      ...prev,
+      sections: [...prev.sections, { ...input, id: uid("sec"), matriculados: 0 }],
+    }));
+    toast.success("Sección abierta.");
+  }, []);
+
+  const updateSection = React.useCallback((id: string, fields: Partial<Section>) => {
+    setState((prev) => ({
+      ...prev,
+      sections: prev.sections.map((s) => (s.id === id ? { ...s, ...fields } : s)),
+    }));
+    toast.success("Estado de sección actualizado.");
+  }, []);
+
   // --------------------------------------------------------------------------
   // M4 — Tesorería
   // --------------------------------------------------------------------------
@@ -754,6 +850,15 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       tryEnroll,
       emitEnrollmentDocs,
       addBulletin,
+      updateBulletin,
+      addCourse,
+      updateCourse,
+      deleteCourse,
+      addScheduleSlot,
+      deleteScheduleSlot,
+      assignTeacher,
+      addSection,
+      updateSection,
       generateMassPensionDebt,
       registerWindowPayment,
       simulateFacialMark,
@@ -780,6 +885,15 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       tryEnroll,
       emitEnrollmentDocs,
       addBulletin,
+      updateBulletin,
+      addCourse,
+      updateCourse,
+      deleteCourse,
+      addScheduleSlot,
+      deleteScheduleSlot,
+      assignTeacher,
+      addSection,
+      updateSection,
       generateMassPensionDebt,
       registerWindowPayment,
       simulateFacialMark,
