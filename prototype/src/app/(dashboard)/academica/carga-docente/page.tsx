@@ -195,7 +195,7 @@ export default function CargaDocentePage() {
                         )}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Badge variant="success" className="bg-green-500/10 text-green-600 border-green-500/20">
+                        <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20">
                           Activo
                         </Badge>
                       </TableCell>
