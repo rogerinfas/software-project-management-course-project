@@ -209,11 +209,21 @@ type DemoDataContextValue = DemoDataState & {
     monto: number,
     metodo: PaymentMethod,
   ) => void;
+  addTariffConcept: (input: Omit<TariffConcept, "id">) => void;
+  updateTariffConcept: (id: string, fields: Partial<TariffConcept>) => void;
+  deleteTariffConcept: (id: string) => void;
+  addDiscount: (input: Omit<DiscountRule, "id">) => void;
+  updateDiscount: (id: string, fields: Partial<DiscountRule>) => void;
+  deleteDiscount: (id: string) => void;
 
   // M5 Personal y asistencia
   simulateFacialMark: (staffId: string) => void;
   toggleSanctionRule: (id: string) => void;
+  updateSanctionRule: (id: string, fields: Partial<SanctionRule>) => void;
   recomputePrePayroll: () => void;
+  addStaffMember: (input: Omit<StaffMember, "id">) => void;
+  updateStaffMember: (id: string, fields: Partial<StaffMember>) => void;
+  deleteStaffMember: (id: string) => void;
 };
 
 const DemoDataContext = React.createContext<DemoDataContextValue | null>(null);
@@ -757,6 +767,76 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const addTariffConcept = React.useCallback(
+    (input: Omit<TariffConcept, "id">) => {
+      setState((prev) => ({
+        ...prev,
+        tariffConcepts: [...prev.tariffConcepts, { ...input, id: uid("trf") }],
+      }));
+      toast.success("Concepto de tarifario creado.");
+    },
+    [],
+  );
+
+  const updateTariffConcept = React.useCallback(
+    (id: string, fields: Partial<TariffConcept>) => {
+      setState((prev) => ({
+        ...prev,
+        tariffConcepts: prev.tariffConcepts.map((c) =>
+          c.id === id ? { ...c, ...fields } : c,
+        ),
+      }));
+      toast.success("Concepto actualizado.");
+    },
+    [],
+  );
+
+  const deleteTariffConcept = React.useCallback(
+    (id: string) => {
+      setState((prev) => ({
+        ...prev,
+        tariffConcepts: prev.tariffConcepts.filter((c) => c.id !== id),
+      }));
+      toast.success("Concepto eliminado.");
+    },
+    [],
+  );
+
+  const addDiscount = React.useCallback(
+    (input: Omit<DiscountRule, "id">) => {
+      setState((prev) => ({
+        ...prev,
+        discounts: [...prev.discounts, { ...input, id: uid("dsc") }],
+      }));
+      toast.success("Regla de descuento creada.");
+    },
+    [],
+  );
+
+  const updateDiscount = React.useCallback(
+    (id: string, fields: Partial<DiscountRule>) => {
+      setState((prev) => ({
+        ...prev,
+        discounts: prev.discounts.map((d) =>
+          d.id === id ? { ...d, ...fields } : d,
+        ),
+      }));
+      toast.success("Descuento actualizado.");
+    },
+    [],
+  );
+
+  const deleteDiscount = React.useCallback(
+    (id: string) => {
+      setState((prev) => ({
+        ...prev,
+        discounts: prev.discounts.filter((d) => d.id !== id),
+      }));
+      toast.success("Descuento eliminado.");
+    },
+    [],
+  );
+
   // --------------------------------------------------------------------------
   // M5 — Personal y asistencia
   // --------------------------------------------------------------------------
@@ -802,6 +882,40 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
         r.id === id ? { ...r, activa: !r.activa } : r,
       ),
     }));
+  }, []);
+
+  const updateSanctionRule = React.useCallback((id: string, fields: Partial<SanctionRule>) => {
+    setState((prev) => ({
+      ...prev,
+      sanctionRules: prev.sanctionRules.map((r) =>
+        r.id === id ? { ...r, ...fields } : r,
+      ),
+    }));
+    toast.success("Regla de asistencia actualizada.");
+  }, []);
+
+  const addStaffMember = React.useCallback((input: Omit<StaffMember, "id">) => {
+    setState((prev) => ({
+      ...prev,
+      staff: [...prev.staff, { ...input, id: uid("stf") }],
+    }));
+    toast.success("Personal registrado.");
+  }, []);
+
+  const updateStaffMember = React.useCallback((id: string, fields: Partial<StaffMember>) => {
+    setState((prev) => ({
+      ...prev,
+      staff: prev.staff.map((s) => (s.id === id ? { ...s, ...fields } : s)),
+    }));
+    toast.success("Datos de personal actualizados.");
+  }, []);
+
+  const deleteStaffMember = React.useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      staff: prev.staff.filter((s) => s.id !== id),
+    }));
+    toast.success("Personal eliminado.");
   }, []);
 
   const recomputePrePayroll = React.useCallback(() => {
@@ -861,9 +975,19 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       updateSection,
       generateMassPensionDebt,
       registerWindowPayment,
+      addTariffConcept,
+      updateTariffConcept,
+      deleteTariffConcept,
+      addDiscount,
+      updateDiscount,
+      deleteDiscount,
       simulateFacialMark,
       toggleSanctionRule,
+      updateSanctionRule,
       recomputePrePayroll,
+      addStaffMember,
+      updateStaffMember,
+      deleteStaffMember,
     }),
     [
       state,
@@ -896,9 +1020,19 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       updateSection,
       generateMassPensionDebt,
       registerWindowPayment,
+      addTariffConcept,
+      updateTariffConcept,
+      deleteTariffConcept,
+      addDiscount,
+      updateDiscount,
+      deleteDiscount,
       simulateFacialMark,
       toggleSanctionRule,
+      updateSanctionRule,
       recomputePrePayroll,
+      addStaffMember,
+      updateStaffMember,
+      deleteStaffMember,
     ],
   );
 

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Search, Wallet, AlertCircle, TrendingUp, CheckCircle2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,215 +24,257 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoData } from "@/context/demo-data-context";
-import { interesMora } from "@/lib/mock/rules";
-import type { NivelEducativo, PaymentMethod } from "@/lib/mock/types";
+import type {
+  NivelEducativo,
+  PaymentMethod,
+} from "@/lib/mock/types";
 
-const HOY = new Date().toISOString().slice(0, 10);
-
-const ESTADO_VARIANT: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+const ESTADO_VARIANT: Record<string, "outline" | "default" | "secondary"> = {
+  pendiente: "outline",
   pagado: "default",
-  pendiente: "destructive",
-  pagado_parcial: "secondary",
-  anulado: "outline",
+  parcial: "secondary",
 };
 
 export default function CobranzasPage() {
   const {
     students,
     charges,
+    payments,
     generateMassPensionDebt,
     registerWindowPayment,
-    treasuryDailyRatePercent,
   } = useDemoData();
 
-  const [studentId, setStudentId] = React.useState(
-    students.find((s) => s.codigo)?.id ?? students[0]?.id ?? "",
-  );
+  const [studentId, setStudentId] = React.useState(students[0]?.id ?? "");
   const [monto, setMonto] = React.useState(0);
   const [metodo, setMetodo] = React.useState<PaymentMethod>("efectivo");
   const [nivelMasivo, setNivelMasivo] = React.useState<NivelEducativo>("primaria");
 
-  const cargos = charges
-    .filter((c) => c.studentId === studentId)
-    .sort(
-      (a, b) =>
-        new Date(a.fechaVencimiento).getTime() -
-        new Date(b.fechaVencimiento).getTime(),
-    );
+  const currentStudent = students.find((s) => s.id === studentId);
+  const studentCharges = charges.filter((c) => c.studentId === studentId);
+  const studentPayments = payments.filter((p) => p.studentId === studentId);
 
-  const pendientes = cargos.filter((c) => c.montoPendiente > 0);
-  const deuda = pendientes.reduce(
-    (a, c) => a + c.montoPendiente + interesMora(c.montoPendiente, c.fechaVencimiento, HOY),
-    0,
-  );
-
-  const student = students.find((s) => s.id === studentId);
+  const totalDeuda = studentCharges
+    .filter((c) => c.status !== "pagado")
+    .reduce((acc, curr) => acc + (curr.montoTotal - curr.montoPagado), 0);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">D-2 · Cobranzas</h1>
-        <p className="text-muted-foreground text-sm">
-          Generación masiva de deuda mensual, estado de cuenta y registro de
-          pagos en ventanilla con orden de prelación.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">D-2 · Cobranzas</h1>
+          <p className="text-muted-foreground text-sm">
+            Gestión de pagos manuales y estados de cuenta por alumno.
+          </p>
+        </div>
+        <div className="flex items-center gap-4 bg-muted/30 p-2 rounded-lg border">
+          <div className="text-right">
+            <p className="text-[10px] uppercase font-bold text-muted-foreground">Recaudación Mayo</p>
+            <p className="text-lg font-mono font-bold text-primary">S/ 42,500.00</p>
+          </div>
+          <TrendingUp className="size-8 text-primary opacity-20" />
+        </div>
       </div>
 
-      <Tabs defaultValue="pagos">
+      <Tabs defaultValue="ventanilla">
         <TabsList>
-          <TabsTrigger value="pagos">Pagos en ventanilla</TabsTrigger>
-          <TabsTrigger value="masiva">Generación mensual</TabsTrigger>
+          <TabsTrigger value="ventanilla">Pago en Ventanilla</TabsTrigger>
+          <TabsTrigger value="masiva">Generación Masiva</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pagos" className="space-y-4 pt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Estado de cuenta</CardTitle>
-              <CardDescription>
-                Se aplican los pagos a las deudas más antiguas primero (tasa de
-                mora: {treasuryDailyRatePercent}%/día).
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-2 md:max-w-md">
-                <Label>Alumno</Label>
-                <select
-                  className="border-input h-8 rounded-lg border px-2 text-sm"
-                  value={studentId}
-                  onChange={(e) => setStudentId(e.target.value)}
-                >
-                  {students.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.codigo ?? "pendiente"} — {s.nombres} {s.apellidos}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {student ? (
-                <>
-                  <div className="text-sm">
-                    Deuda estimada (capital + mora):{" "}
-                    <strong>S/ {deuda.toFixed(2)}</strong>
+        <TabsContent value="ventanilla" className="pt-4 space-y-6">
+          <div className="grid gap-6 md:grid-cols-3">
+            <Card className="md:col-span-1">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Search className="size-4 text-primary" />
+                  <CardTitle className="text-base">Buscar Alumno</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-2">
+                  <Label>Seleccionar estudiante</Label>
+                  <select
+                    className="border-input h-10 rounded-lg border px-3 text-sm"
+                    value={studentId}
+                    onChange={(e) => setStudentId(e.target.value)}
+                  >
+                    {students.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.apellidos}, {s.nombres} ({s.grado})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {currentStudent && (
+                  <div className="rounded-lg border bg-muted/20 p-4 space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-muted-foreground">Estado académico:</span>
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Matriculado</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-muted-foreground">Deuda Total:</span>
+                      <span className={`text-sm font-bold ${totalDeuda > 0 ? "text-destructive" : "text-green-600"}`}>
+                        S/ {totalDeuda.toFixed(2)}
+                      </span>
+                    </div>
                   </div>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Concepto</TableHead>
-                        <TableHead>Vencimiento</TableHead>
-                        <TableHead className="text-right">Original</TableHead>
-                        <TableHead className="text-right">Pendiente</TableHead>
-                        <TableHead className="text-right">Mora</TableHead>
-                        <TableHead>Estado</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {cargos.map((c) => {
-                        const mora = interesMora(
-                          c.montoPendiente,
-                          c.fechaVencimiento,
-                          HOY,
-                        );
-                        return (
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="md:col-span-2">
+              <Tabs defaultValue="deudas">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center justify-between">
+                    <TabsList className="h-8">
+                      <TabsTrigger value="deudas" className="text-xs">Deudas y Cargos</TabsTrigger>
+                      <TabsTrigger value="historial" className="text-xs">Historial de Pagos</TabsTrigger>
+                    </TabsList>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Wallet className="size-4 text-primary" /> Caja
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <TabsContent value="deudas" className="mt-0 space-y-4">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Concepto</TableHead>
+                          <TableHead>Vence</TableHead>
+                          <TableHead className="text-right">Monto</TableHead>
+                          <TableHead className="text-right">Saldo</TableHead>
+                          <TableHead className="text-right">Estado</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {studentCharges.map((c) => (
                           <TableRow key={c.id}>
-                            <TableCell>{c.concepto}</TableCell>
-                            <TableCell>{c.fechaVencimiento}</TableCell>
-                            <TableCell className="text-right tabular-nums">
-                              S/ {c.montoOriginal.toFixed(2)}
+                            <TableCell className="font-medium text-xs">{c.concepto}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{c.fechaVencimiento || "—"}</TableCell>
+                            <TableCell className="text-right tabular-nums text-xs">S/ {c.montoTotal.toFixed(2)}</TableCell>
+                            <TableCell className="text-right tabular-nums text-xs font-bold">
+                              S/ {(c.montoTotal - c.montoPagado).toFixed(2)}
                             </TableCell>
-                            <TableCell className="text-right tabular-nums">
-                              S/ {c.montoPendiente.toFixed(2)}
-                            </TableCell>
-                            <TableCell className="text-right tabular-nums">
-                              S/ {mora.toFixed(2)}
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant={ESTADO_VARIANT[c.status]}>
+                            <TableCell className="text-right">
+                              <Badge variant={ESTADO_VARIANT[c.status]} className="text-[10px] uppercase">
                                 {c.status}
                               </Badge>
                             </TableCell>
                           </TableRow>
-                        );
-                      })}
-                      {cargos.length === 0 ? (
-                        <TableRow>
-                          <TableCell
-                            colSpan={6}
-                            className="text-muted-foreground text-center text-sm"
-                          >
-                            Sin cargos registrados para este alumno.
-                          </TableCell>
-                        </TableRow>
-                      ) : null}
-                    </TableBody>
-                  </Table>
-                </>
-              ) : null}
+                        ))}
+                        {studentCharges.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center py-4 text-muted-foreground text-xs italic">
+                              Sin cargos registrados.
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
 
-              <div className="grid gap-3 rounded-md border p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
-                <div className="grid gap-2">
-                  <Label>Monto recibido</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    step={1}
-                    value={monto}
-                    onChange={(e) => setMonto(Number(e.target.value))}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Método</Label>
-                  <select
-                    className="border-input h-8 rounded-lg border px-2 text-sm"
-                    value={metodo}
-                    onChange={(e) =>
-                      setMetodo(e.target.value as PaymentMethod)
-                    }
-                  >
-                    <option value="efectivo">Efectivo</option>
-                    <option value="tarjeta">Tarjeta</option>
-                    <option value="transferencia">Transferencia</option>
-                  </select>
-                </div>
-                <Button
-                  disabled={!studentId || monto <= 0}
-                  onClick={() => {
-                    registerWindowPayment(studentId, monto, metodo);
-                    setMonto(0);
-                  }}
-                >
-                  Registrar pago
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                    <div className="grid gap-3 rounded-md border p-4 bg-primary/5 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                      <div className="grid gap-2">
+                        <Label className="text-xs">Monto recibido</Label>
+                        <Input
+                          type="number"
+                          value={monto}
+                          onChange={(e) => setMonto(Number(e.target.value))}
+                          className="h-9"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label className="text-xs">Método</Label>
+                        <select
+                          className="border-input h-9 rounded-lg border px-2 text-sm"
+                          value={metodo}
+                          onChange={(e) => setMetodo(e.target.value as PaymentMethod)}
+                        >
+                          <option value="efectivo">Efectivo</option>
+                          <option value="tarjeta">Tarjeta</option>
+                          <option value="transferencia">Transferencia</option>
+                        </select>
+                      </div>
+                      <Button
+                        disabled={!studentId || monto <= 0}
+                        onClick={() => {
+                          registerWindowPayment(studentId, monto, metodo);
+                          setMonto(0);
+                        }}
+                        className="h-9"
+                      >
+                        Aplicar Pago
+                      </Button>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground italic flex items-center gap-1">
+                      <AlertCircle className="size-3" /> Los pagos se aplican automáticamente a las deudas más antiguas (prelación).
+                    </p>
+                  </TabsContent>
+
+                  <TabsContent value="historial" className="mt-0">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Fecha</TableHead>
+                          <TableHead>Método</TableHead>
+                          <TableHead className="text-right">Monto</TableHead>
+                          <TableHead className="text-right">Operación</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {studentPayments.map((p) => (
+                          <TableRow key={p.id}>
+                            <TableCell className="text-xs">{new Date(p.fecha).toLocaleDateString()}</TableCell>
+                            <TableCell className="capitalize text-xs">{p.metodo}</TableCell>
+                            <TableCell className="text-right tabular-nums text-xs font-bold text-green-600">
+                              S/ {p.monto.toFixed(2)}
+                            </TableCell>
+                            <TableCell className="text-right font-mono text-[10px] text-muted-foreground">
+                              #{p.id.split('_')[1] || p.id}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        {studentPayments.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={4} className="text-center py-8 text-muted-foreground text-xs italic">
+                              Aún no hay pagos registrados.
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TabsContent>
+                </CardContent>
+              </Tabs>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="masiva" className="pt-4">
-          <Card>
+          <Card className="border-primary/20 bg-primary/5">
             <CardHeader>
-              <CardTitle>Generación masiva mensual</CardTitle>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="size-5 text-primary" />
+                <CardTitle>Emisión masiva de pensiones</CardTitle>
+              </div>
               <CardDescription>
-                Emite una nueva cuota mensual para todos los alumnos
-                matriculados del nivel elegido.
+                Este proceso genera automáticamente el cargo de pensión para todos los alumnos del nivel seleccionado.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+            <CardContent className="grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
               <div className="grid gap-2">
-                <Label>Nivel</Label>
+                <Label>Nivel Educativo</Label>
                 <select
-                  className="border-input h-8 rounded-lg border px-2 text-sm"
+                  className="border-input h-10 rounded-lg border px-3 text-sm bg-background"
                   value={nivelMasivo}
-                  onChange={(e) =>
-                    setNivelMasivo(e.target.value as NivelEducativo)
-                  }
+                  onChange={(e) => setNivelMasivo(e.target.value as NivelEducativo)}
                 >
                   <option value="inicial">Inicial</option>
                   <option value="primaria">Primaria</option>
                 </select>
               </div>
-              <Button onClick={() => generateMassPensionDebt(nivelMasivo)}>
-                Generar cuotas de mayo
+              <Button size="lg" onClick={() => generateMassPensionDebt(nivelMasivo)}>
+                Generar cuotas de JUNIO
               </Button>
             </CardContent>
           </Card>
