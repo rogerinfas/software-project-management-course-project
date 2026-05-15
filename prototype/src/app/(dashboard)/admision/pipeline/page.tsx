@@ -1,13 +1,30 @@
 "use client";
 
 import * as React from "react";
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCorners,
+  type DragStartEvent,
+  type DragOverEvent,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Plus } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -29,11 +46,136 @@ import type {
   ProspectPrioridad,
 } from "@/lib/mock/types";
 
-const PRIORIDAD_VARIANT: Record<ProspectPrioridad, "default" | "secondary" | "outline"> = {
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+const PRIORIDAD_VARIANT: Record<
+  ProspectPrioridad,
+  "default" | "secondary" | "outline"
+> = {
   alta: "default",
   media: "secondary",
   baja: "outline",
 };
+
+const PRIORIDAD_COLOR: Record<ProspectPrioridad, string> = {
+  alta: "border-l-red-500",
+  media: "border-l-yellow-500",
+  baja: "border-l-slate-400",
+};
+
+// ── ProspectCard (draggable) ──────────────────────────────────────────────────
+
+interface ProspectCardProps {
+  id: string;
+  nombre: string;
+  gradoPostulado: string;
+  celular: string;
+  prioridad: ProspectPrioridad;
+  onDetail: () => void;
+  isDragOverlay?: boolean;
+}
+
+function ProspectCard({
+  id,
+  nombre,
+  gradoPostulado,
+  celular,
+  prioridad,
+  onDetail,
+  isDragOverlay = false,
+}: ProspectCardProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.35 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={isDragOverlay ? undefined : style}
+      {...(isDragOverlay ? {} : { ...attributes, ...listeners })}
+      className={`rounded-md border-l-4 border border-border bg-card p-2.5 shadow-sm text-xs select-none ${
+        PRIORIDAD_COLOR[prioridad]
+      } ${
+        isDragOverlay
+          ? "shadow-xl rotate-1 scale-105"
+          : "hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-1">
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold truncate leading-tight">{nombre}</p>
+          <p className="text-muted-foreground mt-0.5 truncate">{gradoPostulado}</p>
+          <p className="text-muted-foreground">{celular}</p>
+        </div>
+        <Badge variant={PRIORIDAD_VARIANT[prioridad]} className="text-[10px] px-1 py-0 shrink-0">
+          {prioridad}
+        </Badge>
+      </div>
+      {!isDragOverlay && (
+        <Button
+          size="xs"
+          variant="outline"
+          className="mt-2 w-full"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={onDetail}
+        >
+          Ver detalle
+        </Button>
+      )}
+    </div>
+  );
+}
+
+// ── KanbanColumn ──────────────────────────────────────────────────────────────
+
+interface KanbanColumnProps {
+  id: string;
+  title: string;
+  orden: number;
+  prospectIds: string[];
+  children: React.ReactNode;
+  isOver: boolean;
+}
+
+function KanbanColumn({ id, title, orden, prospectIds, children, isOver }: KanbanColumnProps) {
+  const { setNodeRef } = useSortable({ id, disabled: true });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`flex flex-col rounded-xl border bg-muted/30 transition-colors ${
+        isOver ? "ring-2 ring-primary/50 bg-primary/5" : ""
+      }`}
+      style={{ minHeight: 240 }}
+    >
+      <div className="flex items-center justify-between px-3 py-2.5 border-b">
+        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {orden}. {title}
+        </span>
+        <Badge variant="outline" className="tabular-nums text-[10px] px-1.5 py-0">
+          {prospectIds.length}
+        </Badge>
+      </div>
+      <SortableContext items={prospectIds} strategy={verticalListSortingStrategy}>
+        <div className="flex-1 space-y-2 p-2">
+          {prospectIds.length === 0 && (
+            <p className="text-muted-foreground text-xs text-center pt-6">
+              Arrastra un prospecto aquí
+            </p>
+          )}
+          {children}
+        </div>
+      </SortableContext>
+    </div>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function PipelinePage() {
   const {
@@ -47,6 +189,7 @@ export default function PipelinePage() {
 
   const stages = admissionStages.slice().sort((a, b) => a.orden - b.orden);
 
+  // Nuevo prospecto
   const [newOpen, setNewOpen] = React.useState(false);
   const [nombre, setNombre] = React.useState("");
   const [celular, setCelular] = React.useState("");
@@ -54,9 +197,18 @@ export default function PipelinePage() {
   const [nivel, setNivel] = React.useState<NivelEducativo>("primaria");
   const [prioridad, setPrioridad] = React.useState<ProspectPrioridad>("media");
 
+  // Detalle / interacción
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const [tipo, setTipo] = React.useState<ProspectInteraction["tipo"]>("llamada");
   const [resumen, setResumen] = React.useState("");
+
+  // DnD state
+  const [activeId, setActiveId] = React.useState<string | null>(null);
+  const [overColumnId, setOverColumnId] = React.useState<string | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+  );
 
   const selected = selectedId
     ? prospects.find((p) => p.id === selectedId) ?? null
@@ -67,20 +219,66 @@ export default function PipelinePage() {
         .sort((a, b) => (a.fecha < b.fecha ? 1 : -1))
     : [];
 
+  const activeProspect = activeId
+    ? prospects.find((p) => p.id === activeId)
+    : null;
+
+  // ── DnD handlers ──
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active.id as string);
+  }
+
+  function handleDragOver(event: DragOverEvent) {
+    const { over } = event;
+    if (!over) { setOverColumnId(null); return; }
+
+    const overId = over.id as string;
+    // Is the target a stage column?
+    const isStage = stages.some((s) => s.id === overId);
+    if (isStage) {
+      setOverColumnId(overId);
+      return;
+    }
+    // Target is another prospect card — find its column
+    const targetProspect = prospects.find((p) => p.id === overId);
+    if (targetProspect) setOverColumnId(targetProspect.currentStageId);
+    else setOverColumnId(null);
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    setActiveId(null);
+    setOverColumnId(null);
+    if (!over) return;
+
+    const draggedId = active.id as string;
+    const overId = over.id as string;
+
+    // Determine target stage
+    const isStage = stages.some((s) => s.id === overId);
+    let targetStageId: string | null = null;
+
+    if (isStage) {
+      targetStageId = overId;
+    } else {
+      // Dropped over another prospect card
+      const targetProspect = prospects.find((p) => p.id === overId);
+      if (targetProspect) targetStageId = targetProspect.currentStageId;
+    }
+
+    if (!targetStageId) return;
+
+    const draggedProspect = prospects.find((p) => p.id === draggedId);
+    if (!draggedProspect) return;
+    if (draggedProspect.currentStageId === targetStageId) return;
+
+    moveProspectStage(draggedId, targetStageId);
+  }
+
   function submitProspect() {
     if (!nombre.trim() || !celular.trim()) return;
-    addProspect({
-      nombre: nombre.trim(),
-      celular: celular.trim(),
-      gradoPostulado: grado,
-      nivel,
-      prioridad,
-    });
-    setNombre("");
-    setCelular("");
-    setGrado("1° primaria");
-    setNivel("primaria");
-    setPrioridad("media");
+    addProspect({ nombre: nombre.trim(), celular: celular.trim(), gradoPostulado: grado, nivel, prioridad });
+    setNombre(""); setCelular(""); setGrado("1° primaria"); setNivel("primaria"); setPrioridad("media");
     setNewOpen(false);
   }
 
@@ -98,15 +296,23 @@ export default function PipelinePage() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">A-2 · CRM / Pipeline de admisión</h1>
           <p className="text-muted-foreground text-sm">
-            Tablero Kanban por etapa e historial de interacciones por prospecto.
+            Tablero Kanban con arrastrar y soltar. Mueve los prospectos entre etapas.
           </p>
         </div>
         <Dialog open={newOpen} onOpenChange={setNewOpen}>
-          <DialogTrigger render={<Button>Nuevo prospecto</Button>} />
+          <DialogTrigger
+            render={
+              <Button className="inline-flex items-center gap-2">
+                <Plus className="size-4" />
+                Nuevo prospecto
+              </Button>
+            }
+          />
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Registrar prospecto</DialogTitle>
@@ -118,19 +324,11 @@ export default function PipelinePage() {
               </div>
               <div className="grid gap-2">
                 <Label>Celular</Label>
-                <Input
-                  value={celular}
-                  onChange={(e) => setCelular(e.target.value)}
-                  placeholder="959000000"
-                />
+                <Input value={celular} onChange={(e) => setCelular(e.target.value)} placeholder="959000000" />
               </div>
               <div className="grid gap-2">
                 <Label>Grado postulado</Label>
-                <select
-                  className="border-input bg-background h-8 rounded-lg border px-2 text-sm"
-                  value={grado}
-                  onChange={(e) => setGrado(e.target.value)}
-                >
+                <select className="border-input bg-background h-8 rounded-lg border px-2 text-sm" value={grado} onChange={(e) => setGrado(e.target.value)}>
                   <option>Inicial 5 años</option>
                   <option>1° primaria</option>
                   <option>2° primaria</option>
@@ -139,24 +337,14 @@ export default function PipelinePage() {
               </div>
               <div className="grid gap-2">
                 <Label>Nivel</Label>
-                <select
-                  className="border-input bg-background h-8 rounded-lg border px-2 text-sm"
-                  value={nivel}
-                  onChange={(e) => setNivel(e.target.value as NivelEducativo)}
-                >
+                <select className="border-input bg-background h-8 rounded-lg border px-2 text-sm" value={nivel} onChange={(e) => setNivel(e.target.value as NivelEducativo)}>
                   <option value="inicial">Inicial</option>
                   <option value="primaria">Primaria</option>
                 </select>
               </div>
               <div className="grid gap-2">
                 <Label>Prioridad</Label>
-                <select
-                  className="border-input bg-background h-8 rounded-lg border px-2 text-sm"
-                  value={prioridad}
-                  onChange={(e) =>
-                    setPrioridad(e.target.value as ProspectPrioridad)
-                  }
-                >
+                <select className="border-input bg-background h-8 rounded-lg border px-2 text-sm" value={prioridad} onChange={(e) => setPrioridad(e.target.value as ProspectPrioridad)}>
                   <option value="alta">Alta</option>
                   <option value="media">Media</option>
                   <option value="baja">Baja</option>
@@ -164,130 +352,118 @@ export default function PipelinePage() {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setNewOpen(false)}>
-                Cancelar
-              </Button>
+              <Button variant="outline" onClick={() => setNewOpen(false)}>Cancelar</Button>
               <Button onClick={submitProspect}>Guardar</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-5">
-        {stages.map((stage) => {
-          const list = prospects.filter((p) => p.currentStageId === stage.id);
-          return (
-            <Card key={stage.id} className="min-h-[220px]">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center justify-between text-sm">
-                  <span>
-                    {stage.orden}. {stage.nombre}
-                  </span>
-                  <Badge variant="outline" className="tabular-nums">
-                    {list.length}
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {list.length === 0 ? (
-                  <p className="text-muted-foreground text-xs">
-                    Sin prospectos en esta etapa.
-                  </p>
-                ) : null}
-                {list.map((p) => (
-                  <div
+      {/* Kanban Board */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
+        <div
+          className="grid gap-3 overflow-x-auto pb-2"
+          style={{ gridTemplateColumns: `repeat(${stages.length}, minmax(200px, 1fr))` }}
+        >
+          {stages.map((stage) => {
+            const stageProspects = prospects.filter(
+              (p) => p.currentStageId === stage.id,
+            );
+            const ids = stageProspects.map((p) => p.id);
+            return (
+              <KanbanColumn
+                key={stage.id}
+                id={stage.id}
+                title={stage.nombre}
+                orden={stage.orden}
+                prospectIds={ids}
+                isOver={overColumnId === stage.id}
+              >
+                {stageProspects.map((p) => (
+                  <ProspectCard
                     key={p.id}
-                    className="rounded-md border p-2 text-xs shadow-sm"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-medium">{p.nombre}</span>
-                      <Badge variant={PRIORIDAD_VARIANT[p.prioridad]}>
-                        {p.prioridad}
-                      </Badge>
-                    </div>
-                    <p className="text-muted-foreground mt-1">
-                      {p.gradoPostulado} · {p.celular}
-                    </p>
-                    <div className="mt-2 flex gap-1">
-                      <select
-                        className="border-input h-7 w-full rounded border px-1 text-xs"
-                        value={p.currentStageId}
-                        onChange={(e) =>
-                          moveProspectStage(p.id, e.target.value)
-                        }
-                      >
-                        {stages.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.orden}. {s.nombre}
-                          </option>
-                        ))}
-                      </select>
-                      <Button
-                        size="xs"
-                        variant="outline"
-                        onClick={() => setSelectedId(p.id)}
-                      >
-                        Detalle
-                      </Button>
-                    </div>
-                  </div>
+                    id={p.id}
+                    nombre={p.nombre}
+                    gradoPostulado={p.gradoPostulado}
+                    celular={p.celular}
+                    prioridad={p.prioridad}
+                    onDetail={() => setSelectedId(p.id)}
+                  />
                 ))}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+              </KanbanColumn>
+            );
+          })}
+        </div>
 
+        {/* Drag overlay — ghost card */}
+        <DragOverlay>
+          {activeProspect && (
+            <ProspectCard
+              id={activeProspect.id}
+              nombre={activeProspect.nombre}
+              gradoPostulado={activeProspect.gradoPostulado}
+              celular={activeProspect.celular}
+              prioridad={activeProspect.prioridad}
+              onDetail={() => {}}
+              isDragOverlay
+            />
+          )}
+        </DragOverlay>
+      </DndContext>
+
+      {/* Detalle / Interacciones */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">
-            Historial de interacciones{selected ? ` — ${selected.nombre}` : ""}
+            Historial de interacciones
+            {selected ? ` — ${selected.nombre}` : ""}
           </CardTitle>
-          <CardDescription>
-            Selecciona un prospecto desde el tablero para registrar nuevas
-            interacciones.
-          </CardDescription>
         </CardHeader>
         <CardContent>
           {!selected ? (
             <p className="text-muted-foreground text-sm">
-              Ningún prospecto seleccionado.
+              Haz clic en &quot;Ver detalle&quot; en cualquier tarjeta del tablero.
             </p>
           ) : (
             <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+              {/* Timeline */}
               <div>
                 {history.length === 0 ? (
                   <p className="text-muted-foreground text-sm">
-                    Sin interacciones registradas para este prospecto.
+                    Sin interacciones registradas.
                   </p>
                 ) : (
                   <ul className="space-y-2 text-sm">
                     {history.map((i) => (
-                      <li key={i.id} className="rounded-md border p-2">
+                      <li key={i.id} className="rounded-md border p-3">
                         <div className="flex items-center justify-between text-xs">
-                          <span className="font-medium capitalize">{i.tipo}</span>
+                          <span className="font-semibold capitalize">{i.tipo}</span>
                           <span className="text-muted-foreground">
                             {new Date(i.fecha).toLocaleString("es-PE")}
                           </span>
                         </div>
                         <p className="mt-1">{i.resumen}</p>
-                        <p className="text-muted-foreground mt-1 text-xs">
-                          por {i.autor}
-                        </p>
+                        <p className="text-muted-foreground mt-1 text-xs">por {i.autor}</p>
                       </li>
                     ))}
                   </ul>
                 )}
               </div>
+
+              {/* Nueva interacción */}
               <div className="space-y-3">
                 <div className="grid gap-2">
                   <Label>Tipo</Label>
                   <select
                     className="border-input h-8 rounded-lg border px-2 text-sm"
                     value={tipo}
-                    onChange={(e) =>
-                      setTipo(e.target.value as ProspectInteraction["tipo"])
-                    }
+                    onChange={(e) => setTipo(e.target.value as ProspectInteraction["tipo"])}
                   >
                     <option value="llamada">Llamada</option>
                     <option value="correo">Correo</option>
@@ -301,7 +477,7 @@ export default function PipelinePage() {
                     rows={3}
                     value={resumen}
                     onChange={(e) => setResumen(e.target.value)}
-                    placeholder="Qué se habló, acuerdos, siguientes pasos."
+                    placeholder="Qué se habló, acuerdos, próximos pasos."
                   />
                 </div>
                 <Button onClick={submitInteraction}>Registrar interacción</Button>

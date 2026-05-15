@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useDemoData } from "@/context/demo-data-context";
+import { ModeToggle } from "@/components/mode-toggle";
 import type { BulletinCategory } from "@/lib/mock/types";
 
 const CATEGORY_LABEL: Record<BulletinCategory, string> = {
@@ -95,6 +96,7 @@ export default function LandingPage() {
             >
               Iniciar Sesión
             </Link>
+            <ModeToggle />
           </div>
         </div>
       </header>

@@ -80,6 +80,38 @@ export interface ProspectDocument {
   subidoEn: string;
 }
 
+export type AppointmentStatus = "programada" | "realizada" | "cancelada";
+export type AppointmentTipo =
+  | "entrevista_familiar"
+  | "evaluacion_academica"
+  | "evaluacion_psicologica";
+
+/** A-3. Cita agendada en el proceso de admisión. */
+export interface AppointmentSlot {
+  id: string;
+  prospectId: string;
+  tipo: AppointmentTipo;
+  fecha: string; // YYYY-MM-DD
+  horaInicio: string; // HH:mm
+  horaFin: string;   // HH:mm
+  responsable: string;
+  lugar: string;
+  estado: AppointmentStatus;
+  notas?: string;
+}
+
+export type EvaluationAptitud = "apto" | "no_apto" | "pendiente";
+
+/** A-4. Dictamen final del proceso de admisión. */
+export interface EvaluationResult {
+  id: string;
+  prospectId: string;
+  aptitud: EvaluationAptitud;
+  comentarios: string;
+  evaluador: string;
+  fechaDictamen: string; // YYYY-MM-DD
+}
+
 // ============================================================================
 // MÓDULO 2 — Matrícula
 // ============================================================================

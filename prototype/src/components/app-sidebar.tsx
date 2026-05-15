@@ -5,7 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BookOpen,
+  CalendarCheck,
   CalendarClock,
+  ClipboardCheck,
   ClipboardList,
   Coins,
   FileBadge,
@@ -54,7 +56,9 @@ const nav = [
     items: [
       { href: "/admision/config", title: "Config. proceso", icon: Settings2 },
       { href: "/admision/pipeline", title: "CRM / Pipeline", icon: UserPlus },
+      { href: "/admision/citas", title: "Agenda de Citas", icon: CalendarCheck },
       { href: "/admision/documentos", title: "Documentos", icon: FolderOpen },
+      { href: "/admision/evaluacion", title: "Evaluación / Dictamen", icon: ClipboardCheck },
     ],
   },
   {
