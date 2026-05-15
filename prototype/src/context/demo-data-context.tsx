@@ -56,6 +56,7 @@ import type {
   EvaluationAptitud,
   EvaluationResult,
   FacialMark,
+  Guardian,
   InternalReceipt,
   NivelEducativo,
   Payment,
