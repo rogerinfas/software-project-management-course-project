@@ -1,0 +1,263 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Auth & Roles ─────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  TEACHER
+  STAFF
+  ADMISSION
+  TREASURY
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  staffProfile StaffProfile?
+}
+
+// ── M1: ADMISIÓN (Admission) ─────────────────────────────────────────────────
+
+model AdmissionStage {
+  id        String     @id @default(cuid())
+  name      String // Nombre de la etapa (ej. Entrevista)
+  order     Int // Orden de visualización en el Kanban
+  prospects Prospect[]
+}
+
+model Prospect {
+  id             String                @id @default(cuid())
+  name           String
+  phone          String
+  targetGrade    String // Grado al que postula
+  level          EducationalLevel
+  priority       ProspectPriority      @default(MEDIUM)
+  currentStageId String
+  currentStage   AdmissionStage        @relation(fields: [currentStageId], references: [id])
+  appointments   Appointment[]
+  evaluation     EvaluationResult?
+  interactions   ProspectInteraction[]
+  createdAt      DateTime              @default(now())
+}
+
+enum EducationalLevel {
+  INITIAL
+  PRIMARY
+  SECONDARY
+}
+
+enum ProspectPriority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model Appointment {
+  id         String   @id @default(cuid())
+  date       DateTime // Fecha y hora programada
+  type       String // Entrevista, Evaluación Psicológica, etc.
+  prospectId String
+  prospect   Prospect @relation(fields: [prospectId], references: [id])
+  notes      String?
+}
+
+model EvaluationResult {
+  id          String           @id @default(cuid())
+  prospectId  String           @unique
+  prospect    Prospect         @relation(fields: [prospectId], references: [id])
+  aptitude    EvaluationStatus @default(PENDING)
+  comments    String?
+  evaluatorId String?
+  date        DateTime         @default(now())
+}
+
+enum EvaluationStatus {
+  FIT // Apto
+  UNFIT // No Apto
+  PENDING // Pendiente
+}
+
+model ProspectInteraction {
+  id         String   @id @default(cuid())
+  prospectId String
+  prospect   Prospect @relation(fields: [prospectId], references: [id])
+  type       String // llamada, correo, entrevista, nota
+  summary    String
+  author     String
+  date       DateTime @default(now())
+}
+
+// ── M2: MATRÍCULA (Enrollment) ────────────────────────────────────────────────
+
+model Guardian {
+  id         String    @id @default(cuid())
+  dni        String    @unique
+  name       String
+  phone      String
+  email      String?
+  occupation String?
+  students   Student[]
+}
+
+model Student {
+  id          String           @id @default(cuid())
+  code        String?          @unique
+  firstName   String
+  lastName    String
+  dni         String           @unique
+  level       EducationalLevel
+  grade       String
+  sectionId   String?
+  section     Section?         @relation(fields: [sectionId], references: [id])
+  guardianId  String
+  guardian    Guardian         @relation(fields: [guardianId], references: [id])
+  enrollments Enrollment[]
+  charges     Charge[]
+  createdAt   DateTime         @default(now())
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
+  year      Int
+  date      DateTime @default(now())
+  status    String // activa, retirada, etc.
+  pdfUrl    String? // URL a la Ficha de Matrícula PDF
+}
+
+// ── M3: GESTIÓN ACADÉMICA (Academic Management) ───────────────────────────────
+
+model Section {
+  id        String           @id @default(cuid())
+  name      String // A, B, C
+  grade     String
+  level     EducationalLevel
+  capacity  Int // Aforo máximo
+  status    String           @default("OPEN") // OPEN, CLOSED
+  students  Student[]
+  schedules Schedule[]
+}
+
+model Course {
+  id          String     @id @default(cuid())
+  name        String
+  description String?
+  schedules   Schedule[]
+}
+
+model Schedule {
+  id        String       @id @default(cuid())
+  sectionId String
+  section   Section      @relation(fields: [sectionId], references: [id])
+  courseId  String
+  course    Course       @relation(fields: [courseId], references: [id])
+  staffId   String
+  staff     StaffProfile @relation(fields: [staffId], references: [id])
+  day       Int // 1-7 (Lunes-Domingo)
+  startTime String // HH:mm
+  endTime   String // HH:mm
+}
+
+model Communication {
+  id        String    @id @default(cuid())
+  title     String
+  content   String
+  category  String // Urgente, Evento, Informativo
+  isVisible Boolean   @default(true)
+  expiresAt DateTime? // Fecha de caducidad
+  createdAt DateTime  @default(now())
+}
+
+// ── M4: TESORERÍA (Treasury) ──────────────────────────────────────────────────
+
+model Tariff {
+  id      String           @id @default(cuid())
+  concept String // Pensión, Matrícula, etc.
+  amount  Float
+  type    TariffType       @default(MONTHLY)
+  level   EducationalLevel
+  charges Charge[]
+}
+
+enum TariffType {
+  ONE_TIME
+  MONTHLY
+  EXTRA
+}
+
+model Charge {
+  id             String    @id @default(cuid())
+  studentId      String
+  student        Student   @relation(fields: [studentId], references: [id])
+  tariffId       String
+  tariff         Tariff    @relation(fields: [tariffId], references: [id])
+  originalAmount Float
+  pendingAmount  Float
+  dueDate        DateTime?
+  status         String    @default("PENDING") // PAID, PARTIAL, PENDING
+  payments       Payment[]
+}
+
+model Payment {
+  id          String        @id @default(cuid())
+  chargeId    String
+  charge      Charge        @relation(fields: [chargeId], references: [id])
+  studentId   String
+  totalAmount Float
+  method      PaymentMethod @default(CASH)
+  timestamp   DateTime      @default(now())
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+}
+
+// ── M5: PERSONAL Y ASISTENCIA (Staff & Attendance) ───────────────────────────
+
+model StaffProfile {
+  id          String             @id @default(cuid())
+  userId      String             @unique
+  user        User               @relation(fields: [userId], references: [id])
+  specialty   String // Especialidad del docente o administrativo
+  cvUrl       String?
+  entryTime   String             @default("08:00")
+  exitTime    String             @default("16:00")
+  gracePeriod Int                @default(5) // Minutos de gracia
+  attendance  AttendanceRecord[]
+  schedules   Schedule[]
+}
+
+model AttendanceRecord {
+  id           String       @id @default(cuid())
+  staffId      String
+  staff        StaffProfile @relation(fields: [staffId], references: [id])
+  type         String // entry, exit
+  timestamp    DateTime     @default(now())
+  method       String       @default("FACIAL")
+  delayMinutes Int          @default(0) // Minutos de tardanza
+  fineAmount   Float        @default(0.0)
+}
+
+model AttendanceRule {
+  id                 String @id @default(cuid())
+  gracePeriodMinutes Int    @default(5)
+  finePerMinute      Float  @default(0.5)
+}
