@@ -1,13 +1,19 @@
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
-import { UserService } from '../../application/services/user.service';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Role } from '@prisma/client';
+import { UserEntity } from '../../domain/entities/user.entity';
+import { CreateUserCommand } from '../../application/use-cases/user/commands/create-user.command';
+import { GetUserByEmailQuery } from '../../application/use-cases/user/queries/get-user-by-email.query';
 import 'dotenv/config';
 
 @Injectable()
 export class SeedService implements OnApplicationBootstrap {
   private readonly logger = new Logger(SeedService.name);
 
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
   async onApplicationBootstrap() {
     this.logger.log('🚀 Iniciando inicialización de usuarios base...');
@@ -38,7 +44,7 @@ export class SeedService implements OnApplicationBootstrap {
 
   private async tryFindUserByEmail(email: string) {
     try {
-      return await this.userService.getUserByEmail(email);
+      return await this.queryBus.execute(new GetUserByEmailQuery(email));
     } catch {
       return null;
     }
@@ -49,12 +55,13 @@ export class SeedService implements OnApplicationBootstrap {
 
     if (!existingUser) {
       this.logger.log(`👤 Creando usuario para el rol ${role}: ${email}`);
-      await this.userService.createUser({
+      const entity = new UserEntity({
         email,
-        password, // In a real app, this would be hashed
+        emailVerified: true,
         role,
         name: `Default ${role.charAt(0) + role.slice(1).toLowerCase()}`,
       });
+      await this.commandBus.execute(new CreateUserCommand(entity, password));
     } else {
       this.logger.log(`✅ Usuario ${role} ya existe: ${email}`);
     }

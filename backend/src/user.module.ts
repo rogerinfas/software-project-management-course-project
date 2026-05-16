@@ -1,21 +1,25 @@
 import { Module } from '@nestjs/common';
-import { UserController } from './presentation/controllers/user.controller';
-import { UserService } from './application/services/user.service';
+import { CqrsModule } from '@nestjs/cqrs';
+import { UserController } from './presentation/controllers/user/user.controller';
 import { PrismaUserRepository } from './infrastructure/persistence/prisma/repositories/prisma-user.repository';
 import { PrismaService } from './infrastructure/persistence/prisma/prisma.service';
 import { SeedService } from './infrastructure/seed/seed.service';
+import { CommandHandlers } from './application/use-cases/user/commands';
+import { QueryHandlers } from './application/use-cases/user/queries';
 
 @Module({
+  imports: [CqrsModule],
   controllers: [UserController],
   providers: [
-    UserService,
     PrismaService,
     SeedService,
     {
       provide: 'IUserRepository',
       useClass: PrismaUserRepository,
     },
+    ...CommandHandlers,
+    ...QueryHandlers,
   ],
-  exports: [UserService],
+  exports: [CqrsModule],
 })
 export class UserModule {}
