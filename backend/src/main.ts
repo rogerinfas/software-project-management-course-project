@@ -1,6 +1,11 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import {
+  Logger,
+  ValidationPipe,
+  ClassSerializerInterceptor,
+} from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 
@@ -20,6 +25,17 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+
+  const config = new DocumentBuilder()
+    .setTitle('School Management API')
+    .setDescription('The API description')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
 
   app.enableCors({
     origin: [process.env.WEB_URL || 'http://localhost:3000'],
