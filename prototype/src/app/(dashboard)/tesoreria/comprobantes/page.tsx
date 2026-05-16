@@ -26,12 +26,12 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoData } from "@/context/demo-data-context";
-import type { Receipt } from "@/lib/mock/types";
+import type { InternalReceipt } from "@/lib/mock/types";
 import { toast } from "sonner";
 
 export default function ComprobantesPage() {
   const { receipts, morosity, collection } = useDemoData();
-  const [selectedReceipt, setSelectedReceipt] = React.useState<Receipt | null>(null);
+  const [selectedReceipt, setSelectedReceipt] = React.useState<InternalReceipt | null>(null);
 
   const handleRemind = (parent: string) => {
     toast.success(`Recordatorio enviado a ${parent} vía WhatsApp.`);
@@ -232,7 +232,7 @@ export default function ComprobantesPage() {
               </div>
               <div className="text-right">
                 <p className="text-muted-foreground font-bold uppercase tracking-wider mb-1">Fecha de emisión:</p>
-                <p className="font-semibold text-black">{new Date(selectedReceipt?.emitidoEn).toLocaleDateString()}</p>
+                <p className="font-semibold text-black">{selectedReceipt?.emitidoEn ? new Date(selectedReceipt.emitidoEn).toLocaleDateString() : ""}</p>
               </div>
             </div>
 

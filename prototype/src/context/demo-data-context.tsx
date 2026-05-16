@@ -71,6 +71,9 @@ import type {
   SanctionRule,
   ScheduleSlot,
   Section,
+  StaffMember,
+  TariffConcept,
+  DiscountRule,
   TeachingAssignment,
 } from "@/lib/mock/types";
 

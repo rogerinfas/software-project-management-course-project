@@ -29,13 +29,13 @@ export default function ReglasPage() {
   const { sanctionRules, toggleSanctionRule, updateSanctionRule } = useDemoData();
 
   const handleUpdate = (id: string, monto: string) => {
-    updateSanctionRule(id, { montoPorMinuto: Number(monto) });
+    updateSanctionRule(id, { multaPorMinuto: Number(monto) });
   };
 
   const calcularMultaPorMinutos = (minutos: number, rules: SanctionRule[]) => {
     const activa = rules.find((r) => r.activa);
     if (!activa) return 0;
-    return minutos * activa.montoPorMinuto;
+    return minutos * activa.multaPorMinuto;
   };
 
   const ESCENARIOS = [5, 15, 30, 60];
@@ -81,7 +81,7 @@ export default function ReglasPage() {
                         )}
                       </div>
                       <p className="text-[11px] text-muted-foreground">
-                        Sanción: S/ {rule.montoPorMinuto.toFixed(2)} por cada minuto de tardanza.
+                        Sanción: S/ {rule.multaPorMinuto.toFixed(2)} por cada minuto de tardanza.
                       </p>
                     </div>
                     <div className="flex items-center gap-4">
@@ -91,7 +91,7 @@ export default function ReglasPage() {
                           type="number"
                           step="0.1"
                           className="w-20 h-8 text-xs font-mono"
-                          defaultValue={rule.montoPorMinuto}
+                          defaultValue={rule.multaPorMinuto}
                           onBlur={(e) => handleUpdate(rule.id, e.target.value)}
                         />
                       </div>

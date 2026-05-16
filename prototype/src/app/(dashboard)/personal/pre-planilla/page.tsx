@@ -36,7 +36,7 @@ export default function PrePlanillaPage() {
     }, 1500);
   };
 
-  const totalDescuentos = prePayroll.reduce((acc, curr) => acc + curr.totalMulta, 0);
+  const totalDescuentos = prePayroll.reduce((acc, curr) => acc + curr.descuentoMulta, 0);
 
   return (
     <div className="space-y-6">
@@ -112,29 +112,41 @@ export default function PrePlanillaPage() {
               <TableRow>
                 <TableHead>Personal</TableHead>
                 <TableHead>DNI</TableHead>
+                <TableHead className="text-right">Horas Efec.</TableHead>
                 <TableHead className="text-right">Tardanza Total</TableHead>
                 <TableHead className="text-right">Monto a Descontar</TableHead>
+                <TableHead className="text-right">Sueldo Neto</TableHead>
                 <TableHead className="text-right">Estado</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {prePayroll.map((item) => {
                 const person = staff.find((s) => s.id === item.staffId);
+                const pctNeto = Math.round((item.neto / item.sueldoBase) * 100);
                 return (
                   <TableRow key={item.staffId}>
                     <TableCell className="font-medium text-xs">
                       {person ? `${person.apellidos}, ${person.nombres}` : item.staffId}
                     </TableCell>
-                    <TableCell className="font-mono text-xs">{person?.dni}</TableCell>
+                    <TableCell className="font-mono text-[10px] text-muted-foreground">{person?.dni}</TableCell>
+                    <TableCell className="text-right font-mono text-xs font-bold">{item.horasEfectivas}h</TableCell>
                     <TableCell className="text-right tabular-nums text-xs font-bold text-orange-600">
                       {item.minutosTardanza} min
                     </TableCell>
-                    <TableCell className="text-right tabular-nums text-xs font-black text-destructive">
-                      S/ {item.totalMulta.toFixed(2)}
+                    <TableCell className="text-right tabular-nums text-xs font-bold text-destructive">
+                      - S/ {item.descuentoMulta.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Badge variant={item.totalMulta > 50 ? "destructive" : "outline"} className="text-[9px] uppercase">
-                        {item.totalMulta > 50 ? "Alerta Grave" : "Proyectado"}
+                       <div className="flex flex-col items-end gap-1">
+                          <span className="font-black text-xs tabular-nums text-primary">S/ {item.neto.toFixed(2)}</span>
+                          <div className="h-1 w-20 bg-muted rounded-full overflow-hidden">
+                             <div className="h-full bg-primary" style={{ width: `${pctNeto}%` }} />
+                          </div>
+                       </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge variant={item.descuentoMulta > 50 ? "destructive" : "outline"} className="text-[9px] uppercase">
+                        {item.descuentoMulta > 50 ? "Alerta Grave" : "Proyectado"}
                       </Badge>
                     </TableCell>
                   </TableRow>

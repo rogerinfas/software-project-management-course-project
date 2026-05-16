@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Edit2, Trash2, Tag, Percent } from "lucide-react";
+import { Plus, Edit2, Trash2, Tag, Percent, Users } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,6 +47,8 @@ export default function TarifarioPage() {
   const {
     tariffConcepts,
     discounts,
+    students,
+    sections,
     addTariffConcept,
     updateTariffConcept,
     deleteTariffConcept,
@@ -59,8 +61,8 @@ export default function TarifarioPage() {
   const [conceptOpen, setConceptOpen] = React.useState(false);
   const [cId, setCId] = React.useState<string | null>(null);
   const [cNombre, setCNombre] = React.useState("");
-  const [cTipo, setCTipo] = React.useState<TariffType>("unico");
-  const [cNivel, setCNivel] = React.useState<NivelEducativo>("primaria");
+  const [cTipo, setCTipo] = React.useState<TariffType>("mensual");
+  const [cNivel, setCNivel] = React.useState<NivelEducativo | "todos">("todos");
   const [cMonto, setCMonto] = React.useState("0");
 
   const handleSaveConcept = () => {
@@ -228,24 +230,38 @@ export default function TarifarioPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {tariffConcepts.map((c) => (
-                    <TableRow key={c.id}>
-                      <TableCell className="font-medium">{c.nombre}</TableCell>
-                      <TableCell><Badge variant="secondary">{TIPO_LABEL[c.tipo]}</Badge></TableCell>
-                      <TableCell className="capitalize">{c.aplicaNivel}</TableCell>
-                      <TableCell className="text-right font-mono">S/ {c.montoBase.toFixed(2)}</TableCell>
-                      <TableCell className="text-right space-x-1">
-                        <Button variant="ghost" size="icon-xs" onClick={() => {
-                          setCId(c.id); setCNombre(c.nombre); setCTipo(c.tipo); setCNivel(c.aplicaNivel); setCMonto(c.montoBase.toString()); setConceptOpen(true);
-                        }}>
-                          <Edit2 className="size-3" />
-                        </Button>
-                        <Button variant="ghost" size="icon-xs" className="text-destructive" onClick={() => { if(confirm("¿Eliminar concepto?")) deleteTariffConcept(c.id); }}>
-                          <Trash2 className="size-3" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {tariffConcepts.map((c) => {
+                    const count = students.filter(s => {
+                      if (!s.sectionId) return false;
+                      const sec = sections.find(x => x.id === s.sectionId);
+                      return sec?.nivel === c.aplicaNivel;
+                    }).length;
+                    return (
+                      <TableRow key={c.id}>
+                        <TableCell className="py-3">
+                          <div className="flex flex-col gap-0.5">
+                            <span className="font-bold text-xs">{c.nombre}</span>
+                            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                              <Users className="size-2.5" /> {count} alumnos alcanzados
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell><Badge variant="secondary" className="text-[9px] uppercase h-4">{TIPO_LABEL[c.tipo]}</Badge></TableCell>
+                        <TableCell className="capitalize text-xs">{c.aplicaNivel}</TableCell>
+                        <TableCell className="text-right font-mono font-bold text-xs">S/ {c.montoBase.toFixed(2)}</TableCell>
+                        <TableCell className="text-right space-x-1">
+                          <Button variant="ghost" size="icon-xs" onClick={() => {
+                            setCId(c.id); setCNombre(c.nombre); setCTipo(c.tipo); setCNivel(c.aplicaNivel); setCMonto(c.montoBase.toString()); setConceptOpen(true);
+                          }}>
+                            <Edit2 className="size-3" />
+                          </Button>
+                          <Button variant="ghost" size="icon-xs" className="text-destructive" onClick={() => { if(confirm("¿Eliminar concepto?")) deleteTariffConcept(c.id); }}>
+                            <Trash2 className="size-3" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>

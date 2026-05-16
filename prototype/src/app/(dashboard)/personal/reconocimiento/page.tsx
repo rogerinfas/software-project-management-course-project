@@ -89,28 +89,51 @@ export default function ReconocimientoPage() {
               <div className="relative aspect-video rounded-2xl bg-black overflow-hidden flex items-center justify-center border-4 border-muted">
                 {scanning && (
                   <div className="absolute inset-0 z-10 pointer-events-none">
-                    <div className="absolute inset-x-4 top-0 h-1 bg-primary shadow-[0_0_15px_rgba(59,130,246,0.8)] animate-[scan_2s_infinite_ease-in-out]" />
-                    <div className="absolute inset-0 bg-primary/5" />
+                    {/* Scanning Line */}
+                    <div className="absolute inset-x-0 top-0 h-0.5 bg-primary/80 shadow-[0_0_15px_rgba(59,130,246,1)] animate-[scan_2.5s_infinite_ease-in-out]" />
+                    
+                    {/* HUD Frame */}
+                    <div className="absolute inset-10 border-2 border-white/20 rounded-3xl">
+                      <div className="absolute top-0 left-0 size-8 border-t-4 border-l-4 border-primary rounded-tl-xl" />
+                      <div className="absolute top-0 right-0 size-8 border-t-4 border-r-4 border-primary rounded-tr-xl" />
+                      <div className="absolute bottom-0 left-0 size-8 border-b-4 border-l-4 border-primary rounded-bl-xl" />
+                      <div className="absolute bottom-0 right-0 size-8 border-b-4 border-r-4 border-primary rounded-br-xl" />
+                      
+                      {/* Biometric Points Simulation */}
+                      <div className="absolute top-1/4 left-1/3 size-1 bg-primary rounded-full animate-pulse shadow-[0_0_8px_white]" />
+                      <div className="absolute top-1/4 right-1/3 size-1 bg-primary rounded-full animate-pulse delay-75 shadow-[0_0_8px_white]" />
+                      <div className="absolute top-1/2 left-1/2 size-1 bg-primary rounded-full animate-pulse delay-150 shadow-[0_0_8px_white]" />
+                    </div>
+                    <div className="absolute inset-0 bg-primary/5 backdrop-blur-[1px]" />
                   </div>
                 )}
                 
                 {scanResult ? (
-                  <div className="z-20 flex flex-col items-center animate-in zoom-in duration-300">
-                    <div className="size-20 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/40">
-                      <ShieldCheck className="size-12 text-white" />
+                  <div className="z-20 flex flex-col items-center animate-in zoom-in duration-500">
+                    <div className="size-24 bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.6)] border-4 border-white/50">
+                      <ShieldCheck className="size-14 text-white" />
                     </div>
-                    <p className="text-white font-bold mt-4 text-lg">IDENTIFICADO</p>
-                    <p className="text-green-400 text-xs font-mono">Confianza: 98.4%</p>
+                    <div className="mt-4 text-center">
+                      <p className="text-white font-black text-xl tracking-tighter uppercase drop-shadow-lg">ACCESO CONCEDIDO</p>
+                      <div className="flex items-center justify-center gap-2 mt-1">
+                        <Badge className="bg-green-600/90 text-white border-none text-[10px]">99.8% MATCH</Badge>
+                        <span className="text-white/70 text-[10px] font-mono">LATENCY: 12ms</span>
+                      </div>
+                    </div>
                   </div>
                 ) : scanning ? (
-                  <div className="z-20 text-center">
-                    <div className="size-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                    <p className="text-white text-xs font-bold tracking-widest uppercase">Escaneando...</p>
+                  <div className="z-20 text-center space-y-3">
+                    <div className="flex gap-1 justify-center">
+                      <div className="size-1.5 bg-primary rounded-full animate-bounce" />
+                      <div className="size-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.2s]" />
+                      <div className="size-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.4s]" />
+                    </div>
+                    <p className="text-white text-[10px] font-black tracking-[0.2em] uppercase drop-shadow-md">Analizando Biometría...</p>
                   </div>
                 ) : (
-                  <div className="text-center opacity-40 group hover:opacity-100 transition-opacity">
-                    <User className="size-24 text-white mx-auto mb-2" />
-                    <p className="text-white text-[10px] font-bold tracking-tighter uppercase">Esperando detección</p>
+                  <div className="text-center opacity-40 group-hover:opacity-80 transition-all duration-500 transform group-hover:scale-110">
+                    <User className="size-28 text-white mx-auto mb-2 drop-shadow-2xl" />
+                    <p className="text-white text-[10px] font-black tracking-widest uppercase">POSICIONE EL ROSTRO</p>
                   </div>
                 )}
 

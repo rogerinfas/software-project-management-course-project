@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Search, Wallet, AlertCircle, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Search, Wallet, AlertCircle, TrendingUp, CheckCircle2, Banknote, CreditCard, ArrowUpRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ const ESTADO_VARIANT: Record<string, "outline" | "default" | "secondary"> = {
 export default function CobranzasPage() {
   const {
     students,
+    sections,
     charges,
     payments,
     generateMassPensionDebt,
@@ -55,24 +56,62 @@ export default function CobranzasPage() {
 
   const totalDeuda = studentCharges
     .filter((c) => c.status !== "pagado")
-    .reduce((acc, curr) => acc + (curr.montoTotal - curr.montoPagado), 0);
+    .reduce((acc, curr) => acc + curr.montoPendiente, 0);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold">D-2 · Cobranzas</h1>
-          <p className="text-muted-foreground text-sm">
-            Gestión de pagos manuales y estados de cuenta por alumno.
-          </p>
-        </div>
-        <div className="flex items-center gap-4 bg-muted/30 p-2 rounded-lg border">
-          <div className="text-right">
-            <p className="text-[10px] uppercase font-bold text-muted-foreground">Recaudación Mayo</p>
-            <p className="text-lg font-mono font-bold text-primary">S/ 42,500.00</p>
-          </div>
-          <TrendingUp className="size-8 text-primary opacity-20" />
-        </div>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-black tracking-tight">D-2 · Cobranzas</h1>
+        <p className="text-muted-foreground text-sm">
+          Gestión de pagos manuales y estados de cuenta por alumno con aplicación por prelación.
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Recaudación Total (Mayo)</CardTitle>
+            <TrendingUp className="size-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-black tabular-nums">S/ 42,500.00</div>
+            <div className="mt-1 flex items-center gap-1 text-[10px] text-green-600 font-bold">
+              +12% <span className="text-muted-foreground font-normal">vs mes anterior</span>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Meta Mensual</CardTitle>
+            <CheckCircle2 className="size-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-black tabular-nums">85%</div>
+            <div className="mt-2 h-1.5 w-full bg-muted rounded-full overflow-hidden">
+               <div className="h-full bg-blue-500" style={{ width: '85%' }} />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Deuda Corriente</CardTitle>
+            <AlertCircle className="size-4 text-destructive" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-black tabular-nums text-destructive">S/ 8,420.00</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Vencido hace más de 15 días</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Transacciones Hoy</CardTitle>
+            <Wallet className="size-4 text-orange-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-black tabular-nums">14</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Última hace 12 minutos</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Tabs defaultValue="ventanilla">
@@ -98,11 +137,14 @@ export default function CobranzasPage() {
                     value={studentId}
                     onChange={(e) => setStudentId(e.target.value)}
                   >
-                    {students.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.apellidos}, {s.nombres} ({s.grado})
-                      </option>
-                    ))}
+                    {students.map((s) => {
+                      const section = sections.find(sec => sec.id === s.sectionId);
+                      return (
+                        <option key={s.id} value={s.id}>
+                          {s.apellidos}, {s.nombres} {section ? `(${section.grado} ${section.seccion})` : ""}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
                 {currentStudent && (
@@ -152,9 +194,9 @@ export default function CobranzasPage() {
                           <TableRow key={c.id}>
                             <TableCell className="font-medium text-xs">{c.concepto}</TableCell>
                             <TableCell className="text-xs text-muted-foreground">{c.fechaVencimiento || "—"}</TableCell>
-                            <TableCell className="text-right tabular-nums text-xs">S/ {c.montoTotal.toFixed(2)}</TableCell>
+                            <TableCell className="text-right tabular-nums text-xs">S/ {c.montoOriginal.toFixed(2)}</TableCell>
                             <TableCell className="text-right tabular-nums text-xs font-bold">
-                              S/ {(c.montoTotal - c.montoPagado).toFixed(2)}
+                              S/ {c.montoPendiente.toFixed(2)}
                             </TableCell>
                             <TableCell className="text-right">
                               <Badge variant={ESTADO_VARIANT[c.status]} className="text-[10px] uppercase">
@@ -224,13 +266,20 @@ export default function CobranzasPage() {
                       <TableBody>
                         {studentPayments.map((p) => (
                           <TableRow key={p.id}>
-                            <TableCell className="text-xs">{new Date(p.fecha).toLocaleDateString()}</TableCell>
-                            <TableCell className="capitalize text-xs">{p.metodo}</TableCell>
+                            <TableCell className="text-xs">{new Date(p.fechaHora).toLocaleDateString()}</TableCell>
+                            <TableCell>
+                               <div className="flex items-center gap-1.5 capitalize text-xs">
+                                  {p.metodo === 'efectivo' && <Banknote className="size-3 text-green-600" />}
+                                  {p.metodo === 'tarjeta' && <CreditCard className="size-3 text-blue-600" />}
+                                  {p.metodo === 'transferencia' && <ArrowUpRight className="size-3 text-orange-600" />}
+                                  {p.metodo}
+                               </div>
+                            </TableCell>
                             <TableCell className="text-right tabular-nums text-xs font-bold text-green-600">
-                              S/ {p.monto.toFixed(2)}
+                              S/ {p.montoTotal.toFixed(2)}
                             </TableCell>
                             <TableCell className="text-right font-mono text-[10px] text-muted-foreground">
-                              #{p.id.split('_')[1] || p.id}
+                              #{p.id.split('-')[1] || p.id}
                             </TableCell>
                           </TableRow>
                         ))}

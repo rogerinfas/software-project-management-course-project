@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, Edit2, Trash2, UserCog, Clock, Briefcase } from "lucide-react";
+import { Plus, Edit2, Trash2, UserCog, Clock, Briefcase, Users } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDemoData } from "@/context/demo-data-context";
-import type { StaffMember } from "@/lib/mock/types";
+import type { StaffMember, StaffRole } from "@/lib/mock/types";
 
 export default function RrhhPage() {
   const { staff, addStaffMember, updateStaffMember, deleteStaffMember } = useDemoData();
@@ -43,7 +43,7 @@ export default function RrhhPage() {
   const [nombres, setNombres] = React.useState("");
   const [apellidos, setApellidos] = React.useState("");
   const [dni, setDni] = React.useState("");
-  const [rol, setRol] = React.useState<"docente" | "administrativo">("docente");
+  const [rol, setRol] = React.useState<StaffRole>("docente");
   const [especialidad, setEspecialidad] = React.useState("");
   const [hEntrada, setHEntrada] = React.useState("08:00");
   const [hSalida, setHSalida] = React.useState("16:00");
@@ -59,6 +59,7 @@ export default function RrhhPage() {
       horaEntrada: hEntrada,
       horaSalida: hSalida,
       toleranciaMinutos: Number(tolerancia),
+      fotoReferencia: "/placeholder-avatar.png"
     };
     if (editingId) updateStaffMember(editingId, data);
     else addStaffMember(data);
@@ -161,38 +162,45 @@ export default function RrhhPage() {
         </Dialog>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card className="bg-primary/5 border-primary/10">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Briefcase className="size-4 text-primary" /> Total Staff
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Colaboradores</CardTitle>
+            <Users className="size-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{staff.length}</div>
-            <p className="text-[10px] text-muted-foreground mt-1">Colaboradores activos</p>
+            <div className="text-2xl font-black tabular-nums">{staff.length}</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Total activos en planilla</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <UserCog className="size-4 text-orange-500" /> Docentes
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Plana Docente</CardTitle>
+            <UserCog className="size-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{staff.filter(s => s.rol === 'docente').length}</div>
-            <p className="text-[10px] text-muted-foreground mt-1">Plana académica</p>
+            <div className="text-2xl font-black tabular-nums">{staff.filter(s => s.rol === 'docente').length}</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Especialistas académicos</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Clock className="size-4 text-blue-500" /> Administrativos
-            </CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Administrativos</CardTitle>
+            <Briefcase className="size-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{staff.filter(s => s.rol === 'administrativo').length}</div>
-            <p className="text-[10px] text-muted-foreground mt-1">Gestión y soporte</p>
+            <div className="text-2xl font-black tabular-nums">{staff.filter(s => s.rol === 'administrativo').length}</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Gestión y soporte institucional</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Jornada Promedio</CardTitle>
+            <Clock className="size-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-black tabular-nums">8.5h</div>
+            <p className="text-[10px] text-muted-foreground mt-1">Horas laboradas por día</p>
           </CardContent>
         </Card>
       </div>
