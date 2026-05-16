@@ -31,6 +31,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDemoData } from "@/context/demo-data-context";
 
 export default function ApoderadosPage() {
@@ -133,17 +140,18 @@ export default function ApoderadosPage() {
             <div className="grid gap-3 py-2 sm:grid-cols-2">
               <div className="col-span-2 grid gap-2">
                 <Label>Alumno</Label>
-                <select
-                  className="border-input bg-background h-8 rounded-lg border px-2 text-sm"
-                  value={nStudentId}
-                  onChange={(e) => setNStudentId(e.target.value)}
-                >
-                  {students.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.nombres} {s.apellidos} ({s.codigo ?? "sin código"})
-                    </option>
-                  ))}
-                </select>
+                <Select value={nStudentId} onValueChange={(v) => setNStudentId(v || "")}>
+                  <SelectTrigger className="h-8">
+                    <SelectValue placeholder="Seleccionar alumno" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {students.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.nombres} {s.apellidos} ({s.codigo ?? "sin código"})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="col-span-2 grid gap-2">
                 <Label>Nombre completo</Label>
@@ -155,15 +163,16 @@ export default function ApoderadosPage() {
               </div>
               <div className="grid gap-2">
                 <Label>Parentesco</Label>
-                <select
-                  className="border-input bg-background h-8 rounded-lg border px-2 text-sm"
-                  value={nParentesco}
-                  onChange={(e) => setNParentesco(e.target.value)}
-                >
-                  {["Padre", "Madre", "Abuelo/a", "Tío/a", "Tutor legal"].map((p) => (
-                    <option key={p}>{p}</option>
-                  ))}
-                </select>
+                <Select value={nParentesco} onValueChange={(v) => setNParentesco(v || "")}>
+                  <SelectTrigger className="h-8">
+                    <SelectValue placeholder="Parentesco" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["Padre", "Madre", "Abuelo/a", "Tío/a", "Tutor legal"].map((p) => (
+                      <SelectItem key={p} value={p}>{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label>Teléfono</Label>
@@ -233,18 +242,19 @@ export default function ApoderadosPage() {
                 Filtra por alumno y edita datos de contacto directamente.
               </CardDescription>
             </div>
-            <select
-              className="border-input bg-background h-8 rounded-lg border px-2 text-sm"
-              value={filtroStudent}
-              onChange={(e) => setFiltroStudent(e.target.value)}
-            >
-              <option value="todos">Todos los alumnos</option>
-              {students.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.nombres} {s.apellidos}
-                </option>
-              ))}
-            </select>
+            <Select value={filtroStudent} onValueChange={(v) => setFiltroStudent(v || "")}>
+              <SelectTrigger className="h-8 w-[200px]">
+                <SelectValue placeholder="Filtrar por alumno" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos los alumnos</SelectItem>
+                {students.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.nombres} {s.apellidos}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardHeader>
         <CardContent>

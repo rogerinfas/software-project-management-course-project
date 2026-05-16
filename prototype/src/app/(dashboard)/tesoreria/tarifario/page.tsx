@@ -32,6 +32,13 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDemoData } from "@/context/demo-data-context";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type {
   NivelEducativo,
   TariffType,
@@ -150,18 +157,29 @@ export default function TarifarioPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                       <Label>Tipo</Label>
-                      <select className="border-input h-9 rounded-lg border px-2 text-sm" value={cTipo} onChange={(e) => setCTipo(e.target.value as TariffType)}>
-                        <option value="unico">Único</option>
-                        <option value="mensual">Mensual</option>
-                        <option value="extra">Extra</option>
-                      </select>
+                      <Select value={cTipo} onValueChange={(v) => setCTipo(v as TariffType)}>
+                        <SelectTrigger className="h-9">
+                          <SelectValue placeholder="Tipo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="unico">Único</SelectItem>
+                          <SelectItem value="mensual">Mensual</SelectItem>
+                          <SelectItem value="extra">Extra</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="grid gap-2">
                       <Label>Nivel</Label>
-                      <select className="border-input h-9 rounded-lg border px-2 text-sm" value={cNivel} onChange={(e) => setCNivel(e.target.value as NivelEducativo)}>
-                        <option value="inicial">Inicial</option>
-                        <option value="primaria">Primaria</option>
-                      </select>
+                      <Select value={cNivel} onValueChange={(v) => setCNivel(v as NivelEducativo | "todos")}>
+                        <SelectTrigger className="h-9">
+                          <SelectValue placeholder="Nivel" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="todos">Todos</SelectItem>
+                          <SelectItem value="inicial">Inicial</SelectItem>
+                          <SelectItem value="primaria">Primaria</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <div className="grid gap-2">

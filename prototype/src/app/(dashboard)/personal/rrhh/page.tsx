@@ -30,6 +30,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDemoData } from "@/context/demo-data-context";
 import type { StaffMember, StaffRole } from "@/lib/mock/types";
 
@@ -129,10 +136,15 @@ export default function RrhhPage() {
                 </div>
                 <div className="grid gap-2">
                   <Label>Rol</Label>
-                  <select className="border-input h-9 rounded-lg border px-2 text-sm" value={rol} onChange={(e) => setRol(e.target.value as "docente" | "administrativo")}>
-                    <option value="docente">Docente</option>
-                    <option value="administrativo">Administrativo</option>
-                  </select>
+                  <Select value={rol} onValueChange={(v) => setRol(v as "docente" | "administrativo")}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue placeholder="Seleccionar rol" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="docente">Docente</SelectItem>
+                      <SelectItem value="administrativo">Administrativo</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="grid gap-2">
