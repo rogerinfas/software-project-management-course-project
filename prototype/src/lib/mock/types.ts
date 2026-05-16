@@ -235,10 +235,12 @@ export interface BulletinPost {
 // MÓDULO 4 — Tesorería
 // ============================================================================
 
+export type TariffType = "unico" | "mensual" | "extra";
+
 export interface TariffConcept {
   id: string;
   nombre: string;
-  tipo: "unico" | "mensual" | "extra";
+  tipo: TariffType;
   meses?: string[];
   montoBase: number;
   aplicaNivel: NivelEducativo | "todos";
