@@ -1,6 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { IUserRepository } from '../../domain/repositories/user.repository.interface';
 import { UserEntity } from '../../domain/entities/user.entity';
+import { auth } from '../../infrastructure/config/better-auth/better-auth.config';
 
 @Injectable()
 export class UserService {
@@ -10,8 +11,20 @@ export class UserService {
   ) {}
 
   async createUser(data: Partial<UserEntity>): Promise<UserEntity> {
-    // Business logic like checking if email exists, hashing password, etc.
-    return this.userRepository.create(data);
+    const betterAuthUser = await auth.api.signUpEmail({
+      body: {
+        email: data.email!,
+        password: data.password!,
+        name: data.name || '',
+        role: data.role,
+      },
+    });
+
+    if (!betterAuthUser || !betterAuthUser.user) {
+      throw new Error('Error al crear el usuario en Better Auth');
+    }
+
+    return new UserEntity(betterAuthUser.user as UserEntity);
   }
 
   async getAllUsers(): Promise<UserEntity[]> {

@@ -9,12 +9,15 @@ export class PrismaUserRepository implements IUserRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(user: Partial<UserEntity>): Promise<UserEntity> {
+    // Better Auth normally handles user creation with password.
+    // This is a fallback or for system users without auth accounts.
     const created = await this.prisma.user.create({
       data: {
         email: user.email!,
-        password: user.password || 'temporary_password',
         name: user.name,
         role: (user.role as Role) || Role.ADMIN,
+        emailVerified: user.emailVerified || false,
+        image: user.image,
       },
     });
     return new UserEntity(created);
@@ -40,9 +43,11 @@ export class PrismaUserRepository implements IUserRepository {
       where: { id },
       data: {
         email: user.email,
-        password: user.password,
         name: user.name,
         role: user.role as Role,
+        emailVerified: user.emailVerified,
+        image: user.image,
+        deletedAt: user.deletedAt,
       },
     });
     return new UserEntity(updated);
