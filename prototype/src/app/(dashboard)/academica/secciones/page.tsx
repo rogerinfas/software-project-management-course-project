@@ -30,6 +30,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDemoData } from "@/context/demo-data-context";
 
 const SECCIONES_VALIDAS = ["A", "B", "C"];
@@ -85,46 +92,49 @@ export default function SeccionesPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label>Nivel</Label>
-                  <select
-                    className="border-input h-10 rounded-lg border px-2 text-sm capitalize"
-                    value={nivel}
-                    onChange={(e) => setNivel(e.target.value as "inicial" | "primaria")}
-                  >
-                    <option value="inicial">Inicial</option>
-                    <option value="primaria">Primaria</option>
-                  </select>
+                  <Select value={nivel} onValueChange={(v) => setNivel(v as "inicial" | "primaria")}>
+                    <SelectTrigger className="h-10">
+                      <SelectValue placeholder="Nivel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="inicial">Inicial</SelectItem>
+                      <SelectItem value="primaria">Primaria</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label>Grado</Label>
-                  <select
-                    className="border-input h-10 rounded-lg border px-2 text-sm"
-                    value={grado}
-                    onChange={(e) => setGrado(e.target.value)}
-                  >
-                    {nivel === "inicial"
-                      ? ["Inicial 3 años", "Inicial 4 años", "Inicial 5 años"].map((g) => (
-                          <option key={g} value={g}>{g}</option>
-                        ))
-                      : ["1° primaria", "2° primaria", "3° primaria", "4° primaria", "5° primaria", "6° primaria"].map((g) => (
-                          <option key={g} value={g}>{g}</option>
-                        ))}
-                  </select>
+                  <Select value={grado} onValueChange={(v) => setGrado(v || "")}>
+                    <SelectTrigger className="h-10">
+                      <SelectValue placeholder="Grado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {nivel === "inicial"
+                        ? ["Inicial 3 años", "Inicial 4 años", "Inicial 5 años"].map((g) => (
+                            <SelectItem key={g} value={g}>{g}</SelectItem>
+                          ))
+                        : ["1° primaria", "2° primaria", "3° primaria", "4° primaria", "5° primaria", "6° primaria"].map((g) => (
+                            <SelectItem key={g} value={g}>{g}</SelectItem>
+                          ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
                   <Label>Sección</Label>
-                  <select
-                    className="border-input h-10 rounded-lg border px-2 text-sm"
-                    value={seccion}
-                    onChange={(e) => setSeccion(e.target.value)}
-                  >
-                    {SECCIONES_VALIDAS.map((s) => (
-                      <option key={s} value={s}>
-                        Sección {s}
-                      </option>
-                    ))}
-                  </select>
+                  <Select value={seccion} onValueChange={(v) => setSeccion(v || "")}>
+                    <SelectTrigger className="h-10">
+                      <SelectValue placeholder="Sección" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SECCIONES_VALIDAS.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          Sección {s}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label>Capacidad máxima</Label>

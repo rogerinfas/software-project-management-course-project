@@ -23,6 +23,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDemoData } from "@/context/demo-data-context";
 import type { EvaluationAptitud } from "@/lib/mock/types";
 
@@ -147,16 +154,17 @@ export default function EvaluacionAdmisionPage() {
                 Haz clic en &quot;Registrar dictamen&quot; para actualizar el resultado de cada postulante.
               </CardDescription>
             </div>
-            <select
-              className="border-input bg-background h-8 rounded-lg border px-2 text-sm"
-              value={filtro}
-              onChange={(e) => setFiltro(e.target.value as EvaluationAptitud | "todos")}
-            >
-              <option value="todos">Todos</option>
-              <option value="pendiente">Pendientes</option>
-              <option value="apto">Aptos</option>
-              <option value="no_apto">No Aptos</option>
-            </select>
+            <Select value={filtro} onValueChange={(v) => setFiltro(v as EvaluationAptitud | "todos")}>
+              <SelectTrigger className="h-8 w-[140px]">
+                <SelectValue placeholder="Filtrar" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="pendiente">Pendientes</SelectItem>
+                <SelectItem value="apto">Aptos</SelectItem>
+                <SelectItem value="no_apto">No Aptos</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardHeader>
         <CardContent>

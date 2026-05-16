@@ -39,6 +39,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDemoData } from "@/context/demo-data-context";
 import type {
   NivelEducativo,
@@ -328,27 +335,42 @@ export default function PipelinePage() {
               </div>
               <div className="grid gap-2">
                 <Label>Grado postulado</Label>
-                <select className="border-input bg-background h-8 rounded-lg border px-2 text-sm" value={grado} onChange={(e) => setGrado(e.target.value)}>
-                  <option>Inicial 5 años</option>
-                  <option>1° primaria</option>
-                  <option>2° primaria</option>
-                  <option>3° primaria</option>
-                </select>
+                <Select value={grado} onValueChange={(v) => setGrado(v || "")}>
+                  <SelectTrigger className="h-8">
+                    <SelectValue placeholder="Seleccionar grado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Inicial 5 años">Inicial 5 años</SelectItem>
+                    <SelectItem value="1° primaria">1° primaria</SelectItem>
+                    <SelectItem value="2° primaria">2° primaria</SelectItem>
+                    <SelectItem value="3° primaria">3° primaria</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label>Nivel</Label>
-                <select className="border-input bg-background h-8 rounded-lg border px-2 text-sm" value={nivel} onChange={(e) => setNivel(e.target.value as NivelEducativo)}>
-                  <option value="inicial">Inicial</option>
-                  <option value="primaria">Primaria</option>
-                </select>
+                <Select value={nivel} onValueChange={(v) => setNivel(v as NivelEducativo)}>
+                  <SelectTrigger className="h-8">
+                    <SelectValue placeholder="Seleccionar nivel" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="inicial">Inicial</SelectItem>
+                    <SelectItem value="primaria">Primaria</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label>Prioridad</Label>
-                <select className="border-input bg-background h-8 rounded-lg border px-2 text-sm" value={prioridad} onChange={(e) => setPrioridad(e.target.value as ProspectPrioridad)}>
-                  <option value="alta">Alta</option>
-                  <option value="media">Media</option>
-                  <option value="baja">Baja</option>
-                </select>
+                <Select value={prioridad} onValueChange={(v) => setPrioridad(v as ProspectPrioridad)}>
+                  <SelectTrigger className="h-8">
+                    <SelectValue placeholder="Seleccionar prioridad" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alta">Alta</SelectItem>
+                    <SelectItem value="media">Media</SelectItem>
+                    <SelectItem value="baja">Baja</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <DialogFooter>
@@ -460,16 +482,17 @@ export default function PipelinePage() {
               <div className="space-y-3">
                 <div className="grid gap-2">
                   <Label>Tipo</Label>
-                  <select
-                    className="border-input h-8 rounded-lg border px-2 text-sm"
-                    value={tipo}
-                    onChange={(e) => setTipo(e.target.value as ProspectInteraction["tipo"])}
-                  >
-                    <option value="llamada">Llamada</option>
-                    <option value="correo">Correo</option>
-                    <option value="entrevista">Entrevista</option>
-                    <option value="nota">Nota</option>
-                  </select>
+                  <Select value={tipo} onValueChange={(v) => setTipo(v as ProspectInteraction["tipo"])}>
+                    <SelectTrigger className="h-8">
+                      <SelectValue placeholder="Tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="llamada">Llamada</SelectItem>
+                      <SelectItem value="correo">Correo</SelectItem>
+                      <SelectItem value="entrevista">Entrevista</SelectItem>
+                      <SelectItem value="nota">Nota</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="grid gap-2">
                   <Label>Resumen</Label>

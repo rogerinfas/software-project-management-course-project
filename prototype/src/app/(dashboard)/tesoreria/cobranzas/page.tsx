@@ -23,6 +23,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDemoData } from "@/context/demo-data-context";
 import type {
   NivelEducativo,
@@ -132,20 +139,21 @@ export default function CobranzasPage() {
               <CardContent className="space-y-4">
                 <div className="grid gap-2">
                   <Label>Seleccionar estudiante</Label>
-                  <select
-                    className="border-input h-10 rounded-lg border px-3 text-sm"
-                    value={studentId}
-                    onChange={(e) => setStudentId(e.target.value)}
-                  >
-                    {students.map((s) => {
-                      const section = sections.find(sec => sec.id === s.sectionId);
-                      return (
-                        <option key={s.id} value={s.id}>
-                          {s.apellidos}, {s.nombres} {section ? `(${section.grado} ${section.seccion})` : ""}
-                        </option>
-                      );
-                    })}
-                  </select>
+                  <Select value={studentId} onValueChange={(v) => setStudentId(v || "")}>
+                    <SelectTrigger className="h-10">
+                      <SelectValue placeholder="Buscar alumno..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {students.map((s) => {
+                        const section = sections.find(sec => sec.id === s.sectionId);
+                        return (
+                          <SelectItem key={s.id} value={s.id}>
+                            {s.apellidos}, {s.nombres} {section ? `(${section.grado} ${section.seccion})` : ""}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
                 </div>
                 {currentStudent && (
                   <div className="rounded-lg border bg-muted/20 p-4 space-y-2">
@@ -227,15 +235,16 @@ export default function CobranzasPage() {
                       </div>
                       <div className="grid gap-2">
                         <Label className="text-xs">Método</Label>
-                        <select
-                          className="border-input h-9 rounded-lg border px-2 text-sm"
-                          value={metodo}
-                          onChange={(e) => setMetodo(e.target.value as PaymentMethod)}
-                        >
-                          <option value="efectivo">Efectivo</option>
-                          <option value="tarjeta">Tarjeta</option>
-                          <option value="transferencia">Transferencia</option>
-                        </select>
+                        <Select value={metodo} onValueChange={(v) => setMetodo(v as PaymentMethod)}>
+                          <SelectTrigger className="h-9">
+                            <SelectValue placeholder="Método" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="efectivo">Efectivo</SelectItem>
+                            <SelectItem value="tarjeta">Tarjeta</SelectItem>
+                            <SelectItem value="transferencia">Transferencia</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <Button
                         disabled={!studentId || monto <= 0}
@@ -313,14 +322,15 @@ export default function CobranzasPage() {
             <CardContent className="grid gap-6 md:grid-cols-[1fr_auto] md:items-end">
               <div className="grid gap-2">
                 <Label>Nivel Educativo</Label>
-                <select
-                  className="border-input h-10 rounded-lg border px-3 text-sm bg-background"
-                  value={nivelMasivo}
-                  onChange={(e) => setNivelMasivo(e.target.value as NivelEducativo)}
-                >
-                  <option value="inicial">Inicial</option>
-                  <option value="primaria">Primaria</option>
-                </select>
+                <Select value={nivelMasivo} onValueChange={(v) => setNivelMasivo(v as NivelEducativo)}>
+                  <SelectTrigger className="h-10 bg-background">
+                    <SelectValue placeholder="Nivel" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="inicial">Inicial</SelectItem>
+                    <SelectItem value="primaria">Primaria</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <Button size="lg" onClick={() => generateMassPensionDebt(nivelMasivo)}>
                 Generar cuotas de JUNIO
