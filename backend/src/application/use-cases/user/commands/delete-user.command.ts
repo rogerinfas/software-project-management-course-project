@@ -1,6 +1,7 @@
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
+import { UserNotFoundException } from '../../../../domain/exceptions/user/user-not-found.exception';
 
 export class DeleteUserCommand implements ICommand {
   constructor(public readonly id: string) {}
@@ -14,6 +15,10 @@ export class DeleteUserCommandHandler implements ICommandHandler<DeleteUserComma
   ) {}
 
   async execute(command: DeleteUserCommand): Promise<void> {
+    const existing = await this.userRepository.findById(command.id);
+    if (!existing) {
+      throw new UserNotFoundException(command.id);
+    }
     return this.userRepository.delete(command.id);
   }
 }

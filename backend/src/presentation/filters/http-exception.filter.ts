@@ -9,6 +9,7 @@ import {
 import { Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
 import { BaseErrorResponse } from '../../config/interfaces/base-error-response';
+import { DomainException } from '../../domain/exceptions/base/domain-exception';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -36,6 +37,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
       } else {
         message = typeof resBody === 'string' ? resBody : exception.message;
       }
+    } else if (exception instanceof DomainException) {
+      switch (exception.code) {
+        case 'USER_NOT_FOUND':
+          status = HttpStatus.NOT_FOUND;
+          break;
+        case 'EMAIL_ALREADY_EXISTS':
+          status = HttpStatus.CONFLICT;
+          break;
+        default:
+          status = HttpStatus.BAD_REQUEST;
+          break;
+      }
+      message = exception.message;
+      errorDetails = exception.code;
     } else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       // Prisma unique constraints and index error translations
       switch (exception.code) {
