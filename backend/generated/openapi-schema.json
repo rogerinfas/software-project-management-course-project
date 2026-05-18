@@ -54,17 +54,50 @@
       },
       "get": {
         "operationId": "UserController_findAll",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Número de página (comenzando desde 1)",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Cantidad de elementos por página",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Lista de usuarios obtenida exitosamente",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserResponse"
-                  }
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ResponsePaginatedUserDto"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UserResponse"
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -80,7 +113,7 @@
             }
           }
         },
-        "summary": "Obtener todos los usuarios",
+        "summary": "Obtener todos los usuarios (completo o paginado)",
         "tags": [
           "Gestión de Usuarios"
         ]
@@ -5381,7 +5414,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-18T21:25:26.695Z"
+            "example": "2026-05-18T21:34:00.906Z"
           },
           "path": {
             "type": "string",
@@ -5486,13 +5519,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-18T21:25:26.833Z"
+            "example": "2026-05-18T21:34:01.021Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-18T21:25:26.833Z"
+            "example": "2026-05-18T21:34:01.021Z"
           }
         },
         "required": [

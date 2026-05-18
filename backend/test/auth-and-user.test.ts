@@ -162,6 +162,20 @@ describe('🚀 Auth & User Module Integration Tests', () => {
       assert.strictEqual(user.email, testEmail);
     });
 
+    test('GET /api/users - should fetch paginated users list when page and size are supplied', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/users?page=1&size=5')
+        .set('Cookie', [cookie])
+        .expect(200);
+
+      assert.ok(res.body.data, 'Paginated response should contain a data field');
+      assert.ok(res.body.meta, 'Paginated response should contain a meta field');
+      assert.ok(Array.isArray(res.body.data), 'data should be an array');
+      assert.strictEqual(res.body.meta.page, 1);
+      assert.strictEqual(res.body.meta.pageSize, 5);
+      assert.ok(typeof res.body.meta.total === 'number');
+    });
+
     test('GET /api/users/:id - should fetch a single user by ID', async () => {
       const res = await request(app.getHttpServer())
         .get(`/api/users/${userId}`)

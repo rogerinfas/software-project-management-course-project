@@ -9,17 +9,19 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BaseErrorResponse } from '../../../config/interfaces/base-error-response';
-import { CreateUserRequest, UpdateUserRequest, UserResponse } from './dto';
+import { CreateUserRequest, UpdateUserRequest, UserResponse, ResponsePaginatedUserDto } from './dto';
 import { CreateUserCommand } from '../../../application/use-cases/user/commands/create-user.command';
 import { UpdateUserCommand } from '../../../application/use-cases/user/commands/update-user.command';
 import { DeleteUserCommand } from '../../../application/use-cases/user/commands/delete-user.command';
 import { GetUsersQuery } from '../../../application/use-cases/user/queries/get-users.query';
 import { GetUserByIdQuery } from '../../../application/use-cases/user/queries/get-user-by-id.query';
 import { UserEntity } from '../../../domain/entities/user.entity';
+import { PaginationQueryDto } from '../../../config/dtos/pagination-query.dto';
 
 @ApiTags('Gestión de Usuarios')
 @Controller('users')
@@ -57,17 +59,33 @@ export class UserController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Obtener todos los usuarios' })
+  @ApiOperation({ summary: 'Obtener todos los usuarios (completo o paginado)' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Lista de usuarios obtenida exitosamente',
-    type: [UserResponse],
+    schema: {
+      oneOf: [
+        { $ref: '#/components/schemas/ResponsePaginatedUserDto' },
+        {
+          type: 'array',
+          items: { $ref: '#/components/schemas/UserResponse' },
+        },
+      ],
+    },
   })
-  async findAll(): Promise<UserResponse[]> {
-    const results: UserEntity[] = await this.queryBus.execute(
-      new GetUsersQuery(),
+  async findAll(@Query() query: PaginationQueryDto): Promise<UserResponse[] | ResponsePaginatedUserDto> {
+    const results = await this.queryBus.execute(
+      new GetUsersQuery(query.page, query.size),
     );
-    return results.map((r) => r.toDto());
+
+    if (results && 'data' in results) {
+      return {
+        data: results.data.map((r: UserEntity) => r.toDto() as UserResponse),
+        meta: results.meta,
+      };
+    }
+
+    return (results as UserEntity[]).map((r: UserEntity) => r.toDto() as UserResponse);
   }
 
   @Get(':id')
