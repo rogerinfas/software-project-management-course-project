@@ -89,7 +89,7 @@ export class UserController {
     if (!result) {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
     }
-    return result.toDto() as UserResponse;
+    return result.toDto();
   }
 
   @Put(':id')

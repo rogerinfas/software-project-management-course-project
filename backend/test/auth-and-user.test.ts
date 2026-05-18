@@ -65,26 +65,39 @@ describe('🚀 Auth & User Module Integration Tests', () => {
           });
 
         console.log('DEBUG sign-up: Status is:', res.status);
-        console.log('DEBUG sign-up: Body is:', JSON.stringify(res.body, null, 2));
+        console.log(
+          'DEBUG sign-up: Body is:',
+          JSON.stringify(res.body, null, 2),
+        );
         console.log('DEBUG sign-up: Cookies are:', res.headers['set-cookie']);
 
         assert.strictEqual(res.status, 200);
         assert.ok(res.body.user, 'User object should be returned');
-        assert.strictEqual(res.body.user.email, testEmail, 'Email should match');
+        assert.strictEqual(
+          res.body.user.email,
+          testEmail,
+          'Email should match',
+        );
         assert.strictEqual(res.body.user.name, testName, 'Name should match');
-        
+
         userId = res.body.user.id;
 
         // Extraer cookie si se configuró en el registro
         const cookies = res.headers['set-cookie'] as any as string[];
         if (cookies) {
-          const foundCookie = cookies.find((c: string) => c.startsWith('better-auth.session_token'));
+          const foundCookie = cookies.find((c: string) =>
+            c.startsWith('better-auth.session_token'),
+          );
           if (foundCookie) {
             cookie = foundCookie;
           }
         }
       } catch (err: any) {
-        console.error('💥 Test sign-up crashed with error:', err.message, err.stack);
+        console.error(
+          '💥 Test sign-up crashed with error:',
+          err.message,
+          err.stack,
+        );
         throw err;
       }
     });
@@ -106,7 +119,9 @@ describe('🚀 Auth & User Module Integration Tests', () => {
 
       const cookies = res.headers['set-cookie'] as any as string[];
       assert.ok(cookies, 'Cookies should be set');
-      const foundCookie = cookies.find((c: string) => c.startsWith('better-auth.session_token'));
+      const foundCookie = cookies.find((c: string) =>
+        c.startsWith('better-auth.session_token'),
+      );
       assert.ok(foundCookie, 'Better Auth session cookie should be found');
       cookie = foundCookie;
     });
@@ -117,7 +132,10 @@ describe('🚀 Auth & User Module Integration Tests', () => {
         .set('Cookie', [cookie]);
 
       console.log('DEBUG get-session: Status is:', res.status);
-      console.log('DEBUG get-session: Body is:', JSON.stringify(res.body, null, 2));
+      console.log(
+        'DEBUG get-session: Body is:',
+        JSON.stringify(res.body, null, 2),
+      );
 
       assert.strictEqual(res.status, 200);
       assert.ok(res.body.session, 'Session object should be returned');
@@ -128,9 +146,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
 
   describe('User Administration Endpoints (CRUD)', () => {
     test('GET /api/users - should reject unauthorized requests (no session cookie)', async () => {
-      await request(app.getHttpServer())
-        .get('/api/users')
-        .expect(401);
+      await request(app.getHttpServer()).get('/api/users').expect(401);
     });
 
     test('GET /api/users - should fetch users list when authenticated', async () => {
@@ -182,7 +198,10 @@ describe('🚀 Auth & User Module Integration Tests', () => {
           });
 
         console.log('DEBUG delete signup: Status is:', signUpRes.status);
-        console.log('DEBUG delete signup: Body is:', JSON.stringify(signUpRes.body, null, 2));
+        console.log(
+          'DEBUG delete signup: Body is:',
+          JSON.stringify(signUpRes.body, null, 2),
+        );
 
         assert.strictEqual(signUpRes.status, 200);
         const tempId = signUpRes.body.user.id;
@@ -192,7 +211,10 @@ describe('🚀 Auth & User Module Integration Tests', () => {
           .set('Cookie', [cookie]);
 
         console.log('DEBUG delete: Status is:', deleteRes.status);
-        console.log('DEBUG delete: Body is:', JSON.stringify(deleteRes.body, null, 2));
+        console.log(
+          'DEBUG delete: Body is:',
+          JSON.stringify(deleteRes.body, null, 2),
+        );
 
         assert.strictEqual(deleteRes.status, 200);
 
@@ -204,7 +226,11 @@ describe('🚀 Auth & User Module Integration Tests', () => {
 
         assert.strictEqual(getRes.status, 404);
       } catch (err: any) {
-        console.error('💥 Test delete user crashed with error:', err.message, err.stack);
+        console.error(
+          '💥 Test delete user crashed with error:',
+          err.message,
+          err.stack,
+        );
         throw err;
       }
     });
@@ -219,7 +245,10 @@ describe('🚀 Auth & User Module Integration Tests', () => {
           .set('Cookie', [cookie]);
 
         console.log('DEBUG sign-out: Status is:', res.status);
-        console.log('DEBUG sign-out: Body is:', JSON.stringify(res.body, null, 2));
+        console.log(
+          'DEBUG sign-out: Body is:',
+          JSON.stringify(res.body, null, 2),
+        );
 
         assert.strictEqual(res.status, 200);
 
@@ -228,11 +257,22 @@ describe('🚀 Auth & User Module Integration Tests', () => {
           .set('Cookie', [cookie]);
 
         console.log('DEBUG sign-out verify: Status is:', sessionRes.status);
-        console.log('DEBUG sign-out verify: Body is:', JSON.stringify(sessionRes.body, null, 2));
+        console.log(
+          'DEBUG sign-out verify: Body is:',
+          JSON.stringify(sessionRes.body, null, 2),
+        );
 
-        assert.strictEqual(sessionRes.body, null, 'Session should be null after sign-out');
+        assert.strictEqual(
+          sessionRes.body,
+          null,
+          'Session should be null after sign-out',
+        );
       } catch (err: any) {
-        console.error('💥 Test sign-out crashed with error:', err.message, err.stack);
+        console.error(
+          '💥 Test sign-out crashed with error:',
+          err.message,
+          err.stack,
+        );
         throw err;
       }
     });

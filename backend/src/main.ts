@@ -42,7 +42,7 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  
+
   // Generar esquema OpenAPI de Better Auth y fusionarlo dinámicamente
   let combinedDocument = document;
   try {
@@ -51,7 +51,8 @@ async function bootstrap() {
       const betterAuthPaths = (openAPISchema as any).paths || {};
       const betterAuthComponents = (openAPISchema as any).components || {};
       const betterAuthSchemas = betterAuthComponents.schemas || {};
-      const betterAuthSecuritySchemes = betterAuthComponents.securitySchemes || {};
+      const betterAuthSecuritySchemes =
+        betterAuthComponents.securitySchemes || {};
       const betterAuthTags = (openAPISchema as any).tags || [];
 
       // Agregar prefijo /api/auth a los paths de Better Auth
@@ -131,8 +132,12 @@ async function bootstrap() {
 
   await app.listen(port);
   Logger.log(`🚀 Application is running on: http://localhost:${port}/api`);
-  Logger.log(`📚 Scalar API Documentation available at: http://localhost:${port}/api/docs`);
-  Logger.log(`📖 Swagger legacy documentation available at: http://localhost:${port}/api/swagger`);
+  Logger.log(
+    `📚 Scalar API Documentation available at: http://localhost:${port}/api/docs`,
+  );
+  Logger.log(
+    `📖 Swagger legacy documentation available at: http://localhost:${port}/api/swagger`,
+  );
 }
 bootstrap().catch((err) => {
   Logger.error('❌ Error starting application', err);
