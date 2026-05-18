@@ -8,6 +8,8 @@ import {
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import cookieParser from 'cookie-parser';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import 'dotenv/config';
 import { auth } from './infrastructure/config/better-auth/better-auth.config';
 import { HttpExceptionFilter } from './presentation/filters/http-exception.filter';
@@ -81,6 +83,19 @@ async function bootstrap() {
     }
   } catch (error) {
     Logger.error('❌ Error generating Better Auth OpenAPI schema', error);
+  }
+
+  // Exportar el esquema OpenAPI combinado para integración frontend
+  try {
+    const outputDir = join(process.cwd(), 'generated');
+    if (!existsSync(outputDir)) {
+      mkdirSync(outputDir, { recursive: true });
+    }
+    const outputPath = join(outputDir, 'openapi-schema.json');
+    writeFileSync(outputPath, JSON.stringify(combinedDocument, null, 2));
+    Logger.log(`📝 OpenAPI schema successfully exported to: ${outputPath}`);
+  } catch (error) {
+    Logger.error('❌ Error writing OpenAPI schema to file', error);
   }
 
   // Swagger clásico
