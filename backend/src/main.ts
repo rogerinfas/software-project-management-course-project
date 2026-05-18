@@ -10,6 +10,7 @@ import { apiReference } from '@scalar/nestjs-api-reference';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
 import { auth } from './infrastructure/config/better-auth/better-auth.config';
+import { HttpExceptionFilter } from './presentation/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -20,6 +21,8 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.setGlobalPrefix('api');
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   app.useGlobalPipes(
     new ValidationPipe({

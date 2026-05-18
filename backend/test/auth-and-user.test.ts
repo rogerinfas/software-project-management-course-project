@@ -6,6 +6,7 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import cookieParser from 'cookie-parser';
 import { PrismaService } from '../src/infrastructure/persistence/prisma/prisma.service';
+import { HttpExceptionFilter } from '../src/presentation/filters/http-exception.filter';
 
 describe('🚀 Auth & User Module Integration Tests', () => {
   let app: INestApplication;
@@ -25,6 +26,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
     app = moduleFixture.createNestApplication();
     app.use(cookieParser());
     app.setGlobalPrefix('api');
+    app.useGlobalFilters(new HttpExceptionFilter());
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
