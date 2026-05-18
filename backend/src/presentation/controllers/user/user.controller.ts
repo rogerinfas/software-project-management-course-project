@@ -85,7 +85,7 @@ export class UserController {
     const result: UserEntity | null = await this.queryBus.execute(
       new GetUserByIdQuery(id),
     );
-    return result ? result.toDto() : null;
+    return result ? (result.toDto() as UserResponse) : null;
   }
 
   @Put(':id')
