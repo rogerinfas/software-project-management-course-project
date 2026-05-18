@@ -9,6 +9,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
+import { auth } from './infrastructure/config/better-auth/better-auth.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -37,8 +38,50 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   
+  // Generar esquema OpenAPI de Better Auth y fusionarlo dinámicamente
+  let combinedDocument = document;
+  try {
+    const openAPISchema = await auth.api.generateOpenAPISchema();
+    if (openAPISchema) {
+      const betterAuthPaths = (openAPISchema as any).paths || {};
+      const betterAuthComponents = (openAPISchema as any).components || {};
+      const betterAuthSchemas = betterAuthComponents.schemas || {};
+      const betterAuthSecuritySchemes = betterAuthComponents.securitySchemes || {};
+      const betterAuthTags = (openAPISchema as any).tags || [];
+
+      // Agregar prefijo /api/auth a los paths de Better Auth
+      const prefixedBetterAuthPaths: Record<string, any> = {};
+      for (const [path, value] of Object.entries(betterAuthPaths)) {
+        const prefixedPath = `/api/auth${path}`;
+        prefixedBetterAuthPaths[prefixedPath] = value;
+      }
+
+      combinedDocument = {
+        ...document,
+        paths: {
+          ...document.paths,
+          ...prefixedBetterAuthPaths,
+        },
+        components: {
+          ...document.components,
+          schemas: {
+            ...(document.components?.schemas || {}),
+            ...betterAuthSchemas,
+          },
+          securitySchemes: {
+            ...(document.components?.securitySchemes || {}),
+            ...betterAuthSecuritySchemes,
+          },
+        },
+        tags: [...(document.tags || []), ...betterAuthTags],
+      } as any;
+    }
+  } catch (error) {
+    Logger.error('❌ Error generating Better Auth OpenAPI schema', error);
+  }
+
   // Swagger clásico
-  SwaggerModule.setup('api/swagger', app, document);
+  SwaggerModule.setup('api/swagger', app, combinedDocument);
 
   // Scalar interactivo premium
   app.use(
@@ -46,7 +89,7 @@ async function bootstrap() {
     apiReference({
       theme: 'elysiajs',
       spec: {
-        content: document,
+        content: combinedDocument,
       },
       customCss: `
         @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap');

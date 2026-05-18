@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { openAPI } from 'better-auth/plugins';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
@@ -13,6 +14,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prismaClient, {
     provider: 'postgresql',
   }),
+  plugins: [openAPI()],
   emailAndPassword: {
     enabled: true,
   },
