@@ -51,11 +51,13 @@ import type {
   BulletinPost,
   BulletinVisibility,
   Charge,
+  Course,
   DocumentValidationStatus,
   EnrollmentDocument,
   EvaluationAptitud,
   EvaluationResult,
   FacialMark,
+  Guardian,
   InternalReceipt,
   NivelEducativo,
   Payment,
@@ -67,6 +69,12 @@ import type {
   ProspectInteraction,
   ProspectPrioridad,
   SanctionRule,
+  ScheduleSlot,
+  Section,
+  StaffMember,
+  TariffConcept,
+  DiscountRule,
+  TeachingAssignment,
 } from "@/lib/mock/types";
 
 function uid(prefix: string) {
@@ -173,6 +181,9 @@ type DemoDataContextValue = DemoDataState & {
   // M2 Matrícula
   updateStudentDni: (studentId: string, dni: string) => boolean;
   setGuardianResponsible: (guardianId: string) => void;
+  addGuardian: (input: Omit<Guardian, "id">) => void;
+  updateGuardian: (id: string, fields: Partial<Pick<Guardian, "dni" | "telefono" | "correo" | "ocupacion">>) => void;
+  linkSibling: (studentId: string, siblingId: string) => void;
   tryEnroll: (studentId: string, sectionId: string) => void;
   emitEnrollmentDocs: (studentId: string) => void;
 
@@ -184,6 +195,15 @@ type DemoDataContextValue = DemoDataState & {
     visibilidad: BulletinVisibility;
     vigenteHasta: string;
   }) => void;
+  updateBulletin: (id: string, fields: Partial<BulletinPost>) => void;
+  addCourse: (input: Omit<Course, "id">) => void;
+  updateCourse: (id: string, fields: Partial<Course>) => void;
+  deleteCourse: (id: string) => void;
+  addScheduleSlot: (input: Omit<ScheduleSlot, "id">) => void;
+  deleteScheduleSlot: (id: string) => void;
+  assignTeacher: (input: Omit<TeachingAssignment, "id">) => void;
+  addSection: (input: Omit<Section, "id" | "matriculados">) => void;
+  updateSection: (id: string, fields: Partial<Section>) => void;
 
   // M4 Tesorería
   generateMassPensionDebt: (nivel: NivelEducativo) => void;
@@ -192,11 +212,21 @@ type DemoDataContextValue = DemoDataState & {
     monto: number,
     metodo: PaymentMethod,
   ) => void;
+  addTariffConcept: (input: Omit<TariffConcept, "id">) => void;
+  updateTariffConcept: (id: string, fields: Partial<TariffConcept>) => void;
+  deleteTariffConcept: (id: string) => void;
+  addDiscount: (input: Omit<DiscountRule, "id">) => void;
+  updateDiscount: (id: string, fields: Partial<DiscountRule>) => void;
+  deleteDiscount: (id: string) => void;
 
   // M5 Personal y asistencia
   simulateFacialMark: (staffId: string) => void;
   toggleSanctionRule: (id: string) => void;
+  updateSanctionRule: (id: string, fields: Partial<SanctionRule>) => void;
   recomputePrePayroll: () => void;
+  addStaffMember: (input: Omit<StaffMember, "id">) => void;
+  updateStaffMember: (id: string, fields: Partial<StaffMember>) => void;
+  deleteStaffMember: (id: string) => void;
 };
 
 const DemoDataContext = React.createContext<DemoDataContextValue | null>(null);
@@ -398,6 +428,44 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
     toast.success("Responsable económico actualizado.");
   }, []);
 
+  const addGuardian = React.useCallback((input: Omit<Guardian, "id">) => {
+    setState((prev) => ({
+      ...prev,
+      guardians: [{ ...input, id: uid("gua") }, ...prev.guardians],
+    }));
+    toast.success("Apoderado registrado.");
+  }, []);
+
+  const updateGuardian = React.useCallback(
+    (id: string, fields: Partial<Pick<Guardian, "dni" | "telefono" | "correo" | "ocupacion">>) => {
+      setState((prev) => ({
+        ...prev,
+        guardians: prev.guardians.map((g) =>
+          g.id === id ? { ...g, ...fields } : g,
+        ),
+      }));
+      toast.success("Datos del apoderado actualizados.");
+    },
+    [],
+  );
+
+  const linkSibling = React.useCallback((studentId: string, siblingId: string) => {
+    if (studentId === siblingId) return;
+    setState((prev) => ({
+      ...prev,
+      students: prev.students.map((s) => {
+        if (s.id === studentId && !s.hermanosIds.includes(siblingId)) {
+          return { ...s, hermanosIds: [...s.hermanosIds, siblingId] };
+        }
+        if (s.id === siblingId && !s.hermanosIds.includes(studentId)) {
+          return { ...s, hermanosIds: [...s.hermanosIds, studentId] };
+        }
+        return s;
+      }),
+    }));
+    toast.success("Vinculación familiar registrada.");
+  }, []);
+
   const tryEnroll = React.useCallback(
     (studentId: string, sectionId: string) => {
       setState((prev) => {
@@ -492,6 +560,89 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
     },
     [],
   );
+
+  const updateBulletin = React.useCallback(
+    (id: string, fields: Partial<BulletinPost>) => {
+      setState((prev) => ({
+        ...prev,
+        bulletins: prev.bulletins.map((b) => (b.id === id ? { ...b, ...fields } : b)),
+      }));
+      toast.success("Comunicado actualizado.");
+    },
+    [],
+  );
+
+  const addCourse = React.useCallback((input: Omit<Course, "id">) => {
+    setState((prev) => ({
+      ...prev,
+      courses: [...prev.courses, { ...input, id: uid("crs") }],
+    }));
+    toast.success("Curso creado.");
+  }, []);
+
+  const updateCourse = React.useCallback((id: string, fields: Partial<Course>) => {
+    setState((prev) => ({
+      ...prev,
+      courses: prev.courses.map((c) => (c.id === id ? { ...c, ...fields } : c)),
+    }));
+    toast.success("Curso actualizado.");
+  }, []);
+
+  const deleteCourse = React.useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      courses: prev.courses.filter((c) => c.id !== id),
+    }));
+    toast.success("Curso eliminado.");
+  }, []);
+
+  const addScheduleSlot = React.useCallback((input: Omit<ScheduleSlot, "id">) => {
+    setState((prev) => ({
+      ...prev,
+      scheduleSlots: [...prev.scheduleSlots, { ...input, id: uid("sch") }],
+    }));
+    toast.success("Bloque horario programado.");
+  }, []);
+
+  const deleteScheduleSlot = React.useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      scheduleSlots: prev.scheduleSlots.filter((s) => s.id !== id),
+    }));
+    toast.success("Bloque eliminado.");
+  }, []);
+
+  const assignTeacher = React.useCallback((input: Omit<TeachingAssignment, "id">) => {
+    setState((prev) => {
+      const existing = prev.teachingAssignments.findIndex(
+        (ta) => ta.courseId === input.courseId && ta.sectionId === input.sectionId,
+      );
+      const newAssignments = [...prev.teachingAssignments];
+      if (existing !== -1) {
+        newAssignments[existing] = { ...newAssignments[existing], teacherId: input.teacherId };
+      } else {
+        newAssignments.push({ ...input, id: uid("ta") });
+      }
+      return { ...prev, teachingAssignments: newAssignments };
+    });
+    toast.success("Docente asignado.");
+  }, []);
+
+  const addSection = React.useCallback((input: Omit<Section, "id" | "matriculados">) => {
+    setState((prev) => ({
+      ...prev,
+      sections: [...prev.sections, { ...input, id: uid("sec"), matriculados: 0 }],
+    }));
+    toast.success("Sección abierta.");
+  }, []);
+
+  const updateSection = React.useCallback((id: string, fields: Partial<Section>) => {
+    setState((prev) => ({
+      ...prev,
+      sections: prev.sections.map((s) => (s.id === id ? { ...s, ...fields } : s)),
+    }));
+    toast.success("Estado de sección actualizado.");
+  }, []);
 
   // --------------------------------------------------------------------------
   // M4 — Tesorería
@@ -619,6 +770,76 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const addTariffConcept = React.useCallback(
+    (input: Omit<TariffConcept, "id">) => {
+      setState((prev) => ({
+        ...prev,
+        tariffConcepts: [...prev.tariffConcepts, { ...input, id: uid("trf") }],
+      }));
+      toast.success("Concepto de tarifario creado.");
+    },
+    [],
+  );
+
+  const updateTariffConcept = React.useCallback(
+    (id: string, fields: Partial<TariffConcept>) => {
+      setState((prev) => ({
+        ...prev,
+        tariffConcepts: prev.tariffConcepts.map((c) =>
+          c.id === id ? { ...c, ...fields } : c,
+        ),
+      }));
+      toast.success("Concepto actualizado.");
+    },
+    [],
+  );
+
+  const deleteTariffConcept = React.useCallback(
+    (id: string) => {
+      setState((prev) => ({
+        ...prev,
+        tariffConcepts: prev.tariffConcepts.filter((c) => c.id !== id),
+      }));
+      toast.success("Concepto eliminado.");
+    },
+    [],
+  );
+
+  const addDiscount = React.useCallback(
+    (input: Omit<DiscountRule, "id">) => {
+      setState((prev) => ({
+        ...prev,
+        discounts: [...prev.discounts, { ...input, id: uid("dsc") }],
+      }));
+      toast.success("Regla de descuento creada.");
+    },
+    [],
+  );
+
+  const updateDiscount = React.useCallback(
+    (id: string, fields: Partial<DiscountRule>) => {
+      setState((prev) => ({
+        ...prev,
+        discounts: prev.discounts.map((d) =>
+          d.id === id ? { ...d, ...fields } : d,
+        ),
+      }));
+      toast.success("Descuento actualizado.");
+    },
+    [],
+  );
+
+  const deleteDiscount = React.useCallback(
+    (id: string) => {
+      setState((prev) => ({
+        ...prev,
+        discounts: prev.discounts.filter((d) => d.id !== id),
+      }));
+      toast.success("Descuento eliminado.");
+    },
+    [],
+  );
+
   // --------------------------------------------------------------------------
   // M5 — Personal y asistencia
   // --------------------------------------------------------------------------
@@ -666,6 +887,40 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
+  const updateSanctionRule = React.useCallback((id: string, fields: Partial<SanctionRule>) => {
+    setState((prev) => ({
+      ...prev,
+      sanctionRules: prev.sanctionRules.map((r) =>
+        r.id === id ? { ...r, ...fields } : r,
+      ),
+    }));
+    toast.success("Regla de asistencia actualizada.");
+  }, []);
+
+  const addStaffMember = React.useCallback((input: Omit<StaffMember, "id">) => {
+    setState((prev) => ({
+      ...prev,
+      staff: [...prev.staff, { ...input, id: uid("stf") }],
+    }));
+    toast.success("Personal registrado.");
+  }, []);
+
+  const updateStaffMember = React.useCallback((id: string, fields: Partial<StaffMember>) => {
+    setState((prev) => ({
+      ...prev,
+      staff: prev.staff.map((s) => (s.id === id ? { ...s, ...fields } : s)),
+    }));
+    toast.success("Datos de personal actualizados.");
+  }, []);
+
+  const deleteStaffMember = React.useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      staff: prev.staff.filter((s) => s.id !== id),
+    }));
+    toast.success("Personal eliminado.");
+  }, []);
+
   const recomputePrePayroll = React.useCallback(() => {
     setState((prev) => {
       const tardanzas = consolidarTardanzas(prev.staff, prev.facialMarks);
@@ -706,14 +961,36 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       setEvaluationResult,
       updateStudentDni,
       setGuardianResponsible,
+      addGuardian,
+      updateGuardian,
+      linkSibling,
       tryEnroll,
       emitEnrollmentDocs,
       addBulletin,
+      updateBulletin,
+      addCourse,
+      updateCourse,
+      deleteCourse,
+      addScheduleSlot,
+      deleteScheduleSlot,
+      assignTeacher,
+      addSection,
+      updateSection,
       generateMassPensionDebt,
       registerWindowPayment,
+      addTariffConcept,
+      updateTariffConcept,
+      deleteTariffConcept,
+      addDiscount,
+      updateDiscount,
+      deleteDiscount,
       simulateFacialMark,
       toggleSanctionRule,
+      updateSanctionRule,
       recomputePrePayroll,
+      addStaffMember,
+      updateStaffMember,
+      deleteStaffMember,
     }),
     [
       state,
@@ -729,14 +1006,36 @@ export function DemoDataProvider({ children }: { children: React.ReactNode }) {
       setEvaluationResult,
       updateStudentDni,
       setGuardianResponsible,
+      addGuardian,
+      updateGuardian,
+      linkSibling,
       tryEnroll,
       emitEnrollmentDocs,
       addBulletin,
+      updateBulletin,
+      addCourse,
+      updateCourse,
+      deleteCourse,
+      addScheduleSlot,
+      deleteScheduleSlot,
+      assignTeacher,
+      addSection,
+      updateSection,
       generateMassPensionDebt,
       registerWindowPayment,
+      addTariffConcept,
+      updateTariffConcept,
+      deleteTariffConcept,
+      addDiscount,
+      updateDiscount,
+      deleteDiscount,
       simulateFacialMark,
       toggleSanctionRule,
+      updateSanctionRule,
       recomputePrePayroll,
+      addStaffMember,
+      updateStaffMember,
+      deleteStaffMember,
     ],
   );
 

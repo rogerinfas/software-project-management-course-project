@@ -265,10 +265,10 @@ export const initialEvaluationResults: EvaluationResult[] = [
 // ============================================================================
 
 export const initialSections: Section[] = [
-  { id: "sec-1a", grado: "1° primaria", seccion: "A", nivel: "primaria", capacidad: 25, matriculados: 22 },
-  { id: "sec-2a", grado: "2° primaria", seccion: "A", nivel: "primaria", capacidad: 25, matriculados: 18 },
-  { id: "sec-full", grado: "3° primaria", seccion: "A", nivel: "primaria", capacidad: 25, matriculados: 25 },
-  { id: "sec-ini5b", grado: "Inicial 5 años", seccion: "B", nivel: "inicial", capacidad: 20, matriculados: 12 },
+  { id: "sec-1a", grado: "1° primaria", seccion: "A", nivel: "primaria", capacidad: 25, matriculados: 22, status: "abierta" },
+  { id: "sec-2a", grado: "2° primaria", seccion: "A", nivel: "primaria", capacidad: 25, matriculados: 18, status: "abierta" },
+  { id: "sec-full", grado: "3° primaria", seccion: "A", nivel: "primaria", capacidad: 25, matriculados: 25, status: "abierta" },
+  { id: "sec-ini5b", grado: "Inicial 5 años", seccion: "B", nivel: "inicial", capacidad: 20, matriculados: 12, status: "abierta" },
 ];
 
 export const initialStudents: Student[] = [
