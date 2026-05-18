@@ -155,9 +155,12 @@ describe('🚀 Auth & User Module Integration Tests', () => {
         .set('Cookie', [cookie])
         .expect(200);
 
-      assert.ok(Array.isArray(res.body), 'Response should be an array');
-      assert.ok(res.body.length >= 1, 'Array should have at least 1 element');
-      const user = res.body.find((u: any) => u.id === userId);
+      assert.ok(res.body.data, 'Paginated response should contain a data field');
+      assert.ok(res.body.meta, 'Paginated response should contain a meta field');
+      assert.ok(Array.isArray(res.body.data), 'Response data should be an array');
+      assert.ok(res.body.data.length >= 1, 'Array should have at least 1 element');
+      
+      const user = res.body.data.find((u: any) => u.id === userId);
       assert.ok(user, 'User should be in the list');
       assert.strictEqual(user.email, testEmail);
     });

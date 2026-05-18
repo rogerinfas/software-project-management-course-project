@@ -12,17 +12,15 @@ export class GetUsersQuery implements IQuery {
 }
 
 @QueryHandler(GetUsersQuery)
-export class GetUsersQueryHandler implements IQueryHandler<GetUsersQuery, UserEntity[] | PaginatedResult<UserEntity>> {
+export class GetUsersQueryHandler implements IQueryHandler<GetUsersQuery, PaginatedResult<UserEntity>> {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(query: GetUsersQuery): Promise<UserEntity[] | PaginatedResult<UserEntity>> {
-    const { page, size } = query;
-    if (page !== undefined && size !== undefined) {
-      return this.userRepository.findManyPaginated(page, size);
-    }
-    return this.userRepository.findAll();
+  async execute(query: GetUsersQuery): Promise<PaginatedResult<UserEntity>> {
+    const page = query.page ?? 1;
+    const size = query.size ?? 10;
+    return this.userRepository.findManyPaginated(page, size);
   }
 }

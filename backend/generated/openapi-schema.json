@@ -87,17 +87,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/ResponsePaginatedUserDto"
-                    },
-                    {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/UserResponse"
-                      }
-                    }
-                  ]
+                  "$ref": "#/components/schemas/ResponsePaginatedUserDto"
                 }
               }
             }
@@ -113,7 +103,7 @@
             }
           }
         },
-        "summary": "Obtener todos los usuarios (completo o paginado)",
+        "summary": "Obtener todos los usuarios paginados",
         "tags": [
           "Gestión de Usuarios"
         ]
@@ -5414,7 +5404,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-18T21:34:00.906Z"
+            "example": "2026-05-18T21:50:00.090Z"
           },
           "path": {
             "type": "string",
@@ -5519,13 +5509,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-18T21:34:01.021Z"
+            "example": "2026-05-18T21:50:00.206Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-18T21:34:01.021Z"
+            "example": "2026-05-18T21:50:00.206Z"
           }
         },
         "required": [
@@ -5536,6 +5526,67 @@
           "isActive",
           "createdAt",
           "updatedAt"
+        ]
+      },
+      "PaginationMetadataDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "description": "Número total de elementos"
+          },
+          "page": {
+            "type": "number",
+            "description": "Número de página actual"
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Cantidad de elementos por página"
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Número total de páginas"
+          },
+          "hasNext": {
+            "type": "boolean",
+            "description": "Indica si existe una página siguiente"
+          },
+          "hasPrevious": {
+            "type": "boolean",
+            "description": "Indica si existe una página anterior"
+          }
+        },
+        "required": [
+          "total",
+          "page",
+          "pageSize",
+          "totalPages",
+          "hasNext",
+          "hasPrevious"
+        ]
+      },
+      "ResponsePaginatedUserDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Listado de usuarios paginados",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResponse"
+            }
+          },
+          "meta": {
+            "description": "Metadatos de paginación",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationMetadataDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "meta"
         ]
       },
       "UpdateUserRequest": {

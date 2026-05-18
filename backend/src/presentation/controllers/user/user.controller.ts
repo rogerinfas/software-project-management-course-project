@@ -59,33 +59,21 @@ export class UserController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Obtener todos los usuarios (completo o paginado)' })
+  @ApiOperation({ summary: 'Obtener todos los usuarios paginados' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Lista de usuarios obtenida exitosamente',
-    schema: {
-      oneOf: [
-        { $ref: '#/components/schemas/ResponsePaginatedUserDto' },
-        {
-          type: 'array',
-          items: { $ref: '#/components/schemas/UserResponse' },
-        },
-      ],
-    },
+    type: ResponsePaginatedUserDto,
   })
-  async findAll(@Query() query: PaginationQueryDto): Promise<UserResponse[] | ResponsePaginatedUserDto> {
+  async findAll(@Query() query: PaginationQueryDto): Promise<ResponsePaginatedUserDto> {
     const results = await this.queryBus.execute(
       new GetUsersQuery(query.page, query.size),
     );
 
-    if (results && 'data' in results) {
-      return {
-        data: results.data.map((r: UserEntity) => r.toDto() as UserResponse),
-        meta: results.meta,
-      };
-    }
-
-    return (results as UserEntity[]).map((r: UserEntity) => r.toDto() as UserResponse);
+    return {
+      data: results.data.map((r: UserEntity) => r.toDto() as UserResponse),
+      meta: results.meta,
+    };
   }
 
   @Get(':id')
