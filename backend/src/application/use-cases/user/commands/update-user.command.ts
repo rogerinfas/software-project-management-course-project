@@ -2,7 +2,7 @@ import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
 import { UserEntity } from '../../../../domain/entities/user.entity';
-import { UserNotFoundException } from '../../../../domain/exceptions/user/user-not-found.exception';
+import { UserNotFoundException } from '../../../../domain/exceptions/user.exceptions';
 
 export class UpdateUserCommand implements ICommand {
   constructor(

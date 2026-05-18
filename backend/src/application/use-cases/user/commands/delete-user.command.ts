@@ -1,7 +1,7 @@
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
-import { UserNotFoundException } from '../../../../domain/exceptions/user/user-not-found.exception';
+import { UserNotFoundException } from '../../../../domain/exceptions/user.exceptions';
 
 export class DeleteUserCommand implements ICommand {
   constructor(public readonly id: string) {}

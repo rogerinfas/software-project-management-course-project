@@ -9,7 +9,7 @@ import {
 import { Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
 import { BaseErrorResponse } from '../../config/interfaces/base-error-response';
-import { DomainException } from '../../domain/exceptions/base/domain-exception';
+import { DomainException } from '../../domain/exceptions/domain-exception';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {

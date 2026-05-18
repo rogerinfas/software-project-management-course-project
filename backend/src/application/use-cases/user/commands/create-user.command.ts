@@ -3,7 +3,7 @@ import { Inject } from '@nestjs/common';
 import { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
 import { UserEntity } from '../../../../domain/entities/user.entity';
 import { auth } from '../../../../infrastructure/config/better-auth/better-auth.config';
-import { EmailAlreadyExistsException } from '../../../../domain/exceptions/user/email-already-exists.exception';
+import { EmailAlreadyExistsException } from '../../../../domain/exceptions/user.exceptions';
 
 export class CreateUserCommand implements ICommand {
   constructor(
