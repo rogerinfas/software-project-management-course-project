@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -81,11 +82,14 @@ export class UserController {
     description: 'Usuario no encontrado',
     type: BaseErrorResponse,
   })
-  async findOne(@Param('id') id: string): Promise<UserResponse | null> {
+  async findOne(@Param('id') id: string): Promise<UserResponse> {
     const result: UserEntity | null = await this.queryBus.execute(
       new GetUserByIdQuery(id),
     );
-    return result ? (result.toDto() as UserResponse) : null;
+    if (!result) {
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+    }
+    return result.toDto() as UserResponse;
   }
 
   @Put(':id')
