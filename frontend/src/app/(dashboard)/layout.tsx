@@ -158,10 +158,6 @@ export default function DashboardLayout({
                     <ShieldCheckIcon className="size-4 text-primary shrink-0" />
                     <span>Rol: <strong className="uppercase font-bold text-primary">{user.role || "Usuario"}</strong></span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="text-xs gap-2 py-2">
-                    <UserIcon className="size-4 text-muted-foreground shrink-0" />
-                    <span className="truncate max-w-[160px]">ID: {user.id}</span>
-                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
