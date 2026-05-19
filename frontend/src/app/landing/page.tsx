@@ -164,8 +164,8 @@ export default function LandingPage() {
               </div>
               <div className="relative aspect-square lg:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-1000">
                 <Image
-                  src="/school-hero.png"
-                  alt="Estudiantes en el campus"
+                  src="/madre-santa-beatriz-hero.jpg"
+                  alt="Ceremonia y estandarte de la IEP Madre Santa Beatriz"
                   fill
                   className="object-cover"
                   priority
