@@ -24,7 +24,7 @@ const MODULE_STATUS = [
   {
     code: "M1",
     title: "Admisión",
-    href: "/admision/pipeline",
+    href: "/admission/pipeline",
     description: "CRM de postulantes, etapas de admisión, citas y dictámenes.",
     icon: UserPlusIcon,
     status: "ready", // ready, active, pending
@@ -34,7 +34,7 @@ const MODULE_STATUS = [
   {
     code: "M2",
     title: "Matrícula",
-    href: "/matricula/formalizacion",
+    href: "/enrollment/formalizacion",
     description: "Expediente familiar, gestión de vacantes e instrumentación.",
     icon: UsersIcon,
     status: "active",
@@ -44,7 +44,7 @@ const MODULE_STATUS = [
   {
     code: "M3",
     title: "Académica y comunicación",
-    href: "/academica/malla",
+    href: "/academic/malla",
     description: "Mallas curriculares, carga de docentes, secciones y horarios.",
     icon: BookOpenIcon,
     status: "active",
@@ -54,7 +54,7 @@ const MODULE_STATUS = [
   {
     code: "M4",
     title: "Tesorería",
-    href: "/tesoreria/cobranzas",
+    href: "/treasury/cobranzas",
     description: "Definición del tarifario, cobranzas y facturación integrada.",
     icon: CoinsIcon,
     status: "pending",
@@ -64,7 +64,7 @@ const MODULE_STATUS = [
   {
     code: "M5",
     title: "Personal y asistencia",
-    href: "/personal/reconocimiento",
+    href: "/staff/reconocimiento",
     description: "Mecanismo de reconocimiento facial, pre-planilla y asistencia.",
     icon: FingerprintIcon,
     status: "pending",
