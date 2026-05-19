@@ -5404,7 +5404,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-19T13:37:35.022Z"
+            "example": "2026-05-19T14:23:46.164Z"
           },
           "path": {
             "type": "string",
@@ -5509,13 +5509,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-19T13:37:35.193Z"
+            "example": "2026-05-19T14:23:46.586Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-19T13:37:35.193Z"
+            "example": "2026-05-19T14:23:46.586Z"
           }
         },
         "required": [
