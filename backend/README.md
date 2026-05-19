@@ -1,98 +1,115 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🏫 Colegio Madre Santa Beatriz - Guía de Servicios y Documentación del Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Esta guía centraliza toda la información técnica sobre el backend, base de datos, documentación interactiva y administración de datos de la plataforma institucional.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🛠️ Servicios Activos y Puertos
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+| Servicio | URL de Acceso / Conexión | Descripción |
+| :--- | :--- | :--- |
+| **API REST (NestJS)** | [http://localhost:5000/api](http://localhost:5000/api) | Servidor backend principal en NodeJS. |
+| **Documentación Scalar** | [http://localhost:5000/api/docs](http://localhost:5000/api/docs) | Documentación interactiva de última generación (Scalar). |
+| **Documentación Swagger** | [http://localhost:5000/api/swagger](http://localhost:5000/api/swagger) | Interfaz clásica de Swagger UI. |
+| **Base de Datos (PostgreSQL)** | `localhost:4900` | Servidor de base de datos relacional PostgreSQL expuesto al host. |
+| **pgAdmin 4 (Administración)** | [http://localhost:5050](http://localhost:5050) | Gestor web de PostgreSQL (Contenedor Docker). |
+| **Prisma Studio (GUI)** | [http://localhost:5555](http://localhost:5555) | Explorador y editor visual de base de datos relacional. |
 
-## Project setup
+---
 
+## 🗄️ Base de Datos (Docker & PostgreSQL)
+
+La base de datos corre dentro de un contenedor Docker aislado y se expone al host en el puerto **`4900`** para evitar colisiones con otros servicios PostgreSQL locales.
+
+### 🔑 Credenciales de Conexión
+* **Host:** `localhost` o `127.0.0.1`
+* **Puerto Host:** **`4900`**
+* **Puerto Interno (Docker):** `5432`
+* **Usuario:** `postgres`
+* **Contraseña:** `postgres`
+* **Base de Datos:** `school_management`
+* **URL de Conexión (Prisma / Backend):**
+  ```env
+  DATABASE_URL="postgresql://postgres:postgres@localhost:4900/school_management?schema=public"
+  ```
+
+### 🐘 Control de Contenedores (Docker Compose)
+Para gestionar el ciclo de vida de la base de datos y pgAdmin:
 ```bash
-$ npm install
+# Apagar contenedores y limpiar redes
+docker compose down
+
+# Levantar contenedores en segundo plano (Recomendado)
+docker compose up -d
+
+# Ver registros de ejecución (logs)
+docker compose logs -f
 ```
 
-## Compile and run the project
+---
+
+## 🔑 Cuentas Base Autogeneradas (Seed Data)
+
+Cada vez que el backend se inicia, verifica la existencia de estos usuarios de prueba y los inserta/actualiza en la base de datos automáticamente:
+
+| Rol | Correo Electrónico | Contraseña |
+| :--- | :--- | :--- |
+| **ADMIN** | `admin@santabeatriz.com` | `Admin123!` |
+| **TEACHER** | `teacher@santabeatriz.com` | `Teacher123!` |
+| **STAFF** | `staff@santabeatriz.com` | `Staff123!` |
+| **ADMISSION** | `admission@santabeatriz.com` | `Admission123!` |
+| **TREASURY** | `treasury@santabeatriz.com` | `Treasury123!` |
+
+---
+
+## 🔮 Prisma Studio (Administración Visual)
+
+**Prisma Studio** te permite explorar, filtrar, agregar y editar registros en tiempo real en la base de datos a través de una interfaz de usuario limpia e intuitiva en tu navegador.
+
+### 🚀 Levantar Prisma Studio
+Si no está activo, puedes levantarlo en tu terminal desde la carpeta `backend/` con el siguiente comando para evitar apertura automática de navegadores del sistema:
+```bash
+pnpm exec prisma studio --port 5555 --browser none
+```
+Acceso en el navegador: 👉 **[http://localhost:5555](http://localhost:5555)**
+
+---
+
+## 📖 Endpoints del API REST y Autenticación
+
+El API está completamente estructurado de forma modular y cuenta con soporte nativo de sesiones a través de **Better Auth**.
+
+### 🔐 Autenticación (Better Auth endpoints)
+Todos los flujos de autenticación e inicio de sesión pasan por el prefijo `/api/auth`:
+
+* **POST** `/api/auth/sign-in/email` — Inicio de sesión con correo y contraseña.
+* **POST** `/api/auth/sign-up/email` — Registro de nuevos usuarios.
+* **POST** `/api/auth/sign-out` — Cierre seguro de sesión (borra cookies).
+* **GET** `/api/auth/get-session` — Obtención de la sesión activa del usuario.
+
+### 👥 Administración de Usuarios (`/api/users`)
+* **GET** `/api/users` — Lista todos los usuarios registrados (con filtros opcionales).
+* **POST** `/api/users` — Crea un nuevo usuario de forma administrativa.
+* **GET** `/api/users/:id` — Retorna el detalle de un usuario específico.
+* **PUT** `/api/users/:id` — Actualiza un usuario específico.
+* **DELETE** `/api/users/:id` — Realiza borrado lógico o físico de un usuario.
+
+---
+
+## 🏗️ Comandos de Desarrollo del Backend
+
+Ejecuta estos comandos dentro del directorio `backend/`:
 
 ```bash
-# development
-$ npm run start
+# Instalar dependencias
+pnpm install
 
-# watch mode
-$ npm run start:dev
+# Iniciar servidor en modo desarrollo con auto-recarga (watch mode)
+pnpm run start:dev
 
-# production mode
-$ npm run start:prod
+# Generar cliente de Prisma tras modificar el schema
+pnpm exec prisma generate
+
+# Aplicar migraciones a la base de datos
+pnpm exec prisma migrate dev
 ```
-
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
