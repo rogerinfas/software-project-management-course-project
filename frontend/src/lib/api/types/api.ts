@@ -2360,7 +2360,7 @@ export interface operations {
             };
         };
     };
-    getSession: {
+    getSessionPost: {
         parameters: {
             query?: never;
             header?: never;
