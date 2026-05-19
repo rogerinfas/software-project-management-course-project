@@ -162,13 +162,15 @@ export default function LandingPage() {
                   </Link>
                 </div>
               </div>
-              <div className="relative aspect-square lg:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-muted/20 border flex items-center justify-center">
-                {/* Fallback image with premium gradient card in case raw static is pending */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-primary/5 to-amber-500/10 flex flex-col items-center justify-center p-6 text-center space-y-4">
-                  <GraduationCap className="size-24 text-primary animate-pulse" />
-                  <p className="font-extrabold text-2xl tracking-tight text-foreground">IEP Madre Santa Beatriz</p>
-                  <p className="text-sm text-muted-foreground max-w-xs">Colegio de excelencia en la región de Arequipa.</p>
-                </div>
+              <div className="relative aspect-square lg:aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-1000">
+                <Image
+                  src="/school-hero.png"
+                  alt="Estudiantes en el campus"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               </div>
             </div>
           </div>
