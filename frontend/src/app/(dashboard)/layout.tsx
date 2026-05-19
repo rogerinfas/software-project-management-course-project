@@ -33,14 +33,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { backend } from "@/lib/api/types/backend";
 
+const ROUTE_TRANSLATIONS: Record<string, string> = {
+  about: "Acerca de",
+  admission: "Admisión",
+  enrollment: "Matrícula",
+  academic: "Académica",
+  treasury: "Tesorería",
+  staff: "Personal",
+};
+
 // Function to format the current breadcrumb/section title based on path
 function getSectionTitle(pathname: string): string {
   if (pathname === "/") return "Inicio";
   
-  // Format /academica/malla -> Académica · Malla
   const parts = pathname.split("/").filter(Boolean);
   return parts
-    .map(p => p.charAt(0).toUpperCase() + p.slice(1).replace(/-/g, " "))
+    .map(p => {
+      const translated = ROUTE_TRANSLATIONS[p.toLowerCase()];
+      if (translated) return translated;
+      return p.charAt(0).toUpperCase() + p.slice(1).replace(/-/g, " ");
+    })
     .join(" · ");
 }
 
