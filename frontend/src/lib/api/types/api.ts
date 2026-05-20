@@ -84,7 +84,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get prospects with pagination and search */
+        get: operations["AdmissionController_getProspects"];
         put?: never;
         /** Create a new prospect */
         post: operations["AdmissionController_createProspect"];
@@ -1866,7 +1867,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-05-20T17:08:57.760Z
+             * @example 2026-05-20T17:29:53.356Z
              */
             timestamp: string;
             /**
@@ -1937,13 +1938,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-20T17:08:57.900Z
+             * @example 2026-05-20T17:29:53.471Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-20T17:08:57.900Z
+             * @example 2026-05-20T17:29:53.471Z
              */
             updatedAt: string;
         };
@@ -1995,7 +1996,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Appointment date and time
-             * @example 2026-05-20T17:08:58.284Z
+             * @example 2026-05-20T17:29:53.835Z
              */
             date: string;
             /**
@@ -2013,7 +2014,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-20T17:08:58.285Z
+             * @example 2026-05-20T17:29:53.835Z
              */
             createdAt: string;
         };
@@ -2042,7 +2043,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Evaluation process date
-             * @example 2026-05-20T17:08:58.285Z
+             * @example 2026-05-20T17:29:53.836Z
              */
             date: string;
             /**
@@ -2096,7 +2097,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-20T17:08:58.285Z
+             * @example 2026-05-20T17:29:53.836Z
              */
             createdAt: string;
         };
@@ -2121,13 +2122,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-20T17:08:58.285Z
+             * @example 2026-05-20T17:29:53.836Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-20T17:08:58.285Z
+             * @example 2026-05-20T17:29:53.836Z
              */
             updatedAt: string;
         };
@@ -2154,6 +2155,22 @@ export interface components {
              * @example 2
              */
             order?: number;
+        };
+        PaginationMeta: {
+            /** @example 50 */
+            total: number;
+            /** @example 1 */
+            page: number;
+            /** @example 15 */
+            size: number;
+            /** @example 4 */
+            totalPages: number;
+            /** @example true */
+            hasNext: boolean;
+        };
+        ResponsePaginatedProspectDto: {
+            data: components["schemas"]["ProspectResponse"][];
+            meta: components["schemas"]["PaginationMeta"];
         };
         CreateProspectRequest: {
             /**
@@ -2204,7 +2221,7 @@ export interface components {
             prospectId: string;
             /**
              * @description Appointment date and time in ISO format
-             * @example 2026-05-20T17:08:58.287Z
+             * @example 2026-05-20T17:29:53.838Z
              */
             date: string;
             /**
@@ -2582,6 +2599,33 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    AdmissionController_getProspects: {
+        parameters: {
+            query?: {
+                /** @description Page number (1-indexed) */
+                page?: number;
+                /** @description Items per page */
+                size?: number;
+                /** @description Search by prospect name */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return paginated prospects. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponsePaginatedProspectDto"];
+                };
             };
         };
     };
