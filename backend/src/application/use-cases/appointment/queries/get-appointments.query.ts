@@ -13,6 +13,8 @@ export class GetAppointmentsQueryHandler implements IQueryHandler<GetAppointment
   ) {}
 
   async execute(query: GetAppointmentsQuery): Promise<AppointmentEntity[]> {
+    // 1. Obtener el listado completo de citas agendadas con sus relaciones (ej. prospectos)
+    // Esto se usa en la vista general de la agenda de citas.
     return this.repository.findAll();
   }
 }
