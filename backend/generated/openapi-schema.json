@@ -360,6 +360,59 @@
       }
     },
     "/api/admission/prospects": {
+      "get": {
+        "operationId": "AdmissionController_getProspects",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (1-indexed)",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 15,
+              "example": 15,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search by prospect name",
+            "schema": {
+              "example": "Carlos",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return paginated prospects.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponsePaginatedProspectDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get prospects with pagination and search",
+        "tags": [
+          "Admission"
+        ]
+      },
       "post": {
         "operationId": "AdmissionController_createProspect",
         "parameters": [],
@@ -5691,7 +5744,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-20T17:08:57.760Z"
+            "example": "2026-05-20T17:29:53.356Z"
           },
           "path": {
             "type": "string",
@@ -5796,13 +5849,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-20T17:08:57.900Z"
+            "example": "2026-05-20T17:29:53.471Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-20T17:08:57.900Z"
+            "example": "2026-05-20T17:29:53.471Z"
           }
         },
         "required": [
@@ -5912,7 +5965,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Appointment date and time",
-            "example": "2026-05-20T17:08:58.284Z"
+            "example": "2026-05-20T17:29:53.835Z"
           },
           "type": {
             "type": "string",
@@ -5936,7 +5989,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-20T17:08:58.285Z"
+            "example": "2026-05-20T17:29:53.835Z"
           }
         },
         "required": [
@@ -5979,7 +6032,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Evaluation process date",
-            "example": "2026-05-20T17:08:58.285Z"
+            "example": "2026-05-20T17:29:53.836Z"
           },
           "evaluatorId": {
             "type": "object",
@@ -6061,7 +6114,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-20T17:08:58.285Z"
+            "example": "2026-05-20T17:29:53.836Z"
           }
         },
         "required": [
@@ -6104,13 +6157,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-20T17:08:58.285Z"
+            "example": "2026-05-20T17:29:53.836Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-20T17:08:58.285Z"
+            "example": "2026-05-20T17:29:53.836Z"
           }
         },
         "required": [
@@ -6154,6 +6207,56 @@
             "example": 2
           }
         }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "example": 50
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "size": {
+            "type": "number",
+            "example": 15
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 4
+          },
+          "hasNext": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "total",
+          "page",
+          "size",
+          "totalPages",
+          "hasNext"
+        ]
+      },
+      "ResponsePaginatedProspectDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProspectResponse"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
       },
       "CreateProspectRequest": {
         "type": "object",
@@ -6232,7 +6335,7 @@
           "date": {
             "type": "string",
             "description": "Appointment date and time in ISO format",
-            "example": "2026-05-20T17:08:58.287Z"
+            "example": "2026-05-20T17:29:53.838Z"
           },
           "type": {
             "type": "string",
