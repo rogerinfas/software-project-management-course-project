@@ -19,7 +19,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Plus, Phone, Calendar, User, FileText, CheckCircle } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -266,9 +266,10 @@ export default function PipelinePage() {
   const [nivel, setNivel] = React.useState<"INITIAL" | "PRIMARY" | "SECONDARY">("PRIMARY");
   const [prioridad, setPrioridad] = React.useState<"HIGH" | "MEDIUM" | "LOW">("MEDIUM");
 
-  const handleNivelChange = (newNivel: "INITIAL" | "PRIMARY" | "SECONDARY") => {
-    setNivel(newNivel);
-    setGrado(GRADOS_POR_NIVEL[newNivel][0]);
+  const handleNivelChange = (newNivel: string) => {
+    const typedNivel = newNivel as "INITIAL" | "PRIMARY" | "SECONDARY";
+    setNivel(typedNivel);
+    setGrado(GRADOS_POR_NIVEL[typedNivel][0]);
   };
 
   // Detalle / interacción
@@ -434,41 +435,44 @@ export default function PipelinePage() {
               </div>
               <div className="grid gap-2">
                 <Label>Nivel</Label>
-                <select
-                  value={nivel}
-                  onChange={(e) => handleNivelChange(e.target.value as any)}
-                  className="bg-background border-input text-foreground h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                >
-                  <option value="INITIAL">Inicial</option>
-                  <option value="PRIMARY">Primaria</option>
-                  <option value="SECONDARY">Secundaria</option>
-                </select>
+                <Select value={nivel} onValueChange={(v) => v && handleNivelChange(v)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccionar nivel" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="INITIAL">Inicial</SelectItem>
+                    <SelectItem value="PRIMARY">Primaria</SelectItem>
+                    <SelectItem value="SECONDARY">Secundaria</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label>Grado postulado</Label>
-                <select
-                  value={grado}
-                  onChange={(e) => setGrado(e.target.value)}
-                  className="bg-background border-input text-foreground h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                >
-                  {GRADOS_POR_NIVEL[nivel].map((g) => (
-                    <option key={g} value={g}>
-                      {g}
-                    </option>
-                  ))}
-                </select>
+                <Select value={grado} onValueChange={(v) => setGrado(v ?? grado)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccionar grado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {GRADOS_POR_NIVEL[nivel].map((g) => (
+                      <SelectItem key={g} value={g}>
+                        {g}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid gap-2">
                 <Label>Prioridad</Label>
-                <select
-                  value={prioridad}
-                  onChange={(e) => setPrioridad(e.target.value as any)}
-                  className="bg-background border-input text-foreground h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                >
-                  <option value="HIGH">Alta</option>
-                  <option value="MEDIUM">Media</option>
-                  <option value="LOW">Baja</option>
-                </select>
+                <Select value={prioridad} onValueChange={(v) => setPrioridad(v as "HIGH" | "MEDIUM" | "LOW")}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccionar prioridad" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="HIGH">Alta</SelectItem>
+                    <SelectItem value="MEDIUM">Media</SelectItem>
+                    <SelectItem value="LOW">Baja</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <DialogFooter>
@@ -541,7 +545,7 @@ export default function PipelinePage() {
       <Card className="border-border/80">
         <CardHeader className="border-b border-border/60">
           <CardTitle className="text-base flex items-center gap-2">
-            <FileText className="text-primary size-5" /> Historial de interacciones
+            Historial de interacciones
             {selected ? ` — ${selected.name}` : ""}
           </CardTitle>
         </CardHeader>
@@ -582,16 +586,17 @@ export default function PipelinePage() {
                 
                 <div className="flex flex-col gap-1.5">
                   <Label>Tipo</Label>
-                  <select
-                    value={tipo}
-                    onChange={(e) => setTipo(e.target.value)}
-                    className="bg-background border-input text-foreground h-8 w-full rounded-md border px-2 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
-                  >
-                    <option value="llamada">Llamada Telefónica</option>
-                    <option value="correo">Correo Electrónico</option>
-                    <option value="entrevista">Entrevista Presencial</option>
-                    <option value="nota">Nota de Seguimiento</option>
-                  </select>
+                  <Select value={tipo} onValueChange={(v) => setTipo(v ?? "llamada")}>
+                    <SelectTrigger className="w-full" size="sm">
+                      <SelectValue placeholder="Seleccionar tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="llamada">Llamada Telefónica</SelectItem>
+                      <SelectItem value="correo">Correo Electrónico</SelectItem>
+                      <SelectItem value="entrevista">Entrevista Presencial</SelectItem>
+                      <SelectItem value="nota">Nota de Seguimiento</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div className="flex flex-col gap-1.5">
@@ -614,26 +619,5 @@ export default function PipelinePage() {
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-// Dynamic loading fallback icon
-function Loader2({ className, ...props }: any) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={`lucide lucide-loader-2 ${className}`}
-      {...props}
-    >
-      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-    </svg>
   );
 }
