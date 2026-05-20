@@ -7,15 +7,21 @@ import {
   Clock,
   Plus,
   Search,
-  User,
-  FileText,
   Loader2,
-  CheckCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SelectInfinite } from "@/components/ui/select-infinite";
 import { backend } from "@/lib/api/types/backend";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -32,15 +38,57 @@ export default function AppointmentsPage() {
   const [appointmentType, setAppointmentType] = React.useState("ENTREVISTA");
   const [appointmentNotes, setAppointmentNotes] = React.useState("");
 
+  // Search state for SelectInfinite
+  const [prospectSearch, setProspectSearch] = React.useState("");
+  const [debouncedSearch, setDebouncedSearch] = React.useState("");
+
+  React.useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(prospectSearch);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [prospectSearch]);
+
   // Queries
-  const { data: stages, isLoading: stagesLoading } = backend.useQuery("get", "/api/admission/stages", {});
   const { data: appointments, isLoading: appointmentsLoading } = backend.useQuery("get", "/api/admission/appointments", {});
 
-  // Extract all prospects
-  const prospects = React.useMemo(() => {
-    if (!stages) return [];
-    return (stages as any).flatMap((s: any) => s.prospects || []);
-  }, [stages]);
+  // Infinite query for prospects search
+  const {
+    data: prospectsData,
+    fetchNextPage: fetchNextProspectsPage,
+    hasNextPage: hasNextProspectsPage,
+    isFetchingNextPage: isFetchingNextProspectsPage,
+    isLoading: prospectsLoading,
+  } = backend.useInfiniteQuery(
+    "get",
+    "/api/admission/prospects",
+    {
+      params: {
+        query: {
+          size: 15,
+          search: debouncedSearch || undefined,
+        },
+      },
+    },
+    {
+      initialPageParam: 1,
+      getNextPageParam: (lastPage: any) => {
+        if (!lastPage || !lastPage.meta) return undefined;
+        return lastPage.meta.hasNext ? lastPage.meta.page + 1 : undefined;
+      },
+    }
+  );
+
+  // Flatten prospects from paginated pages
+  const prospectsOptions = React.useMemo(() => {
+    if (!prospectsData) return [];
+    return prospectsData.pages.flatMap((page: any) =>
+      (page.data || []).map((p: any) => ({
+        value: p.id,
+        label: `${p.name} (${p.targetGrade})`,
+      }))
+    );
+  }, [prospectsData]);
 
   // Mutations
   const scheduleMutation = backend.useMutation("post", "/api/admission/appointments", {
@@ -51,6 +99,7 @@ export default function AppointmentsPage() {
       setAppointmentDate("");
       setAppointmentNotes("");
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/appointments"] });
+      queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/prospects"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
@@ -86,7 +135,7 @@ export default function AppointmentsPage() {
     });
   };
 
-  if (stagesLoading || appointmentsLoading) {
+  if (appointmentsLoading) {
     return (
       <div className="flex h-[75vh] flex-col items-center justify-center gap-3">
         <Loader2 className="text-primary size-8 animate-spin" />
@@ -180,20 +229,24 @@ export default function AppointmentsPage() {
 
               <div className="flex flex-col gap-1.5 mt-2">
                 <Label htmlFor="prospect">Postulante *</Label>
-                <select
-                  id="prospect"
-                  value={selectedProspectId}
-                  onChange={(e) => setSelectedProspectId(e.target.value)}
-                  className="bg-background border-input text-foreground h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                  required
-                >
-                  <option value="">Selecciona un postulante...</option>
-                  {prospects.map((p: any) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} ({p.targetGrade})
-                    </option>
-                  ))}
-                </select>
+                <div className="flex flex-col gap-2">
+                  <Input
+                    placeholder="Escribe para buscar..."
+                    value={prospectSearch}
+                    onChange={(e) => setProspectSearch(e.target.value)}
+                    className="h-8 text-xs"
+                  />
+                  <SelectInfinite
+                    value={selectedProspectId}
+                    onValueChange={setSelectedProspectId}
+                    options={prospectsOptions}
+                    placeholder="Selecciona un postulante..."
+                    onScrollEnd={fetchNextProspectsPage}
+                    hasNextPage={hasNextProspectsPage}
+                    isLoadingMore={isFetchingNextProspectsPage}
+                    emptyMessage={prospectsLoading ? "Buscando postulantes..." : "No se encontraron postulantes"}
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -220,29 +273,28 @@ export default function AppointmentsPage() {
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="type">Tipo de Cita *</Label>
-                <select
-                  id="type"
-                  value={appointmentType}
-                  onChange={(e) => setAppointmentType(e.target.value)}
-                  className="bg-background border-input text-foreground h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                  required
-                >
-                  <option value="ENTREVISTA">Entrevista Familiar</option>
-                  <option value="EVALUACION_PSICOLOGICA">Evaluación Psicológica</option>
-                  <option value="EXAMEN_CONOCIMIENTO">Examen de Conocimientos</option>
-                  <option value="ENTREGA_RESULTADOS">Entrega de Resultados</option>
-                </select>
+                <Label>Tipo de Cita *</Label>
+                <Select value={appointmentType} onValueChange={(v) => setAppointmentType(v ?? "ENTREVISTA")}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Seleccionar tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ENTREVISTA">Entrevista Familiar</SelectItem>
+                    <SelectItem value="EVALUACION_PSICOLOGICA">Evaluación Psicológica</SelectItem>
+                    <SelectItem value="EXAMEN_CONOCIMIENTO">Examen de Conocimientos</SelectItem>
+                    <SelectItem value="ENTREGA_RESULTADOS">Entrega de Resultados</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="notes">Notas / Indicaciones</Label>
-                <textarea
+                <Textarea
                   id="notes"
                   placeholder="ej. Traer libreta original..."
                   value={appointmentNotes}
                   onChange={(e) => setAppointmentNotes(e.target.value)}
-                  className="bg-background border-input text-foreground min-h-[80px] w-full rounded-md border p-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                  className="min-h-[80px]"
                 />
               </div>
 
@@ -267,7 +319,7 @@ export default function AppointmentsPage() {
               </h3>
               <ul className="text-muted-foreground text-xs leading-relaxed flex flex-col gap-2.5 list-disc pl-4 mt-2">
                 <li>Las citas y entrevistas deben ser programadas previo acuerdo telefónico o por correo con el apoderado.</li>
-                <li>Los resultados de las evaluaciones psicológicas y académicas se registran directamente en el panel de **Evaluación / Dictamen**.</li>
+                <li>Los resultados de las evaluaciones psicológicas y académicas se registran directamente en el panel de <strong>Evaluación / Dictamen</strong>.</li>
                 <li>Es obligatorio detallar las notas o requisitos especiales para cada tipo de evaluación (ej. portar cartuchera).</li>
               </ul>
               <Button
