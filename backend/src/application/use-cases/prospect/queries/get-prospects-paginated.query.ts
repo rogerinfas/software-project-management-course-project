@@ -26,6 +26,9 @@ export class GetProspectsPaginatedQueryHandler
   async execute(
     query: GetProspectsPaginatedQuery,
   ): Promise<PaginatedResult<ProspectEntity>> {
+    // 1. Ejecutar la query paginada en el repositorio de postulantes
+    // Pasa la página (1-indexed), el tamaño de página y el término de búsqueda opcional.
+    // Esto optimiza el consumo de red y base de datos evitando traer miles de registros a la vez.
     return this.repository.findManyPaginated(
       query.page,
       query.size,
