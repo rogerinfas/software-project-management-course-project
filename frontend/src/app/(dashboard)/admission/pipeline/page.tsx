@@ -421,7 +421,14 @@ export default function PipelinePage() {
                   <option value="1° primaria">1° primaria</option>
                   <option value="2° primaria">2° primaria</option>
                   <option value="3° primaria">3° primaria</option>
+                  <option value="4° primaria">4° primaria</option>
+                  <option value="5° primaria">5° primaria</option>
+                  <option value="6° primaria">6° primaria</option>
                   <option value="1° secundaria">1° secundaria</option>
+                  <option value="2° secundaria">2° secundaria</option>
+                  <option value="3° secundaria">3° secundaria</option>
+                  <option value="4° secundaria">4° secundaria</option>
+                  <option value="5° secundaria">5° secundaria</option>
                 </select>
               </div>
               <div className="grid gap-2">
