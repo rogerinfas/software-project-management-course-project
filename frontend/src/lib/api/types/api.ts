@@ -1866,7 +1866,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-05-19T22:03:45.724Z
+             * @example 2026-05-20T17:08:57.760Z
              */
             timestamp: string;
             /**
@@ -1937,13 +1937,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-19T22:03:45.932Z
+             * @example 2026-05-20T17:08:57.900Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-19T22:03:45.932Z
+             * @example 2026-05-20T17:08:57.900Z
              */
             updatedAt: string;
         };
@@ -1981,36 +1981,254 @@ export interface components {
             /** @description URL to the user avatar image */
             image?: Record<string, never>;
         };
-        CreateStageDto: {
+        AppointmentResponse: {
+            /**
+             * @description Unique appointment identifier
+             * @example appointment-123
+             */
+            id: string;
+            /**
+             * @description ID of the associated prospect
+             * @example prospect-123
+             */
+            prospectId: string;
+            /**
+             * Format: date-time
+             * @description Appointment date and time
+             * @example 2026-05-20T17:08:58.284Z
+             */
+            date: string;
+            /**
+             * @description Appointment type
+             * @example Entrevista Familiar
+             */
+            type: string;
+            /**
+             * @description Additional notes or comments
+             * @example Padres asistirán con el alumno.
+             */
+            notes?: Record<string, never>;
+            /** @description Associated prospect details */
+            prospect?: components["schemas"]["ProspectResponse"];
+            /**
+             * Format: date-time
+             * @description Creation date
+             * @example 2026-05-20T17:08:58.285Z
+             */
+            createdAt: string;
+        };
+        EvaluationResultResponse: {
+            /**
+             * @description Unique evaluation identifier
+             * @example eval-123
+             */
+            id: string;
+            /**
+             * @description ID of the associated prospect
+             * @example prospect-123
+             */
+            prospectId: string;
+            /**
+             * @description Evaluation status status
+             * @example FIT
+             * @enum {string}
+             */
+            aptitude: "FIT" | "UNFIT" | "PENDING";
+            /**
+             * @description Evaluation feedback comments
+             * @example Buen desempeño en habilidades sociales.
+             */
+            comments?: Record<string, never>;
+            /**
+             * Format: date-time
+             * @description Evaluation process date
+             * @example 2026-05-20T17:08:58.285Z
+             */
+            date: string;
+            /**
+             * @description ID of the evaluator staff
+             * @example staff-456
+             */
+            evaluatorId?: Record<string, never>;
+        };
+        ProspectResponse: {
+            /**
+             * @description Unique prospect identifier
+             * @example prospect-123
+             */
+            id: string;
+            /**
+             * @description Prospect full name
+             * @example Carlos Delgado
+             */
             name: string;
+            /**
+             * @description Contact phone number
+             * @example +51 987654321
+             */
+            phone: string;
+            /**
+             * @description Target grade level
+             * @example 1ro de Secundaria
+             */
+            targetGrade: string;
+            /**
+             * @description Educational level
+             * @example SECONDARY
+             * @enum {string}
+             */
+            level: "INITIAL" | "PRIMARY" | "SECONDARY";
+            /**
+             * @description Prospect priority level
+             * @example MEDIUM
+             * @enum {string}
+             */
+            priority: "HIGH" | "MEDIUM" | "LOW";
+            /**
+             * @description Current admission stage ID
+             * @example stage-123
+             */
+            currentStageId: string;
+            /** @description List of scheduled appointments */
+            appointments?: components["schemas"]["AppointmentResponse"][];
+            /** @description Evaluation result if processed */
+            evaluation?: components["schemas"]["EvaluationResultResponse"];
+            /**
+             * Format: date-time
+             * @description Creation date
+             * @example 2026-05-20T17:08:58.285Z
+             */
+            createdAt: string;
+        };
+        AdmissionStageResponse: {
+            /**
+             * @description Unique stage identifier
+             * @example stage-123
+             */
+            id: string;
+            /**
+             * @description Stage name
+             * @example Entrevista
+             */
+            name: string;
+            /**
+             * @description Display order
+             * @example 1
+             */
+            order: number;
+            /** @description List of prospects currently in this stage */
+            prospects?: components["schemas"]["ProspectResponse"][];
+            /**
+             * Format: date-time
+             * @description Creation date
+             * @example 2026-05-20T17:08:58.285Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Last update date
+             * @example 2026-05-20T17:08:58.285Z
+             */
+            updatedAt: string;
+        };
+        CreateStageRequest: {
+            /**
+             * @description Stage name
+             * @example Entrevista
+             */
+            name: string;
+            /**
+             * @description Stage display order
+             * @example 1
+             */
             order: number;
         };
-        UpdateStageDto: {
+        UpdateStageRequest: {
+            /**
+             * @description Stage name
+             * @example Entrevista Modificada
+             */
             name?: string;
+            /**
+             * @description Stage display order
+             * @example 2
+             */
             order?: number;
         };
-        CreateProspectDto: {
+        CreateProspectRequest: {
+            /**
+             * @description Prospect full name
+             * @example Carlos Delgado
+             */
             name: string;
+            /**
+             * @description Contact phone number
+             * @example +51 987654321
+             */
             phone: string;
+            /**
+             * @description Target grade level
+             * @example 1ro de Secundaria
+             */
             targetGrade: string;
-            /** @enum {string} */
-            level: "INICIAL" | "PRIMARIA" | "SECUNDARIA";
-            /** @enum {string} */
-            priority: "ALTA" | "MEDIA" | "BAJA";
+            /**
+             * @description Educational level
+             * @example SECONDARY
+             * @enum {string}
+             */
+            level: "INITIAL" | "PRIMARY" | "SECONDARY";
+            /**
+             * @description Prospect priority level
+             * @example MEDIUM
+             * @enum {string}
+             */
+            priority: "HIGH" | "MEDIUM" | "LOW";
+            /**
+             * @description Initial admission stage ID
+             * @example stage-123
+             */
             currentStageId: string;
         };
-        UpdateProspectStageDto: {
+        UpdateProspectStageRequest: {
+            /**
+             * @description Target admission stage ID
+             * @example stage-456
+             */
             currentStageId: string;
         };
-        CreateAppointmentDto: {
+        CreateAppointmentRequest: {
+            /**
+             * @description ID of the associated prospect
+             * @example prospect-123
+             */
             prospectId: string;
+            /**
+             * @description Appointment date and time in ISO format
+             * @example 2026-05-20T17:08:58.287Z
+             */
             date: string;
+            /**
+             * @description Appointment type (e.g. Psicopedagógica, Entrevista)
+             * @example Entrevista Familiar
+             */
             type: string;
+            /**
+             * @description Additional notes or comments
+             * @example Padres asistirán con el alumno.
+             */
             notes?: string;
         };
-        SaveEvaluationDto: {
-            /** @enum {string} */
-            aptitude: "APTO" | "NO_APTO" | "PENDIENTE";
+        SaveEvaluationRequest: {
+            /**
+             * @description Evaluation aptitude status
+             * @example FIT
+             * @enum {string}
+             */
+            aptitude: "FIT" | "UNFIT" | "PENDING";
+            /**
+             * @description Evaluation feedback comments
+             * @example Buen desempeño en habilidades sociales.
+             */
             comments?: string;
         };
         User: {
@@ -2291,7 +2509,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AdmissionStageResponse"][];
+                };
             };
         };
     };
@@ -2304,15 +2524,18 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateStageDto"];
+                "application/json": components["schemas"]["CreateStageRequest"];
             };
         };
         responses: {
+            /** @description Stage created successfully. */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AdmissionStageResponse"];
+                };
             };
         };
     };
@@ -2327,15 +2550,18 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateStageDto"];
+                "application/json": components["schemas"]["UpdateStageRequest"];
             };
         };
         responses: {
+            /** @description Stage updated successfully. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AdmissionStageResponse"];
+                };
             };
         };
     };
@@ -2350,6 +2576,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Stage deleted successfully. */
             204: {
                 headers: {
                     [name: string]: unknown;
@@ -2367,15 +2594,18 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateProspectDto"];
+                "application/json": components["schemas"]["CreateProspectRequest"];
             };
         };
         responses: {
+            /** @description Prospect created successfully. */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ProspectResponse"];
+                };
             };
         };
     };
@@ -2390,15 +2620,18 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["UpdateProspectStageDto"];
+                "application/json": components["schemas"]["UpdateProspectStageRequest"];
             };
         };
         responses: {
+            /** @description Prospect stage updated successfully. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ProspectResponse"];
+                };
             };
         };
     };
@@ -2411,11 +2644,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Return all appointments. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"][];
+                };
             };
         };
     };
@@ -2428,15 +2664,18 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateAppointmentDto"];
+                "application/json": components["schemas"]["CreateAppointmentRequest"];
             };
         };
         responses: {
+            /** @description Appointment scheduled successfully. */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"];
+                };
             };
         };
     };
@@ -2451,15 +2690,18 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SaveEvaluationDto"];
+                "application/json": components["schemas"]["SaveEvaluationRequest"];
             };
         };
         responses: {
+            /** @description Evaluation saved successfully. */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["EvaluationResultResponse"];
+                };
             };
         };
     };

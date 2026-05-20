@@ -53,18 +53,18 @@ import { backend } from "@/lib/api/types/backend";
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const PRIORIDAD_VARIANT: Record<
-  "ALTA" | "MEDIA" | "BAJA",
+  "HIGH" | "MEDIUM" | "LOW",
   "default" | "secondary" | "outline"
 > = {
-  ALTA: "default",
-  MEDIA: "secondary",
-  BAJA: "outline",
+  HIGH: "default",
+  MEDIUM: "secondary",
+  LOW: "outline",
 };
 
-const PRIORIDAD_COLOR: Record<"ALTA" | "MEDIA" | "BAJA", string> = {
-  ALTA: "border-l-red-500",
-  MEDIA: "border-l-yellow-500",
-  BAJA: "border-l-slate-400",
+const PRIORIDAD_COLOR: Record<"HIGH" | "MEDIUM" | "LOW", string> = {
+  HIGH: "border-l-red-500",
+  MEDIUM: "border-l-yellow-500",
+  LOW: "border-l-slate-400",
 };
 
 // ── ProspectCard (draggable) ──────────────────────────────────────────────────
@@ -74,7 +74,7 @@ interface ProspectCardProps {
   nombre: string;
   gradoPostulado: string;
   celular: string;
-  prioridad: "ALTA" | "MEDIA" | "BAJA";
+  prioridad: "HIGH" | "MEDIUM" | "LOW";
   onDetail: () => void;
   isDragOverlay?: boolean;
 }
@@ -117,7 +117,7 @@ function ProspectCard({
           <p className="text-muted-foreground">{celular}</p>
         </div>
         <Badge variant={PRIORIDAD_VARIANT[prioridad]} className="text-[10px] px-1 py-0 shrink-0">
-          {prioridad === "ALTA" ? "Alta" : prioridad === "MEDIA" ? "Media" : "Baja"}
+          {prioridad === "HIGH" ? "Alta" : prioridad === "MEDIUM" ? "Media" : "Baja"}
         </Badge>
       </div>
       {!isDragOverlay && (
@@ -182,8 +182,8 @@ function KanbanColumn({ id, title, orden, prospectIds, children, isOver }: Kanba
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 const GRADOS_POR_NIVEL = {
-  INICIAL: ["Inicial 3 años", "Inicial 4 años", "Inicial 5 años"],
-  PRIMARIA: [
+  INITIAL: ["Inicial 3 años", "Inicial 4 años", "Inicial 5 años"],
+  PRIMARY: [
     "1° primaria",
     "2° primaria",
     "3° primaria",
@@ -191,7 +191,7 @@ const GRADOS_POR_NIVEL = {
     "5° primaria",
     "6° primaria",
   ],
-  SECUNDARIA: [
+  SECONDARY: [
     "1° secundaria",
     "2° secundaria",
     "3° secundaria",
@@ -224,8 +224,8 @@ export default function PipelinePage() {
       setNombre("");
       setCelular("");
       setGrado("1° primaria");
-      setNivel("PRIMARIA");
-      setPrioridad("MEDIA");
+      setNivel("PRIMARY");
+      setPrioridad("MEDIUM");
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
@@ -263,10 +263,10 @@ export default function PipelinePage() {
   const [nombre, setNombre] = React.useState("");
   const [celular, setCelular] = React.useState("");
   const [grado, setGrado] = React.useState("1° primaria");
-  const [nivel, setNivel] = React.useState<"INICIAL" | "PRIMARIA" | "SECUNDARIA">("PRIMARIA");
-  const [prioridad, setPrioridad] = React.useState<"ALTA" | "MEDIA" | "BAJA">("MEDIA");
+  const [nivel, setNivel] = React.useState<"INITIAL" | "PRIMARY" | "SECONDARY">("PRIMARY");
+  const [prioridad, setPrioridad] = React.useState<"HIGH" | "MEDIUM" | "LOW">("MEDIUM");
 
-  const handleNivelChange = (newNivel: "INICIAL" | "PRIMARIA" | "SECUNDARIA") => {
+  const handleNivelChange = (newNivel: "INITIAL" | "PRIMARY" | "SECONDARY") => {
     setNivel(newNivel);
     setGrado(GRADOS_POR_NIVEL[newNivel][0]);
   };
@@ -439,9 +439,9 @@ export default function PipelinePage() {
                   onChange={(e) => handleNivelChange(e.target.value as any)}
                   className="bg-background border-input text-foreground h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
                 >
-                  <option value="INICIAL">Inicial</option>
-                  <option value="PRIMARIA">Primaria</option>
-                  <option value="SECUNDARIA">Secundaria</option>
+                  <option value="INITIAL">Inicial</option>
+                  <option value="PRIMARY">Primaria</option>
+                  <option value="SECONDARY">Secundaria</option>
                 </select>
               </div>
               <div className="grid gap-2">
@@ -465,9 +465,9 @@ export default function PipelinePage() {
                   onChange={(e) => setPrioridad(e.target.value as any)}
                   className="bg-background border-input text-foreground h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
                 >
-                  <option value="ALTA">Alta</option>
-                  <option value="MEDIA">Media</option>
-                  <option value="BAJA">Baja</option>
+                  <option value="HIGH">Alta</option>
+                  <option value="MEDIUM">Media</option>
+                  <option value="LOW">Baja</option>
                 </select>
               </div>
             </div>
