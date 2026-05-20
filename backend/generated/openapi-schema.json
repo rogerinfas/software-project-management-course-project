@@ -241,6 +241,293 @@
         ]
       }
     },
+    "/api/admission/stages": {
+      "get": {
+        "operationId": "AdmissionController_getStages",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all stages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AdmissionStageResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all admission stages with prospects",
+        "tags": [
+          "Admission"
+        ]
+      },
+      "post": {
+        "operationId": "AdmissionController_createStage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Stage created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdmissionStageResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new admission stage",
+        "tags": [
+          "Admission"
+        ]
+      }
+    },
+    "/api/admission/stages/{id}": {
+      "put": {
+        "operationId": "AdmissionController_updateStage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stage updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdmissionStageResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an admission stage",
+        "tags": [
+          "Admission"
+        ]
+      },
+      "delete": {
+        "operationId": "AdmissionController_deleteStage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Stage deleted successfully."
+          }
+        },
+        "summary": "Delete an admission stage",
+        "tags": [
+          "Admission"
+        ]
+      }
+    },
+    "/api/admission/prospects": {
+      "post": {
+        "operationId": "AdmissionController_createProspect",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProspectRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Prospect created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProspectResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new prospect",
+        "tags": [
+          "Admission"
+        ]
+      }
+    },
+    "/api/admission/prospects/{id}/stage": {
+      "patch": {
+        "operationId": "AdmissionController_updateProspectStage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProspectStageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prospect stage updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProspectResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update stage of a prospect",
+        "tags": [
+          "Admission"
+        ]
+      }
+    },
+    "/api/admission/appointments": {
+      "get": {
+        "operationId": "AdmissionController_getAppointments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all appointments.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AppointmentResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all scheduled appointments",
+        "tags": [
+          "Admission"
+        ]
+      },
+      "post": {
+        "operationId": "AdmissionController_createAppointment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAppointmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Appointment scheduled successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Schedule a new appointment",
+        "tags": [
+          "Admission"
+        ]
+      }
+    },
+    "/api/admission/prospects/{id}/evaluation": {
+      "patch": {
+        "operationId": "AdmissionController_saveEvaluation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveEvaluationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Evaluation saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationResultResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Save evaluation result of a prospect",
+        "tags": [
+          "Admission"
+        ]
+      }
+    },
     "/api/auth/sign-in/social": {
       "post": {
         "tags": [
@@ -905,7 +1192,7 @@
           "Default"
         ],
         "description": "Get the current session",
-        "operationId": "getSession",
+        "operationId": "getSession_post",
         "security": [
           {
             "bearerAuth": []
@@ -5404,7 +5691,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-19T17:31:03.703Z"
+            "example": "2026-05-20T16:34:01.212Z"
           },
           "path": {
             "type": "string",
@@ -5509,13 +5796,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-19T17:31:03.841Z"
+            "example": "2026-05-20T16:34:01.320Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-19T17:31:03.841Z"
+            "example": "2026-05-20T16:34:01.320Z"
           }
         },
         "required": [
@@ -5607,6 +5894,385 @@
             "description": "URL to the user avatar image"
           }
         }
+      },
+      "AppointmentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique appointment identifier",
+            "example": "appointment-123"
+          },
+          "prospectId": {
+            "type": "string",
+            "description": "ID of the associated prospect",
+            "example": "prospect-123"
+          },
+          "date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Appointment date and time",
+            "example": "2026-05-20T16:34:01.674Z"
+          },
+          "type": {
+            "type": "string",
+            "description": "Appointment type",
+            "example": "Entrevista Familiar"
+          },
+          "notes": {
+            "type": "object",
+            "description": "Additional notes or comments",
+            "example": "Padres asistirán con el alumno."
+          },
+          "prospect": {
+            "description": "Associated prospect details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ProspectResponse"
+              }
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation date",
+            "example": "2026-05-20T16:34:01.675Z"
+          }
+        },
+        "required": [
+          "id",
+          "prospectId",
+          "date",
+          "type",
+          "createdAt"
+        ]
+      },
+      "EvaluationResultResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique evaluation identifier",
+            "example": "eval-123"
+          },
+          "prospectId": {
+            "type": "string",
+            "description": "ID of the associated prospect",
+            "example": "prospect-123"
+          },
+          "aptitude": {
+            "type": "string",
+            "description": "Evaluation status status",
+            "enum": [
+              "FIT",
+              "UNFIT",
+              "PENDING"
+            ],
+            "example": "FIT"
+          },
+          "comments": {
+            "type": "object",
+            "description": "Evaluation feedback comments",
+            "example": "Buen desempeño en habilidades sociales."
+          },
+          "date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Evaluation process date",
+            "example": "2026-05-20T16:34:01.675Z"
+          },
+          "evaluatorId": {
+            "type": "object",
+            "description": "ID of the evaluator staff",
+            "example": "staff-456"
+          }
+        },
+        "required": [
+          "id",
+          "prospectId",
+          "aptitude",
+          "date"
+        ]
+      },
+      "ProspectResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique prospect identifier",
+            "example": "prospect-123"
+          },
+          "name": {
+            "type": "string",
+            "description": "Prospect full name",
+            "example": "Carlos Delgado"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Contact phone number",
+            "example": "+51 987654321"
+          },
+          "targetGrade": {
+            "type": "string",
+            "description": "Target grade level",
+            "example": "1ro de Secundaria"
+          },
+          "level": {
+            "type": "string",
+            "description": "Educational level",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "example": "SECONDARY"
+          },
+          "priority": {
+            "type": "string",
+            "description": "Prospect priority level",
+            "enum": [
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ],
+            "example": "MEDIUM"
+          },
+          "currentStageId": {
+            "type": "string",
+            "description": "Current admission stage ID",
+            "example": "stage-123"
+          },
+          "appointments": {
+            "description": "List of scheduled appointments",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AppointmentResponse"
+            }
+          },
+          "evaluation": {
+            "description": "Evaluation result if processed",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EvaluationResultResponse"
+              }
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation date",
+            "example": "2026-05-20T16:34:01.675Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone",
+          "targetGrade",
+          "level",
+          "priority",
+          "currentStageId",
+          "createdAt"
+        ]
+      },
+      "AdmissionStageResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique stage identifier",
+            "example": "stage-123"
+          },
+          "name": {
+            "type": "string",
+            "description": "Stage name",
+            "example": "Entrevista"
+          },
+          "order": {
+            "type": "number",
+            "description": "Display order",
+            "example": 1
+          },
+          "prospects": {
+            "description": "List of prospects currently in this stage",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProspectResponse"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation date",
+            "example": "2026-05-20T16:34:01.675Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Last update date",
+            "example": "2026-05-20T16:34:01.675Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "order",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateStageRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Stage name",
+            "example": "Entrevista"
+          },
+          "order": {
+            "type": "number",
+            "description": "Stage display order",
+            "example": 1
+          }
+        },
+        "required": [
+          "name",
+          "order"
+        ]
+      },
+      "UpdateStageRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Stage name",
+            "example": "Entrevista Modificada"
+          },
+          "order": {
+            "type": "number",
+            "description": "Stage display order",
+            "example": 2
+          }
+        }
+      },
+      "CreateProspectRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Prospect full name",
+            "example": "Carlos Delgado"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Contact phone number",
+            "example": "+51 987654321"
+          },
+          "targetGrade": {
+            "type": "string",
+            "description": "Target grade level",
+            "example": "1ro de Secundaria"
+          },
+          "level": {
+            "type": "string",
+            "description": "Educational level",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "example": "SECONDARY"
+          },
+          "priority": {
+            "type": "string",
+            "description": "Prospect priority level",
+            "enum": [
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ],
+            "example": "MEDIUM"
+          },
+          "currentStageId": {
+            "type": "string",
+            "description": "Initial admission stage ID",
+            "example": "stage-123"
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "targetGrade",
+          "level",
+          "priority",
+          "currentStageId"
+        ]
+      },
+      "UpdateProspectStageRequest": {
+        "type": "object",
+        "properties": {
+          "currentStageId": {
+            "type": "string",
+            "description": "Target admission stage ID",
+            "example": "stage-456"
+          }
+        },
+        "required": [
+          "currentStageId"
+        ]
+      },
+      "CreateAppointmentRequest": {
+        "type": "object",
+        "properties": {
+          "prospectId": {
+            "type": "string",
+            "description": "ID of the associated prospect",
+            "example": "prospect-123"
+          },
+          "date": {
+            "type": "string",
+            "description": "Appointment date and time in ISO format",
+            "example": "2026-05-20T16:34:01.677Z"
+          },
+          "type": {
+            "type": "string",
+            "description": "Appointment type (e.g. Psicopedagógica, Entrevista)",
+            "example": "Entrevista Familiar"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes or comments",
+            "example": "Padres asistirán con el alumno."
+          }
+        },
+        "required": [
+          "prospectId",
+          "date",
+          "type"
+        ]
+      },
+      "SaveEvaluationRequest": {
+        "type": "object",
+        "properties": {
+          "aptitude": {
+            "type": "string",
+            "description": "Evaluation aptitude status",
+            "enum": [
+              "FIT",
+              "UNFIT",
+              "PENDING"
+            ],
+            "example": "FIT"
+          },
+          "comments": {
+            "type": "string",
+            "description": "Evaluation feedback comments",
+            "example": "Buen desempeño en habilidades sociales."
+          }
+        },
+        "required": [
+          "aptitude"
+        ]
       },
       "User": {
         "type": "object",
