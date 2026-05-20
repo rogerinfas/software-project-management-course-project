@@ -22,8 +22,11 @@ export class GetUsersQueryHandler implements IQueryHandler<
   ) {}
 
   async execute(query: GetUsersQuery): Promise<PaginatedResult<UserEntity>> {
+    // 1. Establecer valores de paginación por defecto si no se especifican en la consulta (page=1, size=10)
     const page = query.page ?? 1;
     const size = query.size ?? 10;
+
+    // 2. Obtener el listado paginado de usuarios a través del repositorio
     return this.userRepository.findManyPaginated(page, size);
   }
 }
