@@ -26,6 +26,7 @@ export default function EvaluationPage() {
   // Form states
   const [aptitudeStatus, setAptitudeStatus] = React.useState<"FIT" | "UNFIT" | "PENDING">("PENDING");
   const [comments, setComments] = React.useState("");
+  const [activeTab, setActiveTab] = React.useState<"verdict" | "process" | "profile">("verdict");
 
   // Queries
   const { data: stages, isLoading } = backend.useQuery("get", "/api/admission/stages", {});
@@ -33,7 +34,12 @@ export default function EvaluationPage() {
   // Extract all prospects
   const prospects = React.useMemo(() => {
     if (!stages) return [];
-    return (stages as any).flatMap((s: any) => s.prospects || []);
+    return (stages as any).flatMap((s: any) =>
+      (s.prospects || []).map((p: any) => ({
+        ...p,
+        stageName: s.name,
+      }))
+    );
   }, [stages]);
 
   // Filtered prospects
@@ -52,6 +58,7 @@ export default function EvaluationPage() {
     if (selectedProspect) {
       setAptitudeStatus((selectedProspect.evaluation?.aptitude as any) || "PENDING");
       setComments(selectedProspect.evaluation?.comments || "");
+      setActiveTab("verdict");
     }
   }, [selectedProspect]);
 
@@ -179,76 +186,207 @@ export default function EvaluationPage() {
                 </div>
               </div>
 
-              {/* Scheduled Citas Info */}
-              <div className="flex flex-col gap-2 bg-muted/20 border border-border/40 rounded-lg p-4">
-                <span className="text-foreground text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <Calendar className="size-3.5" /> Historial de Citas del Postulante
-                </span>
-                {selectedProspect.appointments && selectedProspect.appointments.length > 0 ? (
-                  <div className="flex flex-col gap-1.5 mt-2">
-                    {selectedProspect.appointments.map((a: any) => (
-                      <div key={a.id} className="text-xs text-muted-foreground flex items-center justify-between border-b border-border/20 pb-1.5 last:border-0 last:pb-0">
-                        <span>{a.type}</span>
-                        <span className="font-semibold text-foreground">
-                          {new Date(a.date).toLocaleDateString()}
+              {/* Tabs Switcher */}
+              <div className="flex border-b border-border/60 gap-2">
+                {[
+                  { id: "verdict", label: "📁 Dictamen Final" },
+                  { id: "process", label: "📈 Proceso y Citas" },
+                  { id: "profile", label: "👤 Ficha Postulante" },
+                ].map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id as any)}
+                      className={`relative px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all border-b-2 -mb-[2px] cursor-pointer ${
+                        isActive
+                          ? "border-primary text-primary font-bold"
+                          : "border-transparent text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Tab 1: Dictamen Final */}
+              {activeTab === "verdict" && (
+                <div className="flex flex-col gap-6 animate-in fade-in-50 duration-200">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                      <Label className="text-sm font-semibold">Dictamen de Aptitud *</Label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[
+                          { value: "PENDING", label: "Pendiente", color: "border-yellow-500/50 hover:bg-yellow-500/5 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400" },
+                          { value: "FIT", label: "Apto", color: "border-green-500/50 hover:bg-green-500/5 bg-green-500/10 text-green-600 dark:text-green-400" },
+                          { value: "UNFIT", label: "No Apto", color: "border-red-500/50 hover:bg-red-500/5 bg-red-500/10 text-red-600 dark:text-red-400" },
+                        ].map((opt) => {
+                          const isActive = aptitudeStatus === opt.value;
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              onClick={() => setAptitudeStatus(opt.value as any)}
+                              className={`cursor-pointer border rounded-lg p-3 text-center text-xs font-semibold transition-all ${
+                                isActive
+                                  ? `${opt.color} ring-1 ring-primary border-primary`
+                                  : "border-border/60 hover:bg-muted/40"
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <Label htmlFor="comments">Observaciones / Comentarios del Evaluador</Label>
+                      <Textarea
+                        id="comments"
+                        placeholder="Detalla los puntos fuertes o limitaciones encontradas en la entrevista/examen..."
+                        value={comments}
+                        onChange={(e) => setComments(e.target.value)}
+                        className="min-h-[120px]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end mt-2">
+                    <Button type="submit" disabled={evaluateMutation.isPending} className="cursor-pointer">
+                      {evaluateMutation.isPending ? "Guardando..." : "Guardar Calificación"}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 2: Proceso de Admisión (Timeline) */}
+              {activeTab === "process" && (
+                <div className="flex flex-col gap-4 animate-in fade-in-50 duration-200">
+                  <div className="bg-muted/30 border border-border/50 rounded-lg p-4 flex items-center justify-between gap-4">
+                    <div className="flex flex-col">
+                      <span className="text-[0.65rem] text-muted-foreground font-bold uppercase tracking-wider">Etapa Actual en Admisión</span>
+                      <span className="text-sm font-semibold text-foreground mt-0.5">{selectedProspect.stageName || "Sin Etapa"}</span>
+                    </div>
+                    <div className="bg-primary/10 text-primary px-2.5 py-1 rounded text-xs font-bold uppercase border border-primary/20">
+                      En Proceso
+                    </div>
+                  </div>
+
+                  <div className="relative border-l-2 border-border/60 pl-6 ml-3 flex flex-col gap-6 my-4">
+                    {/* Paso 1: Registro */}
+                    <div className="relative">
+                      <span className="absolute -left-[31px] top-0 bg-background border-2 border-primary rounded-full size-4 flex items-center justify-center shrink-0">
+                        <span className="bg-primary rounded-full size-1.5" />
+                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-foreground">Registro del Postulante</span>
+                        <span className="text-[0.7rem] text-muted-foreground mt-0.5">
+                          Ingreso a la base de admisiones el {new Date(selectedProspect.createdAt).toLocaleDateString("es-ES", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric"
+                          })}
                         </span>
                       </div>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-xs text-muted-foreground italic mt-1">
-                    No registra citas programadas para este proceso.
-                  </span>
-                )}
-              </div>
+                    </div>
 
-              {/* Form Input fields */}
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <Label className="text-sm font-semibold">Dictamen de Aptitud *</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { value: "PENDING", label: "Pendiente", color: "border-yellow-500/50 hover:bg-yellow-500/5 bg-yellow-500/10" },
-                      { value: "FIT", label: "Apto", color: "border-green-500/50 hover:bg-green-500/5 bg-green-500/10" },
-                      { value: "UNFIT", label: "No Apto", color: "border-red-500/50 hover:bg-red-500/5 bg-red-500/10" },
-                    ].map((opt) => {
-                      const isActive = aptitudeStatus === opt.value;
-                      return (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          onClick={() => setAptitudeStatus(opt.value as any)}
-                          className={`cursor-pointer border rounded-lg p-3 text-center text-xs font-semibold transition-all ${
-                            isActive
-                              ? `${opt.color} ring-1 ring-primary border-primary`
-                              : "border-border/60 hover:bg-muted/40"
-                          }`}
-                        >
-                          {opt.label}
-                        </button>
-                      );
-                    })}
+                    {/* Paso 2: Historial de Citas */}
+                    {selectedProspect.appointments && selectedProspect.appointments.length > 0 ? (
+                      selectedProspect.appointments.map((a: any) => {
+                        const appointmentDate = new Date(a.date);
+                        return (
+                          <div key={a.id} className="relative">
+                            <span className="absolute -left-[31px] top-0 bg-background border-2 border-border rounded-full size-4 flex items-center justify-center shrink-0">
+                              <span className="bg-muted-foreground/60 rounded-full size-1.5" />
+                            </span>
+                            <div className="bg-muted/15 border border-border/40 rounded-lg p-3 flex flex-col gap-1.5">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-xs font-bold text-foreground">{a.type}</span>
+                                <span className="text-[0.65rem] text-muted-foreground font-semibold">
+                                  {appointmentDate.toLocaleDateString("es-ES", {
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric"
+                                  })}
+                                </span>
+                              </div>
+                              {a.notes ? (
+                                <p className="text-xs text-muted-foreground italic border-l-2 border-primary/30 pl-2 mt-1 leading-relaxed">
+                                  "{a.notes}"
+                                </p>
+                              ) : (
+                                <span className="text-xs text-muted-foreground/50 italic mt-0.5">Sin observaciones registradas.</span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="relative">
+                        <span className="absolute -left-[31px] top-0 bg-background border-2 border-border rounded-full size-4 flex items-center justify-center shrink-0">
+                          <span className="bg-muted-foreground/40 rounded-full size-1.5" />
+                        </span>
+                        <div className="text-xs text-muted-foreground italic pl-1">
+                          No registra citas programadas para este proceso.
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
+              )}
 
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="comments">Observaciones / Comentarios del Evaluador</Label>
-                  <Textarea
-                    id="comments"
-                    placeholder="Detalla los puntos fuertes o limitaciones encontradas en la entrevista/examen..."
-                    value={comments}
-                    onChange={(e) => setComments(e.target.value)}
-                    className="min-h-[120px]"
-                  />
+              {/* Tab 3: Ficha General del Postulante */}
+              {activeTab === "profile" && (
+                <div className="flex flex-col gap-4 animate-in fade-in-50 duration-200">
+                  <div className="grid grid-cols-2 gap-4 py-2">
+                    <div className="flex flex-col gap-0.5 bg-muted/10 border border-border/30 rounded-lg p-3">
+                      <span className="text-[0.65rem] text-muted-foreground font-bold uppercase tracking-wider">Teléfono de Contacto</span>
+                      <span className="text-sm font-semibold text-foreground mt-0.5">{selectedProspect.phone}</span>
+                    </div>
+
+                    <div className="flex flex-col gap-0.5 bg-muted/10 border border-border/30 rounded-lg p-3">
+                      <span className="text-[0.65rem] text-muted-foreground font-bold uppercase tracking-wider">Nivel Educativo</span>
+                      <span className="text-sm font-semibold text-foreground mt-0.5">
+                        {selectedProspect.level === "INITIAL" ? "Inicial" : selectedProspect.level === "PRIMARY" ? "Primaria" : "Secundaria"}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-0.5 bg-muted/10 border border-border/30 rounded-lg p-3">
+                      <span className="text-[0.65rem] text-muted-foreground font-bold uppercase tracking-wider">Grado al que Postula</span>
+                      <span className="text-sm font-semibold text-foreground mt-0.5">{selectedProspect.targetGrade}</span>
+                    </div>
+
+                    <div className="flex flex-col gap-0.5 bg-muted/10 border border-border/30 rounded-lg p-3">
+                      <span className="text-[0.65rem] text-muted-foreground font-bold uppercase tracking-wider">Prioridad en Proceso</span>
+                      <span className={`text-xs font-bold uppercase mt-1 w-fit px-2 py-0.5 rounded border ${
+                        selectedProspect.priority === "HIGH"
+                          ? "bg-red-500/10 text-red-500 border-red-500/20"
+                          : selectedProspect.priority === "MEDIUM"
+                          ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+                          : "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                      }`}>
+                        {selectedProspect.priority === "HIGH" ? "Alta" : selectedProspect.priority === "MEDIUM" ? "Media" : "Baja"}
+                      </span>
+                    </div>
+
+                    <div className="col-span-2 flex flex-col gap-0.5 bg-muted/10 border border-border/30 rounded-lg p-3">
+                      <span className="text-[0.65rem] text-muted-foreground font-bold uppercase tracking-wider">Fecha de Creación en Sistema</span>
+                      <span className="text-sm font-medium text-foreground mt-0.5">
+                        {new Date(selectedProspect.createdAt).toLocaleString("es-ES", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit"
+                        })}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              {/* Submit */}
-              <div className="flex justify-end mt-2">
-                <Button type="submit" disabled={evaluateMutation.isPending} className="cursor-pointer">
-                  {evaluateMutation.isPending ? "Guardando..." : "Guardar Calificación"}
-                </Button>
-              </div>
+              )}
             </form>
           ) : (
             <div className="flex flex-col items-center justify-center py-24 text-center">
