@@ -15,10 +15,14 @@ export class DeleteUserCommandHandler implements ICommandHandler<DeleteUserComma
   ) {}
 
   async execute(command: DeleteUserCommand): Promise<void> {
+    // 1. Buscar al usuario existente por su ID
     const existing = await this.userRepository.findById(command.id);
     if (!existing) {
+      // Si el usuario no existe, lanzar la excepción UserNotFoundException
       throw new UserNotFoundException(command.id);
     }
+
+    // 2. Eliminar al usuario del repositorio
     return this.userRepository.delete(command.id);
   }
 }
