@@ -223,24 +223,19 @@ export default function AppointmentsPage() {
 
               <div className="flex flex-col gap-1.5 mt-2">
                 <Label htmlFor="prospect">Postulante *</Label>
-                <div className="flex flex-col gap-2">
-                  <Input
-                    placeholder="Escribe para buscar..."
-                    value={prospectSearch}
-                    onChange={(e) => setProspectSearch(e.target.value)}
-                    className="h-8 text-xs"
-                  />
-                  <SelectInfinite
-                    value={selectedProspectId}
-                    onValueChange={setSelectedProspectId}
-                    options={prospectsOptions}
-                    placeholder="Selecciona un postulante..."
-                    onScrollEnd={fetchNextProspectsPage}
-                    hasNextPage={hasNextProspectsPage}
-                    isLoadingMore={isFetchingNextProspectsPage}
-                    emptyMessage={prospectsLoading ? "Buscando postulantes..." : "No se encontraron postulantes"}
-                  />
-                </div>
+                <SelectInfinite
+                  value={selectedProspectId}
+                  onValueChange={setSelectedProspectId}
+                  options={prospectsOptions}
+                  placeholder="Selecciona un postulante..."
+                  onScrollEnd={fetchNextProspectsPage}
+                  hasNextPage={hasNextProspectsPage}
+                  isLoadingMore={isFetchingNextProspectsPage}
+                  emptyMessage={prospectsLoading ? "Buscando postulantes..." : "No se encontraron postulantes"}
+                  searchValue={prospectSearch}
+                  onSearchChange={setProspectSearch}
+                  searchPlaceholder="Escribe para buscar..."
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
