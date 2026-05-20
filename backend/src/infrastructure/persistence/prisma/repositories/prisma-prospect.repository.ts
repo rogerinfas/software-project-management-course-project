@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-import { IProspectRepository } from '../../../../domain/repositories/prospect.repository.interface';
+import {
+  IProspectRepository,
+  PaginatedResult,
+} from '../../../../domain/repositories/prospect.repository.interface';
 import { ProspectEntity } from '../../../../domain/entities/prospect.entity';
 import { AppointmentEntity } from '../../../../domain/entities/appointment.entity';
 import { EvaluationResultEntity } from '../../../../domain/entities/evaluation-result.entity';
@@ -80,5 +84,54 @@ export class PrismaProspectRepository implements IProspectRepository {
       ? new EvaluationResultEntity(evaluation)
       : null;
     return entity;
+  }
+
+  async findManyPaginated(
+    page: number,
+    size: number,
+    search?: string,
+  ): Promise<PaginatedResult<ProspectEntity>> {
+    const where: Prisma.ProspectWhereInput = search
+      ? { name: { contains: search, mode: 'insensitive' } }
+      : {};
+
+    const [total, prospects] = await this.prisma.$transaction([
+      this.prisma.prospect.count({ where }),
+      this.prisma.prospect.findMany({
+        where,
+        skip: (page - 1) * size,
+        take: size,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          appointments: true,
+          evaluation: true,
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / size);
+
+    const data = prospects.map((p) => {
+      const { appointments, evaluation, ...prospectData } = p;
+      const entity = new ProspectEntity(prospectData);
+      entity.appointments = appointments.map(
+        (app) => new AppointmentEntity(app),
+      );
+      entity.evaluation = evaluation
+        ? new EvaluationResultEntity(evaluation)
+        : null;
+      return entity;
+    });
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        size,
+        totalPages,
+        hasNext: page < totalPages,
+      },
+    };
   }
 }
