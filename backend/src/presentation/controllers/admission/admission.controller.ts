@@ -7,6 +7,7 @@ import {
   Patch,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
@@ -21,6 +22,7 @@ import { GetStagesQuery } from '../../../application/use-cases/admission-stage/q
 
 import { CreateProspectCommand } from '../../../application/use-cases/prospect/commands/create-prospect.command';
 import { UpdateProspectStageCommand } from '../../../application/use-cases/prospect/commands/update-prospect-stage.command';
+import { GetProspectsPaginatedQuery } from '../../../application/use-cases/prospect/queries/get-prospects-paginated.query';
 
 import { CreateAppointmentCommand } from '../../../application/use-cases/appointment/commands/create-appointment.command';
 import { GetAppointmentsQuery } from '../../../application/use-cases/appointment/queries/get-appointments.query';
@@ -34,7 +36,9 @@ import {
   AdmissionStageResponse,
   CreateProspectRequest,
   UpdateProspectStageRequest,
+  GetProspectsPaginatedRequest,
   ProspectResponse,
+  ResponsePaginatedProspectDto,
   CreateAppointmentRequest,
   AppointmentResponse,
   SaveEvaluationRequest,
@@ -46,6 +50,7 @@ import { AdmissionStageEntity } from '../../../domain/entities/admission-stage.e
 import { ProspectEntity } from '../../../domain/entities/prospect.entity';
 import { AppointmentEntity } from '../../../domain/entities/appointment.entity';
 import { EvaluationResultEntity } from '../../../domain/entities/evaluation-result.entity';
+import { PaginatedResult } from '../../../domain/repositories/prospect.repository.interface';
 
 @ApiTags('Admission')
 @Controller('admission')
@@ -111,6 +116,26 @@ export class AdmissionController {
   @ApiResponse({ status: 204, description: 'Stage deleted successfully.' })
   async deleteStage(@Param('id') id: string): Promise<void> {
     await this.commandBus.execute(new DeleteStageCommand(id));
+  }
+
+  @Get('prospects')
+  @ApiOperation({ summary: 'Get prospects with pagination and search' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return paginated prospects.',
+    type: ResponsePaginatedProspectDto,
+  })
+  async getProspects(
+    @Query() query: GetProspectsPaginatedRequest,
+  ): Promise<ResponsePaginatedProspectDto> {
+    const results = await this.queryBus.execute<
+      GetProspectsPaginatedQuery,
+      PaginatedResult<ProspectEntity>
+    >(new GetProspectsPaginatedQuery(query.page, query.size, query.search));
+    return {
+      data: results.data.map((r) => r.toDto()),
+      meta: results.meta,
+    };
   }
 
   @Post('prospects')

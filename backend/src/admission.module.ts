@@ -13,6 +13,7 @@ import { PrismaEvaluationResultRepository } from './infrastructure/persistence/p
 import { StageCommandHandlers } from './application/use-cases/admission-stage/commands';
 import { StageQueryHandlers } from './application/use-cases/admission-stage/queries';
 import { ProspectCommandHandlers } from './application/use-cases/prospect/commands';
+import { ProspectQueryHandlers } from './application/use-cases/prospect/queries/get-prospects-paginated.query';
 import { AppointmentCommandHandlers } from './application/use-cases/appointment/commands';
 import { AppointmentQueryHandlers } from './application/use-cases/appointment/queries';
 import { EvaluationCommandHandlers } from './application/use-cases/evaluation-result/commands';
@@ -41,6 +42,7 @@ import { EvaluationCommandHandlers } from './application/use-cases/evaluation-re
     ...StageCommandHandlers,
     ...StageQueryHandlers,
     ...ProspectCommandHandlers,
+    ...ProspectQueryHandlers,
     ...AppointmentCommandHandlers,
     ...AppointmentQueryHandlers,
     ...EvaluationCommandHandlers,
