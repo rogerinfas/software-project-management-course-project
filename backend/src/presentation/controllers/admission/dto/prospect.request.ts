@@ -1,6 +1,14 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EducationalLevel, ProspectPriority } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class CreateProspectRequest {
   @ApiProperty({
@@ -62,4 +70,36 @@ export class UpdateProspectStageRequest {
   @IsString()
   @IsNotEmpty()
   currentStageId: string;
+}
+
+export class GetProspectsPaginatedRequest {
+  @ApiPropertyOptional({
+    description: 'Page number (1-indexed)',
+    example: 1,
+    default: 1,
+  })
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value as string, 10))
+  @IsInt()
+  @Min(1)
+  page: number = 1;
+
+  @ApiPropertyOptional({
+    description: 'Items per page',
+    example: 15,
+    default: 15,
+  })
+  @IsOptional()
+  @Transform(({ value }) => parseInt(value as string, 10))
+  @IsInt()
+  @Min(1)
+  size: number = 15;
+
+  @ApiPropertyOptional({
+    description: 'Search by prospect name',
+    example: 'Carlos',
+  })
+  @IsOptional()
+  @IsString()
+  search?: string;
 }
