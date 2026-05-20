@@ -18,7 +18,10 @@ export class CreateStageCommandHandler implements ICommandHandler<CreateStageCom
   ) {}
 
   async execute(command: CreateStageCommand): Promise<AdmissionStageEntity> {
+    // 1. Extraer los datos necesarios (nombre de la etapa y orden secuencial) del comando
     const { name, order } = command;
+
+    // 2. Persistir la nueva etapa de admisión en la base de datos a través del repositorio
     return this.repository.create({ name, order });
   }
 }
