@@ -26,11 +26,14 @@ export class CreateProspectCommandHandler implements ICommandHandler<CreateProsp
   ) {}
 
   async execute(command: CreateProspectCommand): Promise<ProspectEntity> {
+    // 1. Validar si la etapa inicial (stage) asignada al postulante existe en el pipeline
     const stage = await this.stageRepository.findById(command.currentStageId);
     if (!stage) {
+      // Si la etapa de admisión no existe, lanzar excepción HTTP 404
       throw new NotFoundException('Stage not found');
     }
 
+    // 2. Crear y persistir el nuevo prospecto (postulante) en el repositorio
     return this.repository.create({
       name: command.name,
       phone: command.phone,
