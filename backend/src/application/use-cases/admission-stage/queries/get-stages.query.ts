@@ -13,6 +13,8 @@ export class GetStagesQueryHandler implements IQueryHandler<GetStagesQuery> {
   ) {}
 
   async execute(query: GetStagesQuery): Promise<AdmissionStageEntity[]> {
+    // 1. Obtener todas las etapas de admisión junto con sus prospectos asociados
+    // Esto se utiliza para renderizar el tablero Kanban en el frontend con todos los postulantes.
     return this.repository.findAllWithProspects();
   }
 }
