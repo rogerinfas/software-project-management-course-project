@@ -14,10 +14,14 @@ export class DeleteStageCommandHandler implements ICommandHandler<DeleteStageCom
   ) {}
 
   async execute(command: DeleteStageCommand): Promise<void> {
+    // 1. Buscar la etapa de admisión por su ID para verificar su existencia
     const stage = await this.repository.findById(command.id);
     if (!stage) {
+      // Si la etapa no existe, lanzar excepción HTTP 404
       throw new NotFoundException('Stage not found');
     }
+
+    // 2. Eliminar la etapa a través del repositorio
     await this.repository.delete(command.id);
   }
 }
