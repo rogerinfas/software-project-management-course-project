@@ -8,8 +8,6 @@ import {
   CheckCircle,
   XCircle,
   HelpCircle,
-  FileText,
-  User,
   Loader2,
   Calendar,
 } from "lucide-react";
@@ -17,6 +15,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { backend } from "@/lib/api/types/backend";
 
 export default function EvaluationPage() {
@@ -234,12 +233,12 @@ export default function EvaluationPage() {
 
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="comments">Observaciones / Comentarios del Evaluador</Label>
-                  <textarea
+                  <Textarea
                     id="comments"
                     placeholder="Detalla los puntos fuertes o limitaciones encontradas en la entrevista/examen..."
                     value={comments}
                     onChange={(e) => setComments(e.target.value)}
-                    className="bg-background border-input text-foreground min-h-[120px] w-full rounded-md border p-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                    className="min-h-[120px]"
                   />
                 </div>
               </div>
