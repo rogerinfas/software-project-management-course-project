@@ -15,6 +15,8 @@ export class GetUserByEmailQueryHandler implements IQueryHandler<GetUserByEmailQ
   ) {}
 
   async execute(query: GetUserByEmailQuery): Promise<UserEntity | null> {
+    // 1. Consultar en el repositorio si existe un usuario con el correo electrónico proporcionado
+    // Retorna null si no se encuentra ninguna coincidencia.
     return this.userRepository.findByEmail(query.email);
   }
 }
