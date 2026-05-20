@@ -35,7 +35,10 @@ export class PrismaUserRepository implements IUserRepository {
     return users.map((u: PrismaUser) => new UserEntity(u));
   }
 
-  async findManyPaginated(page: number, size: number): Promise<PaginatedResult<UserEntity>> {
+  async findManyPaginated(
+    page: number,
+    size: number,
+  ): Promise<PaginatedResult<UserEntity>> {
     const skip = paginationStart({ page, pageSize: size });
     const take = size;
 
