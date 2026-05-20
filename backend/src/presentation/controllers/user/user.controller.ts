@@ -14,7 +14,12 @@ import {
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BaseErrorResponse } from '../../../config/interfaces/base-error-response';
-import { CreateUserRequest, UpdateUserRequest, UserResponse, ResponsePaginatedUserDto } from './dto';
+import {
+  CreateUserRequest,
+  UpdateUserRequest,
+  UserResponse,
+  ResponsePaginatedUserDto,
+} from './dto';
 import { CreateUserCommand } from '../../../application/use-cases/user/commands/create-user.command';
 import { UpdateUserCommand } from '../../../application/use-cases/user/commands/update-user.command';
 import { DeleteUserCommand } from '../../../application/use-cases/user/commands/delete-user.command';
@@ -65,13 +70,15 @@ export class UserController {
     description: 'Lista de usuarios obtenida exitosamente',
     type: ResponsePaginatedUserDto,
   })
-  async findAll(@Query() query: PaginationQueryDto): Promise<ResponsePaginatedUserDto> {
+  async findAll(
+    @Query() query: PaginationQueryDto,
+  ): Promise<ResponsePaginatedUserDto> {
     const results = await this.queryBus.execute(
       new GetUsersQuery(query.page, query.size),
     );
 
     return {
-      data: results.data.map((r: UserEntity) => r.toDto() as UserResponse),
+      data: results.data.map((r: UserEntity) => r.toDto()),
       meta: results.meta,
     };
   }

@@ -8,6 +8,7 @@ import {
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import cookieParser from 'cookie-parser';
+import { json, urlencoded } from 'express';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import 'dotenv/config';
@@ -22,6 +23,23 @@ async function bootstrap() {
   const port = process.env.PORT || 5000;
 
   app.use(cookieParser());
+
+  // Parse body for all routes except Better Auth
+  app.use((req: any, res: any, next: any) => {
+    if (req.originalUrl && req.originalUrl.includes('/api/auth')) {
+      next();
+    } else {
+      json()(req, res, next);
+    }
+  });
+  app.use((req: any, res: any, next: any) => {
+    if (req.originalUrl && req.originalUrl.includes('/api/auth')) {
+      next();
+    } else {
+      urlencoded({ extended: true })(req, res, next);
+    }
+  });
+
   app.setGlobalPrefix('api');
 
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -88,6 +106,32 @@ async function bootstrap() {
 
   // Exportar el esquema OpenAPI combinado para integración frontend
   try {
+    // Asegurar que todos los operationId sean únicos
+    const operationIdCounts = new Map<string, number>();
+    for (const [path, pathItem] of Object.entries(
+      combinedDocument.paths || {},
+    )) {
+      if (typeof pathItem === 'object' && pathItem !== null) {
+        for (const [method, operation] of Object.entries(pathItem)) {
+          if (
+            typeof operation === 'object' &&
+            operation !== null &&
+            'operationId' in operation
+          ) {
+            const op = operation;
+            const opId = op.operationId;
+            if (opId) {
+              const count = operationIdCounts.get(opId) || 0;
+              operationIdCounts.set(opId, count + 1);
+              if (count > 0) {
+                op.operationId = `${opId}_${method}`;
+              }
+            }
+          }
+        }
+      }
+    }
+
     const outputDir = join(process.cwd(), 'generated');
     if (!existsSync(outputDir)) {
       mkdirSync(outputDir, { recursive: true });

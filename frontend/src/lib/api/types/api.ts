@@ -41,6 +41,111 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admission/stages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all admission stages with prospects */
+        get: operations["AdmissionController_getStages"];
+        put?: never;
+        /** Create a new admission stage */
+        post: operations["AdmissionController_createStage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admission/stages/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update an admission stage */
+        put: operations["AdmissionController_updateStage"];
+        post?: never;
+        /** Delete an admission stage */
+        delete: operations["AdmissionController_deleteStage"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admission/prospects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a new prospect */
+        post: operations["AdmissionController_createProspect"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admission/prospects/{id}/stage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update stage of a prospect */
+        patch: operations["AdmissionController_updateProspectStage"];
+        trace?: never;
+    };
+    "/api/admission/appointments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all scheduled appointments */
+        get: operations["AdmissionController_getAppointments"];
+        put?: never;
+        /** Schedule a new appointment */
+        post: operations["AdmissionController_createAppointment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admission/prospects/{id}/evaluation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Save evaluation result of a prospect */
+        patch: operations["AdmissionController_saveEvaluation"];
+        trace?: never;
+    };
     "/api/auth/sign-in/social": {
         parameters: {
             query?: never;
@@ -241,7 +346,7 @@ export interface paths {
         get: operations["getSession"];
         put?: never;
         /** @description Get the current session */
-        post: operations["getSession"];
+        post: operations["getSession_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1761,7 +1866,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-05-18T22:17:37.685Z
+             * @example 2026-05-19T22:03:45.724Z
              */
             timestamp: string;
             /**
@@ -1832,13 +1937,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-18T22:17:37.819Z
+             * @example 2026-05-19T22:03:45.932Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-18T22:17:37.819Z
+             * @example 2026-05-19T22:03:45.932Z
              */
             updatedAt: string;
         };
@@ -1875,6 +1980,38 @@ export interface components {
             name?: Record<string, never>;
             /** @description URL to the user avatar image */
             image?: Record<string, never>;
+        };
+        CreateStageDto: {
+            name: string;
+            order: number;
+        };
+        UpdateStageDto: {
+            name?: string;
+            order?: number;
+        };
+        CreateProspectDto: {
+            name: string;
+            phone: string;
+            targetGrade: string;
+            /** @enum {string} */
+            level: "INICIAL" | "PRIMARIA" | "SECUNDARIA";
+            /** @enum {string} */
+            priority: "ALTA" | "MEDIA" | "BAJA";
+            currentStageId: string;
+        };
+        UpdateProspectStageDto: {
+            currentStageId: string;
+        };
+        CreateAppointmentDto: {
+            prospectId: string;
+            date: string;
+            type: string;
+            notes?: string;
+        };
+        SaveEvaluationDto: {
+            /** @enum {string} */
+            aptitude: "APTO" | "NO_APTO" | "PENDIENTE";
+            comments?: string;
         };
         User: {
             id?: string;
@@ -2140,6 +2277,192 @@ export interface operations {
             };
         };
     };
+    AdmissionController_getStages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return all stages. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdmissionController_createStage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateStageDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdmissionController_updateStage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateStageDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdmissionController_deleteStage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdmissionController_createProspect: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateProspectDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdmissionController_updateProspectStage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProspectStageDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdmissionController_getAppointments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdmissionController_createAppointment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAppointmentDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdmissionController_saveEvaluation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveEvaluationDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     socialSignIn: {
         parameters: {
             query?: never;
@@ -2360,7 +2683,7 @@ export interface operations {
             };
         };
     };
-    getSessionPost: {
+    getSession_post: {
         parameters: {
             query?: never;
             header?: never;

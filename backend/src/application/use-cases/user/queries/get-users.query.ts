@@ -12,7 +12,10 @@ export class GetUsersQuery implements IQuery {
 }
 
 @QueryHandler(GetUsersQuery)
-export class GetUsersQueryHandler implements IQueryHandler<GetUsersQuery, PaginatedResult<UserEntity>> {
+export class GetUsersQueryHandler implements IQueryHandler<
+  GetUsersQuery,
+  PaginatedResult<UserEntity>
+> {
   constructor(
     @Inject('IUserRepository')
     private readonly userRepository: IUserRepository,
