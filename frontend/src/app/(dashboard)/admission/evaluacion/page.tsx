@@ -25,7 +25,7 @@ export default function EvaluationPage() {
   const [selectedProspectId, setSelectedProspectId] = React.useState<string | null>(null);
 
   // Form states
-  const [aptitudeStatus, setAptitudeStatus] = React.useState<"APTO" | "NO_APTO" | "PENDIENTE">("PENDIENTE");
+  const [aptitudeStatus, setAptitudeStatus] = React.useState<"FIT" | "UNFIT" | "PENDING">("PENDING");
   const [comments, setComments] = React.useState("");
 
   // Queries
@@ -51,7 +51,7 @@ export default function EvaluationPage() {
   // Set default form values when prospect changes
   React.useEffect(() => {
     if (selectedProspect) {
-      setAptitudeStatus((selectedProspect.evaluation?.aptitude as any) || "PENDIENTE");
+      setAptitudeStatus((selectedProspect.evaluation?.aptitude as any) || "PENDING");
       setComments(selectedProspect.evaluation?.comments || "");
     }
   }, [selectedProspect]);
@@ -119,7 +119,7 @@ export default function EvaluationPage() {
               </div>
             ) : (
               filteredProspects.map((p: any) => {
-                const status = p.evaluation?.aptitude || "PENDIENTE";
+                const status = p.evaluation?.aptitude || "PENDING";
                 return (
                   <button
                     key={p.id}
@@ -135,13 +135,13 @@ export default function EvaluationPage() {
                       <span className="text-xs text-muted-foreground">{p.targetGrade}</span>
                     </div>
 
-                    {status === "APTO" && (
+                    {status === "FIT" && (
                       <CheckCircle className="text-green-500 size-4 shrink-0" />
                     )}
-                    {status === "NO_APTO" && (
+                    {status === "UNFIT" && (
                       <XCircle className="text-red-500 size-4 shrink-0" />
                     )}
-                    {status === "PENDIENTE" && (
+                    {status === "PENDING" && (
                       <HelpCircle className="text-yellow-500 size-4 shrink-0" />
                     )}
                   </button>
@@ -168,14 +168,14 @@ export default function EvaluationPage() {
                   <span className="text-xs text-muted-foreground font-medium">Dictamen:</span>
                   <span
                     className={`px-2 py-0.5 rounded text-[0.7rem] font-bold uppercase border ${
-                      selectedProspect.evaluation?.aptitude === "APTO"
+                      selectedProspect.evaluation?.aptitude === "FIT"
                         ? "bg-green-500/10 text-green-500 border-green-500/20"
-                        : selectedProspect.evaluation?.aptitude === "NO_APTO"
+                        : selectedProspect.evaluation?.aptitude === "UNFIT"
                         ? "bg-red-500/10 text-red-500 border-red-500/20"
                         : "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
                     }`}
                   >
-                    {selectedProspect.evaluation?.aptitude || "PENDIENTE"}
+                    {selectedProspect.evaluation?.aptitude === "FIT" ? "APTO" : selectedProspect.evaluation?.aptitude === "UNFIT" ? "NO APTO" : "PENDIENTE"}
                   </span>
                 </div>
               </div>
@@ -209,9 +209,9 @@ export default function EvaluationPage() {
                   <Label className="text-sm font-semibold">Dictamen de Aptitud *</Label>
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { value: "PENDIENTE", label: "Pendiente", color: "border-yellow-500/50 hover:bg-yellow-500/5 bg-yellow-500/10" },
-                      { value: "APTO", label: "Apto", color: "border-green-500/50 hover:bg-green-500/5 bg-green-500/10" },
-                      { value: "NO_APTO", label: "No Apto", color: "border-red-500/50 hover:bg-red-500/5 bg-red-500/10" },
+                      { value: "PENDING", label: "Pendiente", color: "border-yellow-500/50 hover:bg-yellow-500/5 bg-yellow-500/10" },
+                      { value: "FIT", label: "Apto", color: "border-green-500/50 hover:bg-green-500/5 bg-green-500/10" },
+                      { value: "UNFIT", label: "No Apto", color: "border-red-500/50 hover:bg-red-500/5 bg-red-500/10" },
                     ].map((opt) => {
                       const isActive = aptitudeStatus === opt.value;
                       return (
