@@ -15,6 +15,8 @@ export class GetUserByIdQueryHandler implements IQueryHandler<GetUserByIdQuery> 
   ) {}
 
   async execute(query: GetUserByIdQuery): Promise<UserEntity | null> {
+    // 1. Consultar en el repositorio si existe un usuario con el ID único especificado
+    // Retorna null si el usuario no se encuentra.
     return this.userRepository.findById(query.id);
   }
 }
