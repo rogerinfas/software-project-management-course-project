@@ -5,7 +5,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   Calendar as CalendarIcon,
   Clock,
-  Plus,
   Search,
   Loader2,
 } from "lucide-react";
@@ -154,11 +153,6 @@ export default function AppointmentsPage() {
             Programa y gestiona las entrevistas y evaluaciones psicológicas de los postulantes.
           </p>
         </div>
-
-        <Button onClick={() => setIsCreateOpen(true)} className="cursor-pointer">
-          <Plus className="mr-2 size-4" />
-          Programar Cita
-        </Button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
