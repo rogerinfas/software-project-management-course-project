@@ -181,6 +181,25 @@ function KanbanColumn({ id, title, orden, prospectIds, children, isOver }: Kanba
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
+const GRADOS_POR_NIVEL = {
+  INICIAL: ["Inicial 3 años", "Inicial 4 años", "Inicial 5 años"],
+  PRIMARIA: [
+    "1° primaria",
+    "2° primaria",
+    "3° primaria",
+    "4° primaria",
+    "5° primaria",
+    "6° primaria",
+  ],
+  SECUNDARIA: [
+    "1° secundaria",
+    "2° secundaria",
+    "3° secundaria",
+    "4° secundaria",
+    "5° secundaria",
+  ],
+};
+
 export default function PipelinePage() {
   const queryClient = useQueryClient();
 
@@ -246,6 +265,11 @@ export default function PipelinePage() {
   const [grado, setGrado] = React.useState("1° primaria");
   const [nivel, setNivel] = React.useState<"INICIAL" | "PRIMARIA" | "SECUNDARIA">("PRIMARIA");
   const [prioridad, setPrioridad] = React.useState<"ALTA" | "MEDIA" | "BAJA">("MEDIA");
+
+  const handleNivelChange = (newNivel: "INICIAL" | "PRIMARIA" | "SECUNDARIA") => {
+    setNivel(newNivel);
+    setGrado(GRADOS_POR_NIVEL[newNivel][0]);
+  };
 
   // Detalle / interacción
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
@@ -409,38 +433,29 @@ export default function PipelinePage() {
                 <Input value={celular} onChange={(e) => setCelular(e.target.value)} placeholder="ej. 959000000" />
               </div>
               <div className="grid gap-2">
+                <Label>Nivel</Label>
+                <select
+                  value={nivel}
+                  onChange={(e) => handleNivelChange(e.target.value as any)}
+                  className="bg-background border-input text-foreground h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                >
+                  <option value="INICIAL">Inicial</option>
+                  <option value="PRIMARIA">Primaria</option>
+                  <option value="SECUNDARIA">Secundaria</option>
+                </select>
+              </div>
+              <div className="grid gap-2">
                 <Label>Grado postulado</Label>
                 <select
                   value={grado}
                   onChange={(e) => setGrado(e.target.value)}
                   className="bg-background border-input text-foreground h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
                 >
-                  <option value="Inicial 3 años">Inicial 3 años</option>
-                  <option value="Inicial 4 años">Inicial 4 años</option>
-                  <option value="Inicial 5 años">Inicial 5 años</option>
-                  <option value="1° primaria">1° primaria</option>
-                  <option value="2° primaria">2° primaria</option>
-                  <option value="3° primaria">3° primaria</option>
-                  <option value="4° primaria">4° primaria</option>
-                  <option value="5° primaria">5° primaria</option>
-                  <option value="6° primaria">6° primaria</option>
-                  <option value="1° secundaria">1° secundaria</option>
-                  <option value="2° secundaria">2° secundaria</option>
-                  <option value="3° secundaria">3° secundaria</option>
-                  <option value="4° secundaria">4° secundaria</option>
-                  <option value="5° secundaria">5° secundaria</option>
-                </select>
-              </div>
-              <div className="grid gap-2">
-                <Label>Nivel</Label>
-                <select
-                  value={nivel}
-                  onChange={(e) => setNivel(e.target.value as any)}
-                  className="bg-background border-input text-foreground h-9 w-full rounded-md border px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                >
-                  <option value="INICIAL">Inicial</option>
-                  <option value="PRIMARIA">Primaria</option>
-                  <option value="SECUNDARIA">Secundaria</option>
+                  {GRADOS_POR_NIVEL[nivel].map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="grid gap-2">
