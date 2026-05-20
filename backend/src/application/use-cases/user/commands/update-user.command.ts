@@ -19,10 +19,14 @@ export class UpdateUserCommandHandler implements ICommandHandler<UpdateUserComma
   ) {}
 
   async execute(command: UpdateUserCommand): Promise<UserEntity> {
+    // 1. Buscar al usuario existente por su ID
     const existing = await this.userRepository.findById(command.id);
     if (!existing) {
+      // Si el usuario no existe, lanzar la excepción específica UserNotFoundException
       throw new UserNotFoundException(command.id);
     }
+
+    // 2. Actualizar y retornar la entidad de usuario modificada en el repositorio
     return this.userRepository.update(command.id, command.data);
   }
 }
