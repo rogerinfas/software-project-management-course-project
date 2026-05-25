@@ -147,6 +147,110 @@ export interface paths {
         patch: operations["AdmissionController_saveEvaluation"];
         trace?: never;
     };
+    "/api/enrollment/guardians": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List apoderados (guardians) with pagination and search */
+        get: operations["EnrollmentController_getGuardians"];
+        put?: never;
+        /** Create a new guardian */
+        post: operations["EnrollmentController_createGuardian"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/enrollment/guardians/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update an existing guardian */
+        put: operations["EnrollmentController_updateGuardian"];
+        post?: never;
+        /** Delete a guardian */
+        delete: operations["EnrollmentController_deleteGuardian"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/enrollment/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List enrolled students with pagination and search */
+        get: operations["EnrollmentController_getStudents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/enrollment/sections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all academic sections with vacancy count */
+        get: operations["EnrollmentController_getSections"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/enrollment/formalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Formalize a student enrollment (registers student, guardian & enrollment) */
+        post: operations["EnrollmentController_formalizeEnrollment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/enrollment/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all academic enrollment documents/records paginated */
+        get: operations["EnrollmentController_getDocuments"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/sign-in/social": {
         parameters: {
             query?: never;
@@ -1867,7 +1971,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-05-20T17:29:53.356Z
+             * @example 2026-05-25T13:37:41.599Z
              */
             timestamp: string;
             /**
@@ -1938,13 +2042,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-20T17:29:53.471Z
+             * @example 2026-05-25T13:37:41.708Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-20T17:29:53.471Z
+             * @example 2026-05-25T13:37:41.708Z
              */
             updatedAt: string;
         };
@@ -1996,7 +2100,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Appointment date and time
-             * @example 2026-05-20T17:29:53.835Z
+             * @example 2026-05-25T13:37:42.219Z
              */
             date: string;
             /**
@@ -2014,7 +2118,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-20T17:29:53.835Z
+             * @example 2026-05-25T13:37:42.219Z
              */
             createdAt: string;
         };
@@ -2043,7 +2147,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Evaluation process date
-             * @example 2026-05-20T17:29:53.836Z
+             * @example 2026-05-25T13:37:42.223Z
              */
             date: string;
             /**
@@ -2097,7 +2201,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-20T17:29:53.836Z
+             * @example 2026-05-25T13:37:42.223Z
              */
             createdAt: string;
         };
@@ -2122,13 +2226,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-20T17:29:53.836Z
+             * @example 2026-05-25T13:37:42.223Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-20T17:29:53.836Z
+             * @example 2026-05-25T13:37:42.223Z
              */
             updatedAt: string;
         };
@@ -2221,7 +2325,7 @@ export interface components {
             prospectId: string;
             /**
              * @description Appointment date and time in ISO format
-             * @example 2026-05-20T17:29:53.838Z
+             * @example 2026-05-25T13:37:42.235Z
              */
             date: string;
             /**
@@ -2247,6 +2351,287 @@ export interface components {
              * @example Buen desempeño en habilidades sociales.
              */
             comments?: string;
+        };
+        SectionResponse: {
+            /**
+             * @description ID de la sección
+             * @example section-123
+             */
+            id: string;
+            /**
+             * @description Nombre (ej. A, B, C)
+             * @example A
+             */
+            name: string;
+            /**
+             * @description Grado
+             * @example 1ro de Primaria
+             */
+            grade: string;
+            /**
+             * @example PRIMARY
+             * @enum {string}
+             */
+            level: "INITIAL" | "PRIMARY" | "SECONDARY";
+            /**
+             * @description Aforo máximo permitido
+             * @example 30
+             */
+            capacity: number;
+            /**
+             * @description Estado (ej. OPEN, CLOSED)
+             * @example OPEN
+             */
+            status: string;
+            /**
+             * @description Cantidad actual de alumnos matriculados
+             * @example 12
+             */
+            matriculados: number;
+        };
+        StudentResponse: {
+            /**
+             * @description ID único del estudiante
+             * @example student-123
+             */
+            id: string;
+            /**
+             * @description Código de estudiante
+             * @example ALU-2026-1234
+             */
+            code?: string | null;
+            /**
+             * @description Nombres
+             * @example Luis
+             */
+            firstName: string;
+            /**
+             * @description Apellidos
+             * @example Pérez
+             */
+            lastName: string;
+            /**
+             * @description DNI
+             * @example 87654321
+             */
+            dni: string;
+            /**
+             * @example PRIMARY
+             * @enum {string}
+             */
+            level: "INITIAL" | "PRIMARY" | "SECONDARY";
+            /**
+             * @description Grado
+             * @example 1ro de Primaria
+             */
+            grade: string;
+            /**
+             * @description ID de la sección
+             * @example section-123
+             */
+            sectionId?: string | null;
+            section?: components["schemas"]["SectionResponse"] | null;
+            /**
+             * @description ID del apoderado
+             * @example guardian-123
+             */
+            guardianId: string;
+            guardian?: components["schemas"]["GuardianResponse"];
+            /**
+             * Format: date-time
+             * @description Fecha de creación
+             */
+            createdAt: string;
+        };
+        GuardianResponse: {
+            /**
+             * @description ID único del apoderado
+             * @example guardian-123
+             */
+            id: string;
+            /**
+             * @description DNI del apoderado
+             * @example 12345678
+             */
+            dni: string;
+            /**
+             * @description Nombre completo
+             * @example Juan Pérez
+             */
+            name: string;
+            /**
+             * @description Teléfono de contacto
+             * @example 987654321
+             */
+            phone: string;
+            /**
+             * @description Correo electrónico
+             * @example juan.perez@gmail.com
+             */
+            email?: string | null;
+            /**
+             * @description Ocupación
+             * @example Ingeniero
+             */
+            occupation?: string | null;
+            students?: components["schemas"]["StudentResponse"][];
+        };
+        PaginatedGuardiansResponse: {
+            data: components["schemas"]["GuardianResponse"][];
+            meta: components["schemas"]["PaginationMeta"];
+        };
+        CreateGuardianRequest: {
+            /**
+             * @description DNI del apoderado
+             * @example 12345678
+             */
+            dni: string;
+            /**
+             * @description Nombre completo
+             * @example Juan Pérez
+             */
+            name: string;
+            /**
+             * @description Teléfono de contacto
+             * @example 987654321
+             */
+            phone: string;
+            /**
+             * @description Correo electrónico
+             * @example juan.perez@gmail.com
+             */
+            email?: string | null;
+            /**
+             * @description Ocupación
+             * @example Ingeniero
+             */
+            occupation?: string | null;
+        };
+        UpdateGuardianRequest: {
+            /**
+             * @description DNI del apoderado
+             * @example 12345678
+             */
+            dni?: string;
+            /**
+             * @description Nombre completo
+             * @example Juan Pérez
+             */
+            name?: string;
+            /**
+             * @description Teléfono de contacto
+             * @example 987654321
+             */
+            phone?: string;
+            /**
+             * @description Correo electrónico
+             * @example juan.perez@gmail.com
+             */
+            email?: string | null;
+            /**
+             * @description Ocupación
+             * @example Ingeniero
+             */
+            occupation?: string | null;
+        };
+        PaginatedStudentsResponse: {
+            data: components["schemas"]["StudentResponse"][];
+            meta: components["schemas"]["PaginationMeta"];
+        };
+        FormalizeEnrollmentRequest: {
+            /**
+             * @description Nombres del alumno
+             * @example Luis
+             */
+            firstName: string;
+            /**
+             * @description Apellidos del alumno
+             * @example Pérez
+             */
+            lastName: string;
+            /**
+             * @description DNI del alumno
+             * @example 87654321
+             */
+            dni: string;
+            /**
+             * @example PRIMARY
+             * @enum {string}
+             */
+            level: "INITIAL" | "PRIMARY" | "SECONDARY";
+            /**
+             * @description Grado de postulación
+             * @example 1ro de Primaria
+             */
+            grade: string;
+            /**
+             * @description ID de la sección asignada
+             * @example section-123
+             */
+            sectionId: string;
+            /**
+             * @description DNI del apoderado
+             * @example 12345678
+             */
+            guardianDni: string;
+            /**
+             * @description Nombre del apoderado
+             * @example Juan Pérez
+             */
+            guardianName: string;
+            /**
+             * @description Teléfono del apoderado
+             * @example 987654321
+             */
+            guardianPhone: string;
+            /**
+             * @description Correo del apoderado
+             * @example juan.perez@gmail.com
+             */
+            guardianEmail?: string | null;
+            /**
+             * @description Ocupación del apoderado
+             * @example Ingeniero
+             */
+            guardianOccupation?: string | null;
+        };
+        EnrollmentResponse: {
+            /**
+             * @description ID único de la matrícula
+             * @example enrollment-123
+             */
+            id: string;
+            /**
+             * @description ID del estudiante
+             * @example student-123
+             */
+            studentId: string;
+            student?: components["schemas"]["StudentResponse"];
+            /**
+             * @description Año de la matrícula
+             * @example 2026
+             */
+            year: number;
+            /**
+             * Format: date-time
+             * @description Fecha de la matrícula
+             * @example 2026-05-25T13:37:42.397Z
+             */
+            date: string;
+            /**
+             * @description Estado
+             * @example activa
+             */
+            status: string;
+            /**
+             * @description URL de la Ficha de Matrícula PDF
+             * @example /pdf/ficha-matricula-student-123.pdf
+             */
+            pdfUrl?: string | null;
+        };
+        PaginatedEnrollmentsResponse: {
+            data: components["schemas"]["EnrollmentResponse"][];
+            meta: components["schemas"]["PaginationMeta"];
         };
         User: {
             id?: string;
@@ -2745,6 +3130,201 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EvaluationResultResponse"];
+                };
+            };
+        };
+    };
+    EnrollmentController_getGuardians: {
+        parameters: {
+            query?: {
+                /** @description Número de página (1-indexed) */
+                page?: number;
+                /** @description Tamaño de página */
+                size?: number;
+                /** @description Búsqueda por nombre o DNI */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return paginated guardians. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedGuardiansResponse"];
+                };
+            };
+        };
+    };
+    EnrollmentController_createGuardian: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateGuardianRequest"];
+            };
+        };
+        responses: {
+            /** @description Guardian created successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardianResponse"];
+                };
+            };
+        };
+    };
+    EnrollmentController_updateGuardian: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateGuardianRequest"];
+            };
+        };
+        responses: {
+            /** @description Guardian updated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardianResponse"];
+                };
+            };
+        };
+    };
+    EnrollmentController_deleteGuardian: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Guardian deleted successfully. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    EnrollmentController_getStudents: {
+        parameters: {
+            query?: {
+                /** @description Número de página (1-indexed) */
+                page?: number;
+                /** @description Tamaño de página */
+                size?: number;
+                /** @description Búsqueda por nombre o DNI */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return paginated students. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedStudentsResponse"];
+                };
+            };
+        };
+    };
+    EnrollmentController_getSections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return all sections. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SectionResponse"][];
+                };
+            };
+        };
+    };
+    EnrollmentController_formalizeEnrollment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormalizeEnrollmentRequest"];
+            };
+        };
+        responses: {
+            /** @description Enrollment completed successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrollmentResponse"];
+                };
+            };
+        };
+    };
+    EnrollmentController_getDocuments: {
+        parameters: {
+            query?: {
+                /** @description Número de página (1-indexed) */
+                page?: number;
+                /** @description Tamaño de página */
+                size?: number;
+                /** @description Búsqueda por nombre o DNI */
+                search?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return paginated documents. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedEnrollmentsResponse"];
                 };
             };
         };
