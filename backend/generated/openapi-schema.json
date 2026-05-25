@@ -896,6 +896,553 @@
         ]
       }
     },
+    "/api/academic/courses": {
+      "get": {
+        "operationId": "AcademicController_getCourses",
+        "parameters": [
+          {
+            "name": "search",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return list of courses.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CourseResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List all academic courses",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      },
+      "post": {
+        "operationId": "AcademicController_createCourse",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Course created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new course",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      }
+    },
+    "/api/academic/courses/{id}": {
+      "patch": {
+        "operationId": "AcademicController_updateCourse",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Course updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an existing course",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      },
+      "delete": {
+        "operationId": "AcademicController_deleteCourse",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Course deleted successfully."
+          }
+        },
+        "summary": "Delete a course",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      }
+    },
+    "/api/academic/schedules": {
+      "get": {
+        "operationId": "AcademicController_getSchedules",
+        "parameters": [
+          {
+            "name": "sectionId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "staffId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "day",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return schedules list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScheduleResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List weekly class schedules with filters",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      },
+      "post": {
+        "operationId": "AcademicController_createSchedule",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Schedule created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new schedule assignment",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      }
+    },
+    "/api/academic/schedules/{id}": {
+      "patch": {
+        "operationId": "AcademicController_updateSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Schedule updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an existing schedule assignment",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      },
+      "delete": {
+        "operationId": "AcademicController_deleteSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Schedule deleted successfully."
+          }
+        },
+        "summary": "Delete a schedule assignment",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      }
+    },
+    "/api/academic/communications": {
+      "get": {
+        "operationId": "AcademicController_getCommunications",
+        "parameters": [
+          {
+            "name": "category",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return communications.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommunicationResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List all visible announcements/communications",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      },
+      "post": {
+        "operationId": "AcademicController_createCommunication",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommunicationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Announcement created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunicationResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new announcement",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      }
+    },
+    "/api/academic/communications/{id}": {
+      "patch": {
+        "operationId": "AcademicController_updateCommunication",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCommunicationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Announcement updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunicationResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an existing announcement",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      },
+      "delete": {
+        "operationId": "AcademicController_deleteCommunication",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Announcement deleted successfully."
+          }
+        },
+        "summary": "Delete an announcement",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      }
+    },
+    "/api/academic/sections": {
+      "get": {
+        "operationId": "AcademicController_getSections",
+        "parameters": [
+          {
+            "name": "level",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return all sections.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SectionResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List all sections with student count",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      },
+      "post": {
+        "operationId": "AcademicController_createSection",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Section created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new section",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      }
+    },
+    "/api/academic/sections/{id}": {
+      "patch": {
+        "operationId": "AcademicController_updateSection",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Section updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SectionResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an existing section",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      },
+      "delete": {
+        "operationId": "AcademicController_deleteSection",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Section deleted successfully."
+          }
+        },
+        "summary": "Delete a section",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      }
+    },
+    "/api/academic/teachers": {
+      "get": {
+        "operationId": "AcademicController_getTeachers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all teachers."
+          }
+        },
+        "summary": "List all academic teachers (staff profiles)",
+        "tags": [
+          "Academic (Gestión Académica y Comunicación)"
+        ]
+      }
+    },
     "/api/auth/sign-in/social": {
       "post": {
         "tags": [
@@ -6059,7 +6606,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-25T14:06:45.877Z"
+            "example": "2026-05-25T20:23:11.664Z"
           },
           "path": {
             "type": "string",
@@ -6164,13 +6711,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T14:06:45.994Z"
+            "example": "2026-05-25T20:23:11.849Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-25T14:06:45.994Z"
+            "example": "2026-05-25T20:23:11.849Z"
           }
         },
         "required": [
@@ -6280,7 +6827,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Appointment date and time",
-            "example": "2026-05-25T14:06:46.553Z"
+            "example": "2026-05-25T20:23:12.355Z"
           },
           "type": {
             "type": "string",
@@ -6304,7 +6851,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T14:06:46.553Z"
+            "example": "2026-05-25T20:23:12.355Z"
           }
         },
         "required": [
@@ -6347,7 +6894,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Evaluation process date",
-            "example": "2026-05-25T14:06:46.557Z"
+            "example": "2026-05-25T20:23:12.355Z"
           },
           "evaluatorId": {
             "type": "object",
@@ -6429,7 +6976,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T14:06:46.557Z"
+            "example": "2026-05-25T20:23:12.356Z"
           }
         },
         "required": [
@@ -6472,13 +7019,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T14:06:46.557Z"
+            "example": "2026-05-25T20:23:12.356Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-25T14:06:46.557Z"
+            "example": "2026-05-25T20:23:12.356Z"
           }
         },
         "required": [
@@ -6650,7 +7197,7 @@
           "date": {
             "type": "string",
             "description": "Appointment date and time in ISO format",
-            "example": "2026-05-25T14:06:46.570Z"
+            "example": "2026-05-25T20:23:12.359Z"
           },
           "type": {
             "type": "string",
@@ -7084,7 +7631,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Fecha de la matrícula",
-            "example": "2026-05-25T14:06:46.770Z"
+            "example": "2026-05-25T20:23:12.379Z"
           },
           "status": {
             "type": "string",
@@ -7123,6 +7670,430 @@
           "data",
           "meta"
         ]
+      },
+      "CourseResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID del curso",
+            "example": "course-123"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nombre del curso",
+            "example": "Matemática"
+          },
+          "description": {
+            "type": "object",
+            "description": "Descripción del curso",
+            "example": "Álgebra, geometría y aritmética",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description"
+        ]
+      },
+      "CreateCourseDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del curso",
+            "example": "Matemática"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del curso",
+            "example": "Álgebra, geometría y aritmética"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateCourseDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del curso",
+            "example": "Matemática Avanzada"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del curso",
+            "example": "Álgebra y cálculo"
+          }
+        }
+      },
+      "UserMinimalResponse": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre completo"
+          },
+          "email": {
+            "type": "string",
+            "description": "Correo electrónico"
+          }
+        },
+        "required": [
+          "name",
+          "email"
+        ]
+      },
+      "TeacherMinimalResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID del perfil del docente"
+          },
+          "specialty": {
+            "type": "string",
+            "description": "Especialidad"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserMinimalResponse"
+          }
+        },
+        "required": [
+          "id",
+          "specialty",
+          "user"
+        ]
+      },
+      "ScheduleResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID del horario",
+            "example": "sched-123"
+          },
+          "sectionId": {
+            "type": "string",
+            "description": "ID de la sección",
+            "example": "sec-123"
+          },
+          "section": {
+            "$ref": "#/components/schemas/SectionResponse"
+          },
+          "courseId": {
+            "type": "string",
+            "description": "ID del curso",
+            "example": "course-123"
+          },
+          "course": {
+            "$ref": "#/components/schemas/CourseResponse"
+          },
+          "staffId": {
+            "type": "string",
+            "description": "ID del docente",
+            "example": "staff-123"
+          },
+          "staff": {
+            "$ref": "#/components/schemas/TeacherMinimalResponse"
+          },
+          "day": {
+            "type": "number",
+            "description": "Día de la semana",
+            "example": 1
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Hora de inicio",
+            "example": "08:00"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "Hora de fin",
+            "example": "09:30"
+          }
+        },
+        "required": [
+          "id",
+          "sectionId",
+          "courseId",
+          "staffId",
+          "day",
+          "startTime",
+          "endTime"
+        ]
+      },
+      "CreateScheduleDto": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string",
+            "description": "ID de la sección",
+            "example": "sec-123"
+          },
+          "courseId": {
+            "type": "string",
+            "description": "ID del curso",
+            "example": "course-123"
+          },
+          "staffId": {
+            "type": "string",
+            "description": "ID del perfil de personal (docente)",
+            "example": "staff-123"
+          },
+          "day": {
+            "type": "number",
+            "description": "Día de la semana (1: Lunes, ..., 5: Viernes)",
+            "example": 1
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Hora de inicio (HH:mm)",
+            "example": "08:00"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "Hora de fin (HH:mm)",
+            "example": "09:30"
+          }
+        },
+        "required": [
+          "sectionId",
+          "courseId",
+          "staffId",
+          "day",
+          "startTime",
+          "endTime"
+        ]
+      },
+      "UpdateScheduleDto": {
+        "type": "object",
+        "properties": {
+          "sectionId": {
+            "type": "string",
+            "description": "ID de la sección",
+            "example": "sec-123"
+          },
+          "courseId": {
+            "type": "string",
+            "description": "ID del curso",
+            "example": "course-123"
+          },
+          "staffId": {
+            "type": "string",
+            "description": "ID del perfil de personal (docente)",
+            "example": "staff-123"
+          },
+          "day": {
+            "type": "number",
+            "description": "Día de la semana",
+            "example": 1
+          },
+          "startTime": {
+            "type": "string",
+            "description": "Hora de inicio (HH:mm)",
+            "example": "08:00"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "Hora de fin (HH:mm)",
+            "example": "09:30"
+          }
+        }
+      },
+      "CommunicationResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID del comunicado",
+            "example": "comm-123"
+          },
+          "title": {
+            "type": "string",
+            "description": "Título del comunicado",
+            "example": "Reunión de Padres"
+          },
+          "content": {
+            "type": "string",
+            "description": "Contenido completo",
+            "example": "Se convoca a reunión..."
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoría",
+            "example": "Informativo"
+          },
+          "isVisible": {
+            "type": "boolean",
+            "description": "¿Es visible actualmente?",
+            "example": true
+          },
+          "expiresAt": {
+            "type": "object",
+            "description": "Fecha de caducidad",
+            "example": "2026-12-31T23:59:59.000Z",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Fecha de creación",
+            "example": "2026-05-25T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "content",
+          "category",
+          "isVisible",
+          "expiresAt",
+          "createdAt"
+        ]
+      },
+      "CreateCommunicationDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Título del comunicado",
+            "example": "Reunión de Padres"
+          },
+          "content": {
+            "type": "string",
+            "description": "Contenido completo",
+            "example": "Se convoca a reunión..."
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoría (Urgente, Evento, Informativo)",
+            "example": "Informativo"
+          },
+          "isVisible": {
+            "type": "boolean",
+            "description": "¿Es visible actualmente?",
+            "default": true
+          },
+          "expiresAt": {
+            "type": "object",
+            "description": "Fecha de caducidad (ISO string)",
+            "example": "2026-12-31T23:59:59.000Z",
+            "nullable": true
+          }
+        },
+        "required": [
+          "title",
+          "content",
+          "category"
+        ]
+      },
+      "UpdateCommunicationDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Título del comunicado",
+            "example": "Reunión de Padres Act."
+          },
+          "content": {
+            "type": "string",
+            "description": "Contenido completo",
+            "example": "Se convoca a reunión..."
+          },
+          "category": {
+            "type": "string",
+            "description": "Categoría (Urgente, Evento, Informativo)",
+            "example": "Informativo"
+          },
+          "isVisible": {
+            "type": "boolean",
+            "description": "¿Es visible actualmente?"
+          },
+          "expiresAt": {
+            "type": "object",
+            "description": "Fecha de caducidad (ISO string)",
+            "nullable": true
+          }
+        }
+      },
+      "CreateSectionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre de la sección (ej. A, B, C)",
+            "example": "A"
+          },
+          "grade": {
+            "type": "string",
+            "description": "Grado académico",
+            "example": "1ro de Primaria"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "example": "PRIMARY"
+          },
+          "capacity": {
+            "type": "number",
+            "description": "Aforo máximo permitido",
+            "example": 25
+          },
+          "status": {
+            "type": "string",
+            "description": "Estado",
+            "example": "OPEN",
+            "default": "OPEN"
+          }
+        },
+        "required": [
+          "name",
+          "grade",
+          "level",
+          "capacity"
+        ]
+      },
+      "UpdateSectionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre de la sección",
+            "example": "B"
+          },
+          "grade": {
+            "type": "string",
+            "description": "Grado académico",
+            "example": "1ro de Primaria"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "example": "PRIMARY"
+          },
+          "capacity": {
+            "type": "number",
+            "description": "Aforo máximo permitido",
+            "example": 30
+          },
+          "status": {
+            "type": "string",
+            "description": "Estado",
+            "example": "CLOSED"
+          }
+        }
       },
       "User": {
         "type": "object",

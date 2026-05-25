@@ -251,6 +251,167 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/academic/courses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all academic courses */
+        get: operations["AcademicController_getCourses"];
+        put?: never;
+        /** Create a new course */
+        post: operations["AcademicController_createCourse"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/academic/courses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a course */
+        delete: operations["AcademicController_deleteCourse"];
+        options?: never;
+        head?: never;
+        /** Update an existing course */
+        patch: operations["AcademicController_updateCourse"];
+        trace?: never;
+    };
+    "/api/academic/schedules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List weekly class schedules with filters */
+        get: operations["AcademicController_getSchedules"];
+        put?: never;
+        /** Create a new schedule assignment */
+        post: operations["AcademicController_createSchedule"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/academic/schedules/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a schedule assignment */
+        delete: operations["AcademicController_deleteSchedule"];
+        options?: never;
+        head?: never;
+        /** Update an existing schedule assignment */
+        patch: operations["AcademicController_updateSchedule"];
+        trace?: never;
+    };
+    "/api/academic/communications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all visible announcements/communications */
+        get: operations["AcademicController_getCommunications"];
+        put?: never;
+        /** Create a new announcement */
+        post: operations["AcademicController_createCommunication"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/academic/communications/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an announcement */
+        delete: operations["AcademicController_deleteCommunication"];
+        options?: never;
+        head?: never;
+        /** Update an existing announcement */
+        patch: operations["AcademicController_updateCommunication"];
+        trace?: never;
+    };
+    "/api/academic/sections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all sections with student count */
+        get: operations["AcademicController_getSections"];
+        put?: never;
+        /** Create a new section */
+        post: operations["AcademicController_createSection"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/academic/sections/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a section */
+        delete: operations["AcademicController_deleteSection"];
+        options?: never;
+        head?: never;
+        /** Update an existing section */
+        patch: operations["AcademicController_updateSection"];
+        trace?: never;
+    };
+    "/api/academic/teachers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all academic teachers (staff profiles) */
+        get: operations["AcademicController_getTeachers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/sign-in/social": {
         parameters: {
             query?: never;
@@ -1971,7 +2132,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-05-25T13:37:41.599Z
+             * @example 2026-05-25T20:14:00.001Z
              */
             timestamp: string;
             /**
@@ -2042,13 +2203,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-25T13:37:41.708Z
+             * @example 2026-05-25T20:14:00.110Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-25T13:37:41.708Z
+             * @example 2026-05-25T20:14:00.110Z
              */
             updatedAt: string;
         };
@@ -2100,7 +2261,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Appointment date and time
-             * @example 2026-05-25T13:37:42.219Z
+             * @example 2026-05-25T20:14:00.456Z
              */
             date: string;
             /**
@@ -2118,7 +2279,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-25T13:37:42.219Z
+             * @example 2026-05-25T20:14:00.456Z
              */
             createdAt: string;
         };
@@ -2147,7 +2308,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Evaluation process date
-             * @example 2026-05-25T13:37:42.223Z
+             * @example 2026-05-25T20:14:00.456Z
              */
             date: string;
             /**
@@ -2201,7 +2362,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-25T13:37:42.223Z
+             * @example 2026-05-25T20:14:00.456Z
              */
             createdAt: string;
         };
@@ -2226,13 +2387,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-25T13:37:42.223Z
+             * @example 2026-05-25T20:14:00.457Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-25T13:37:42.223Z
+             * @example 2026-05-25T20:14:00.457Z
              */
             updatedAt: string;
         };
@@ -2325,7 +2486,7 @@ export interface components {
             prospectId: string;
             /**
              * @description Appointment date and time in ISO format
-             * @example 2026-05-25T13:37:42.235Z
+             * @example 2026-05-25T20:14:00.459Z
              */
             date: string;
             /**
@@ -2615,7 +2776,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Fecha de la matrícula
-             * @example 2026-05-25T13:37:42.397Z
+             * @example 2026-05-25T20:14:00.472Z
              */
             date: string;
             /**
@@ -2632,6 +2793,305 @@ export interface components {
         PaginatedEnrollmentsResponse: {
             data: components["schemas"]["EnrollmentResponse"][];
             meta: components["schemas"]["PaginationMeta"];
+        };
+        CourseResponse: {
+            /**
+             * @description ID del curso
+             * @example course-123
+             */
+            id: string;
+            /**
+             * @description Nombre del curso
+             * @example Matemática
+             */
+            name: string;
+            /**
+             * @description Descripción del curso
+             * @example Álgebra, geometría y aritmética
+             */
+            description: Record<string, never> | null;
+        };
+        CreateCourseDto: {
+            /**
+             * @description Nombre del curso
+             * @example Matemática
+             */
+            name: string;
+            /**
+             * @description Descripción del curso
+             * @example Álgebra, geometría y aritmética
+             */
+            description?: string;
+        };
+        UpdateCourseDto: {
+            /**
+             * @description Nombre del curso
+             * @example Matemática Avanzada
+             */
+            name?: string;
+            /**
+             * @description Descripción del curso
+             * @example Álgebra y cálculo
+             */
+            description?: string;
+        };
+        UserMinimalResponse: {
+            /** @description Nombre completo */
+            name: string;
+            /** @description Correo electrónico */
+            email: string;
+        };
+        TeacherMinimalResponse: {
+            /** @description ID del perfil del docente */
+            id: string;
+            /** @description Especialidad */
+            specialty: string;
+            user: components["schemas"]["UserMinimalResponse"];
+        };
+        ScheduleResponse: {
+            /**
+             * @description ID del horario
+             * @example sched-123
+             */
+            id: string;
+            /**
+             * @description ID de la sección
+             * @example sec-123
+             */
+            sectionId: string;
+            section?: components["schemas"]["SectionResponse"];
+            /**
+             * @description ID del curso
+             * @example course-123
+             */
+            courseId: string;
+            course?: components["schemas"]["CourseResponse"];
+            /**
+             * @description ID del docente
+             * @example staff-123
+             */
+            staffId: string;
+            staff?: components["schemas"]["TeacherMinimalResponse"];
+            /**
+             * @description Día de la semana
+             * @example 1
+             */
+            day: number;
+            /**
+             * @description Hora de inicio
+             * @example 08:00
+             */
+            startTime: string;
+            /**
+             * @description Hora de fin
+             * @example 09:30
+             */
+            endTime: string;
+        };
+        CreateScheduleDto: {
+            /**
+             * @description ID de la sección
+             * @example sec-123
+             */
+            sectionId: string;
+            /**
+             * @description ID del curso
+             * @example course-123
+             */
+            courseId: string;
+            /**
+             * @description ID del perfil de personal (docente)
+             * @example staff-123
+             */
+            staffId: string;
+            /**
+             * @description Día de la semana (1: Lunes, ..., 5: Viernes)
+             * @example 1
+             */
+            day: number;
+            /**
+             * @description Hora de inicio (HH:mm)
+             * @example 08:00
+             */
+            startTime: string;
+            /**
+             * @description Hora de fin (HH:mm)
+             * @example 09:30
+             */
+            endTime: string;
+        };
+        UpdateScheduleDto: {
+            /**
+             * @description ID de la sección
+             * @example sec-123
+             */
+            sectionId?: string;
+            /**
+             * @description ID del curso
+             * @example course-123
+             */
+            courseId?: string;
+            /**
+             * @description ID del perfil de personal (docente)
+             * @example staff-123
+             */
+            staffId?: string;
+            /**
+             * @description Día de la semana
+             * @example 1
+             */
+            day?: number;
+            /**
+             * @description Hora de inicio (HH:mm)
+             * @example 08:00
+             */
+            startTime?: string;
+            /**
+             * @description Hora de fin (HH:mm)
+             * @example 09:30
+             */
+            endTime?: string;
+        };
+        CommunicationResponse: {
+            /**
+             * @description ID del comunicado
+             * @example comm-123
+             */
+            id: string;
+            /**
+             * @description Título del comunicado
+             * @example Reunión de Padres
+             */
+            title: string;
+            /**
+             * @description Contenido completo
+             * @example Se convoca a reunión...
+             */
+            content: string;
+            /**
+             * @description Categoría
+             * @example Informativo
+             */
+            category: string;
+            /**
+             * @description ¿Es visible actualmente?
+             * @example true
+             */
+            isVisible: boolean;
+            /**
+             * @description Fecha de caducidad
+             * @example 2026-12-31T23:59:59.000Z
+             */
+            expiresAt: Record<string, never> | null;
+            /**
+             * Format: date-time
+             * @description Fecha de creación
+             * @example 2026-05-25T10:00:00.000Z
+             */
+            createdAt: string;
+        };
+        CreateCommunicationDto: {
+            /**
+             * @description Título del comunicado
+             * @example Reunión de Padres
+             */
+            title: string;
+            /**
+             * @description Contenido completo
+             * @example Se convoca a reunión...
+             */
+            content: string;
+            /**
+             * @description Categoría (Urgente, Evento, Informativo)
+             * @example Informativo
+             */
+            category: string;
+            /**
+             * @description ¿Es visible actualmente?
+             * @default true
+             */
+            isVisible: boolean;
+            /**
+             * @description Fecha de caducidad (ISO string)
+             * @example 2026-12-31T23:59:59.000Z
+             */
+            expiresAt?: Record<string, never> | null;
+        };
+        UpdateCommunicationDto: {
+            /**
+             * @description Título del comunicado
+             * @example Reunión de Padres Act.
+             */
+            title?: string;
+            /**
+             * @description Contenido completo
+             * @example Se convoca a reunión...
+             */
+            content?: string;
+            /**
+             * @description Categoría (Urgente, Evento, Informativo)
+             * @example Informativo
+             */
+            category?: string;
+            /** @description ¿Es visible actualmente? */
+            isVisible?: boolean;
+            /** @description Fecha de caducidad (ISO string) */
+            expiresAt?: Record<string, never> | null;
+        };
+        CreateSectionDto: {
+            /**
+             * @description Nombre de la sección (ej. A, B, C)
+             * @example A
+             */
+            name: string;
+            /**
+             * @description Grado académico
+             * @example 1ro de Primaria
+             */
+            grade: string;
+            /**
+             * @example PRIMARY
+             * @enum {string}
+             */
+            level: "INITIAL" | "PRIMARY" | "SECONDARY";
+            /**
+             * @description Aforo máximo permitido
+             * @example 25
+             */
+            capacity: number;
+            /**
+             * @description Estado
+             * @default OPEN
+             * @example OPEN
+             */
+            status: string;
+        };
+        UpdateSectionDto: {
+            /**
+             * @description Nombre de la sección
+             * @example B
+             */
+            name?: string;
+            /**
+             * @description Grado académico
+             * @example 1ro de Primaria
+             */
+            grade?: string;
+            /**
+             * @example PRIMARY
+             * @enum {string}
+             */
+            level?: "INITIAL" | "PRIMARY" | "SECONDARY";
+            /**
+             * @description Aforo máximo permitido
+             * @example 30
+             */
+            capacity?: number;
+            /**
+             * @description Estado
+             * @example CLOSED
+             */
+            status?: string;
         };
         User: {
             id?: string;
@@ -3326,6 +3786,395 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["PaginatedEnrollmentsResponse"];
                 };
+            };
+        };
+    };
+    AcademicController_getCourses: {
+        parameters: {
+            query: {
+                search: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return list of courses. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseResponse"][];
+                };
+            };
+        };
+    };
+    AcademicController_createCourse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCourseDto"];
+            };
+        };
+        responses: {
+            /** @description Course created successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseResponse"];
+                };
+            };
+        };
+    };
+    AcademicController_deleteCourse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Course deleted successfully. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AcademicController_updateCourse: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCourseDto"];
+            };
+        };
+        responses: {
+            /** @description Course updated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseResponse"];
+                };
+            };
+        };
+    };
+    AcademicController_getSchedules: {
+        parameters: {
+            query: {
+                sectionId: string;
+                staffId: string;
+                day: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return schedules list. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleResponse"][];
+                };
+            };
+        };
+    };
+    AcademicController_createSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateScheduleDto"];
+            };
+        };
+        responses: {
+            /** @description Schedule created successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleResponse"];
+                };
+            };
+        };
+    };
+    AcademicController_deleteSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Schedule deleted successfully. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AcademicController_updateSchedule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateScheduleDto"];
+            };
+        };
+        responses: {
+            /** @description Schedule updated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScheduleResponse"];
+                };
+            };
+        };
+    };
+    AcademicController_getCommunications: {
+        parameters: {
+            query: {
+                category: string;
+                search: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return communications. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunicationResponse"][];
+                };
+            };
+        };
+    };
+    AcademicController_createCommunication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCommunicationDto"];
+            };
+        };
+        responses: {
+            /** @description Announcement created successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunicationResponse"];
+                };
+            };
+        };
+    };
+    AcademicController_deleteCommunication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Announcement deleted successfully. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AcademicController_updateCommunication: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCommunicationDto"];
+            };
+        };
+        responses: {
+            /** @description Announcement updated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunicationResponse"];
+                };
+            };
+        };
+    };
+    AcademicController_getSections: {
+        parameters: {
+            query: {
+                level: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return all sections. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SectionResponse"][];
+                };
+            };
+        };
+    };
+    AcademicController_createSection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSectionDto"];
+            };
+        };
+        responses: {
+            /** @description Section created successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SectionResponse"];
+                };
+            };
+        };
+    };
+    AcademicController_deleteSection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Section deleted successfully. */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AcademicController_updateSection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateSectionDto"];
+            };
+        };
+        responses: {
+            /** @description Section updated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SectionResponse"];
+                };
+            };
+        };
+    };
+    AcademicController_getTeachers: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return all teachers. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
