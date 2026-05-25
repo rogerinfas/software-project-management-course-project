@@ -39,6 +39,22 @@ export class PrismaSectionRepository implements ISectionRepository {
     return records.map((r) => this.mapToEntity(r)!);
   }
 
+  async create(section: Partial<SectionEntity>): Promise<SectionEntity> {
+    const record = await this.prisma.section.create({
+      data: {
+        name: section.name!,
+        grade: section.grade!,
+        level: section.level!,
+        capacity: section.capacity!,
+        status: section.status ?? 'OPEN',
+      },
+      include: {
+        students: true,
+      },
+    });
+    return this.mapToEntity(record)!;
+  }
+
   async update(
     id: string,
     section: Partial<SectionEntity>,
@@ -58,4 +74,11 @@ export class PrismaSectionRepository implements ISectionRepository {
     });
     return this.mapToEntity(updated)!;
   }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.section.delete({
+      where: { id },
+    });
+  }
 }
+

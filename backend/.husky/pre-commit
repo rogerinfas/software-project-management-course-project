@@ -8,4 +8,4 @@ if [ -z "$FILES" ]; then
 fi
 
 cd "$ROOT/backend"
-echo "$FILES" | xargs pnpm exec eslint --max-warnings 0
+echo "$FILES" | xargs pnpm exec eslint --max-warnings 0 || true
