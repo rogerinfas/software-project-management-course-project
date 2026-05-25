@@ -1,3 +1,15 @@
+// Suppress pg driver client.query deprecation warning programmatically
+const originalEmitWarning = process.emitWarning;
+process.emitWarning = function (warning, ...args: any[]) {
+  if (typeof warning === 'string' && warning.includes('client.query()')) {
+    return;
+  }
+  if (warning instanceof Error && warning.message && warning.message.includes('client.query()')) {
+    return;
+  }
+  return originalEmitWarning.call(process, warning, ...args as any);
+};
+
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {
