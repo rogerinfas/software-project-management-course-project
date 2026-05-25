@@ -58,45 +58,45 @@ const nav = [
     items: [
       { href: "/admission/config", title: "Config. proceso", icon: Settings2 },
       { href: "/admission/pipeline", title: "CRM / Pipeline", icon: UserPlus },
-      { href: "/admission/citas", title: "Agenda de Citas", icon: CalendarCheck },
-      { href: "/admission/documentos", title: "Documentos", icon: FolderOpen },
-      { href: "/admission/evaluacion", title: "Evaluación / Dictamen", icon: ClipboardCheck },
+      { href: "/admission/appointments", title: "Agenda de Citas", icon: CalendarCheck },
+      { href: "/admission/documents", title: "Documentos", icon: FolderOpen },
+      { href: "/admission/evaluation", title: "Evaluación / Dictamen", icon: ClipboardCheck },
     ],
   },
   {
     label: "Matrícula (M2)",
     items: [
-      { href: "/enrollment/expediente", title: "Expediente familiar", icon: Users },
-      { href: "/enrollment/apoderados", title: "Gestión de Apoderados", icon: UserCheck },
-      { href: "/enrollment/formalizacion", title: "Formalización / Asignación", icon: ClipboardList },
-      { href: "/enrollment/documentos", title: "Ficha de Matrícula", icon: FileBadge },
+      { href: "/enrollment/guardians", title: "Gestión de Apoderados", icon: UserCheck },
+      { href: "/enrollment/formalization", title: "Formalización / Asignación", icon: ClipboardList },
+      { href: "/enrollment/documents", title: "Ficha de Matrícula", icon: FileBadge },
+      { href: "/enrollment/family-records", title: "Expediente familiar", icon: Users },
     ],
   },
   {
     label: "Académica & Comunicación (M3)",
     items: [
-      { href: "/academic/malla", title: "Malla curricular", icon: BookOpen },
-      { href: "/academic/carga-docente", title: "Carga docente", icon: GraduationCap },
-      { href: "/academic/secciones", title: "Registro de Secciones", icon: LayoutGrid },
-      { href: "/academic/horarios", title: "Gestión de Horarios", icon: CalendarClock },
-      { href: "/academic/comunicados", title: "Panel de Comunicados", icon: Megaphone },
+      { href: "/academic/curriculum", title: "Malla curricular", icon: BookOpen },
+      { href: "/academic/teacher-load", title: "Carga docente", icon: GraduationCap },
+      { href: "/academic/sections", title: "Registro de Secciones", icon: LayoutGrid },
+      { href: "/academic/schedules", title: "Gestión de Horarios", icon: CalendarClock },
+      { href: "/academic/announcements", title: "Panel de Comunicados", icon: Megaphone },
     ],
   },
   {
     label: "Tesorería (M4)",
     items: [
-      { href: "/treasury/tarifario", title: "Tarifario", icon: Wallet },
-      { href: "/treasury/cobranzas", title: "Cobranzas", icon: Coins },
-      { href: "/treasury/comprobantes", title: "Comprobantes", icon: Receipt },
+      { href: "/treasury/tariffs", title: "Tarifario", icon: Wallet },
+      { href: "/treasury/collections", title: "Cobranzas", icon: Coins },
+      { href: "/treasury/receipts", title: "Comprobantes", icon: Receipt },
     ],
   },
   {
     label: "Personal & Asistencia (M5)",
     items: [
-      { href: "/staff/rrhh", title: "RR.HH.", icon: UserCog },
-      { href: "/staff/reconocimiento", title: "Reconocimiento facial", icon: Fingerprint },
-      { href: "/staff/reglas", title: "Reglas y sanciones", icon: Gavel },
-      { href: "/staff/pre-planilla", title: "Pre-planilla", icon: FileText },
+      { href: "/staff/hr", title: "RR.HH.", icon: UserCog },
+      { href: "/staff/facial-recognition", title: "Reconocimiento facial", icon: Fingerprint },
+      { href: "/staff/rules", title: "Reglas y sanciones", icon: Gavel },
+      { href: "/staff/pre-payroll", title: "Pre-planilla", icon: FileText },
     ],
   },
   {
@@ -106,7 +106,7 @@ const nav = [
   {
     label: "Extras",
     items: [
-      { href: "/academic/malla", title: "Ir a malla", icon: GraduationCap },
+      { href: "/academic/curriculum", title: "Ir a malla", icon: GraduationCap },
     ],
     hidden: true,
   },
