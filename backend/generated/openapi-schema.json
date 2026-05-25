@@ -581,6 +581,321 @@
         ]
       }
     },
+    "/api/enrollment/guardians": {
+      "get": {
+        "operationId": "EnrollmentController_getGuardians",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Número de página (1-indexed)",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Tamaño de página",
+            "schema": {
+              "default": 15,
+              "example": 15,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Búsqueda por nombre o DNI",
+            "schema": {
+              "example": "Juan",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return paginated guardians.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedGuardiansResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List apoderados (guardians) with pagination and search",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      },
+      "post": {
+        "operationId": "EnrollmentController_createGuardian",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGuardianRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Guardian created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuardianResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new guardian",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      }
+    },
+    "/api/enrollment/guardians/{id}": {
+      "put": {
+        "operationId": "EnrollmentController_updateGuardian",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGuardianRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Guardian updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuardianResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an existing guardian",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      },
+      "delete": {
+        "operationId": "EnrollmentController_deleteGuardian",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Guardian deleted successfully."
+          }
+        },
+        "summary": "Delete a guardian",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      }
+    },
+    "/api/enrollment/students": {
+      "get": {
+        "operationId": "EnrollmentController_getStudents",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Número de página (1-indexed)",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Tamaño de página",
+            "schema": {
+              "default": 15,
+              "example": 15,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Búsqueda por nombre o DNI",
+            "schema": {
+              "example": "Juan",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return paginated students.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedStudentsResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List enrolled students with pagination and search",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      }
+    },
+    "/api/enrollment/sections": {
+      "get": {
+        "operationId": "EnrollmentController_getSections",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all sections.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SectionResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List all academic sections with vacancy count",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      }
+    },
+    "/api/enrollment/formalize": {
+      "post": {
+        "operationId": "EnrollmentController_formalizeEnrollment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FormalizeEnrollmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Enrollment completed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnrollmentResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Formalize a student enrollment (registers student, guardian & enrollment)",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      }
+    },
+    "/api/enrollment/documents": {
+      "get": {
+        "operationId": "EnrollmentController_getDocuments",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Número de página (1-indexed)",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "size",
+            "required": false,
+            "in": "query",
+            "description": "Tamaño de página",
+            "schema": {
+              "default": 15,
+              "example": 15,
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Búsqueda por nombre o DNI",
+            "schema": {
+              "example": "Juan",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return paginated documents.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedEnrollmentsResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "List all academic enrollment documents/records paginated",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      }
+    },
     "/api/auth/sign-in/social": {
       "post": {
         "tags": [
@@ -5744,7 +6059,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-20T22:17:39.460Z"
+            "example": "2026-05-25T14:06:45.877Z"
           },
           "path": {
             "type": "string",
@@ -5849,13 +6164,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-20T22:17:39.642Z"
+            "example": "2026-05-25T14:06:45.994Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-20T22:17:39.642Z"
+            "example": "2026-05-25T14:06:45.994Z"
           }
         },
         "required": [
@@ -5965,7 +6280,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Appointment date and time",
-            "example": "2026-05-20T22:17:40.115Z"
+            "example": "2026-05-25T14:06:46.553Z"
           },
           "type": {
             "type": "string",
@@ -5989,7 +6304,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-20T22:17:40.115Z"
+            "example": "2026-05-25T14:06:46.553Z"
           }
         },
         "required": [
@@ -6032,7 +6347,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Evaluation process date",
-            "example": "2026-05-20T22:17:40.115Z"
+            "example": "2026-05-25T14:06:46.557Z"
           },
           "evaluatorId": {
             "type": "object",
@@ -6114,7 +6429,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-20T22:17:40.116Z"
+            "example": "2026-05-25T14:06:46.557Z"
           }
         },
         "required": [
@@ -6157,13 +6472,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-20T22:17:40.116Z"
+            "example": "2026-05-25T14:06:46.557Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-20T22:17:40.116Z"
+            "example": "2026-05-25T14:06:46.557Z"
           }
         },
         "required": [
@@ -6335,7 +6650,7 @@
           "date": {
             "type": "string",
             "description": "Appointment date and time in ISO format",
-            "example": "2026-05-20T22:17:40.118Z"
+            "example": "2026-05-25T14:06:46.570Z"
           },
           "type": {
             "type": "string",
@@ -6375,6 +6690,438 @@
         },
         "required": [
           "aptitude"
+        ]
+      },
+      "SectionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID de la sección",
+            "example": "section-123"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nombre (ej. A, B, C)",
+            "example": "A"
+          },
+          "grade": {
+            "type": "string",
+            "description": "Grado",
+            "example": "1ro de Primaria"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "example": "PRIMARY"
+          },
+          "capacity": {
+            "type": "number",
+            "description": "Aforo máximo permitido",
+            "example": 30
+          },
+          "status": {
+            "type": "string",
+            "description": "Estado (ej. OPEN, CLOSED)",
+            "example": "OPEN"
+          },
+          "matriculados": {
+            "type": "number",
+            "description": "Cantidad actual de alumnos matriculados",
+            "example": 12
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "grade",
+          "level",
+          "capacity",
+          "status",
+          "matriculados"
+        ]
+      },
+      "StudentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único del estudiante",
+            "example": "student-123"
+          },
+          "code": {
+            "type": "string",
+            "description": "Código de estudiante",
+            "example": "ALU-2026-1234",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Nombres",
+            "example": "Luis"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Apellidos",
+            "example": "Pérez"
+          },
+          "dni": {
+            "type": "string",
+            "description": "DNI",
+            "example": "87654321"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "example": "PRIMARY"
+          },
+          "grade": {
+            "type": "string",
+            "description": "Grado",
+            "example": "1ro de Primaria"
+          },
+          "sectionId": {
+            "type": "string",
+            "description": "ID de la sección",
+            "example": "section-123",
+            "nullable": true
+          },
+          "section": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SectionResponse"
+              }
+            ]
+          },
+          "guardianId": {
+            "type": "string",
+            "description": "ID del apoderado",
+            "example": "guardian-123"
+          },
+          "guardian": {
+            "$ref": "#/components/schemas/GuardianResponse"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Fecha de creación"
+          }
+        },
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "dni",
+          "level",
+          "grade",
+          "guardianId",
+          "createdAt"
+        ]
+      },
+      "GuardianResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único del apoderado",
+            "example": "guardian-123"
+          },
+          "dni": {
+            "type": "string",
+            "description": "DNI del apoderado",
+            "example": "12345678"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nombre completo",
+            "example": "Juan Pérez"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Teléfono de contacto",
+            "example": "987654321"
+          },
+          "email": {
+            "type": "string",
+            "description": "Correo electrónico",
+            "example": "juan.perez@gmail.com",
+            "nullable": true
+          },
+          "occupation": {
+            "type": "string",
+            "description": "Ocupación",
+            "example": "Ingeniero",
+            "nullable": true
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentResponse"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "dni",
+          "name",
+          "phone"
+        ]
+      },
+      "PaginatedGuardiansResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GuardianResponse"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "CreateGuardianRequest": {
+        "type": "object",
+        "properties": {
+          "dni": {
+            "type": "string",
+            "description": "DNI del apoderado",
+            "example": "12345678"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nombre completo",
+            "example": "Juan Pérez"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Teléfono de contacto",
+            "example": "987654321"
+          },
+          "email": {
+            "type": "string",
+            "description": "Correo electrónico",
+            "example": "juan.perez@gmail.com",
+            "nullable": true
+          },
+          "occupation": {
+            "type": "string",
+            "description": "Ocupación",
+            "example": "Ingeniero",
+            "nullable": true
+          }
+        },
+        "required": [
+          "dni",
+          "name",
+          "phone"
+        ]
+      },
+      "UpdateGuardianRequest": {
+        "type": "object",
+        "properties": {
+          "dni": {
+            "type": "string",
+            "description": "DNI del apoderado",
+            "example": "12345678"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nombre completo",
+            "example": "Juan Pérez"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Teléfono de contacto",
+            "example": "987654321"
+          },
+          "email": {
+            "type": "string",
+            "description": "Correo electrónico",
+            "example": "juan.perez@gmail.com",
+            "nullable": true
+          },
+          "occupation": {
+            "type": "string",
+            "description": "Ocupación",
+            "example": "Ingeniero",
+            "nullable": true
+          }
+        }
+      },
+      "PaginatedStudentsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentResponse"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "FormalizeEnrollmentRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Nombres del alumno",
+            "example": "Luis"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Apellidos del alumno",
+            "example": "Pérez"
+          },
+          "dni": {
+            "type": "string",
+            "description": "DNI del alumno",
+            "example": "87654321"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "example": "PRIMARY"
+          },
+          "grade": {
+            "type": "string",
+            "description": "Grado de postulación",
+            "example": "1ro de Primaria"
+          },
+          "sectionId": {
+            "type": "string",
+            "description": "ID de la sección asignada",
+            "example": "section-123"
+          },
+          "guardianDni": {
+            "type": "string",
+            "description": "DNI del apoderado",
+            "example": "12345678"
+          },
+          "guardianName": {
+            "type": "string",
+            "description": "Nombre del apoderado",
+            "example": "Juan Pérez"
+          },
+          "guardianPhone": {
+            "type": "string",
+            "description": "Teléfono del apoderado",
+            "example": "987654321"
+          },
+          "guardianEmail": {
+            "type": "string",
+            "description": "Correo del apoderado",
+            "example": "juan.perez@gmail.com",
+            "nullable": true
+          },
+          "guardianOccupation": {
+            "type": "string",
+            "description": "Ocupación del apoderado",
+            "example": "Ingeniero",
+            "nullable": true
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "dni",
+          "level",
+          "grade",
+          "sectionId",
+          "guardianDni",
+          "guardianName",
+          "guardianPhone"
+        ]
+      },
+      "EnrollmentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único de la matrícula",
+            "example": "enrollment-123"
+          },
+          "studentId": {
+            "type": "string",
+            "description": "ID del estudiante",
+            "example": "student-123"
+          },
+          "student": {
+            "$ref": "#/components/schemas/StudentResponse"
+          },
+          "year": {
+            "type": "number",
+            "description": "Año de la matrícula",
+            "example": 2026
+          },
+          "date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Fecha de la matrícula",
+            "example": "2026-05-25T14:06:46.770Z"
+          },
+          "status": {
+            "type": "string",
+            "description": "Estado",
+            "example": "activa"
+          },
+          "pdfUrl": {
+            "type": "string",
+            "description": "URL de la Ficha de Matrícula PDF",
+            "example": "/pdf/ficha-matricula-student-123.pdf",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "studentId",
+          "year",
+          "date",
+          "status"
+        ]
+      },
+      "PaginatedEnrollmentsResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnrollmentResponse"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
         ]
       },
       "User": {
