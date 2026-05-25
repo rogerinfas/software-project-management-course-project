@@ -40,10 +40,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof DomainException) {
       switch (exception.code) {
         case 'USER_NOT_FOUND':
+        case 'GUARDIAN_NOT_FOUND':
+        case 'STUDENT_NOT_FOUND':
+        case 'SECTION_NOT_FOUND':
           status = HttpStatus.NOT_FOUND;
           break;
         case 'EMAIL_ALREADY_EXISTS':
+        case 'GUARDIAN_ALREADY_EXISTS':
+        case 'STUDENT_ALREADY_EXISTS':
           status = HttpStatus.CONFLICT;
+          break;
+        case 'GUARDIAN_HAS_DEBT':
+        case 'NO_VACANCIES_AVAILABLE':
+          status = HttpStatus.BAD_REQUEST;
           break;
         default:
           status = HttpStatus.BAD_REQUEST;
