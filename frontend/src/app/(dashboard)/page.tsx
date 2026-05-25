@@ -34,17 +34,17 @@ const MODULE_STATUS = [
   {
     code: "M2",
     title: "Matrícula",
-    href: "/enrollment/formalizacion",
+    href: "/enrollment/formalization",
     description: "Expediente familiar, gestión de vacantes e instrumentación.",
     icon: UsersIcon,
-    status: "active",
-    statusLabel: "En Construcción",
-    badgeColor: "bg-amber-500/10 text-amber-500 border-amber-500/20"
+    status: "ready",
+    statusLabel: "Fase 2 Lista",
+    badgeColor: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
   },
   {
     code: "M3",
     title: "Académica y comunicación",
-    href: "/academic/malla",
+    href: "/academic/curriculum",
     description: "Mallas curriculares, carga de docentes, secciones y horarios.",
     icon: BookOpenIcon,
     status: "active",
@@ -54,7 +54,7 @@ const MODULE_STATUS = [
   {
     code: "M4",
     title: "Tesorería",
-    href: "/treasury/cobranzas",
+    href: "/treasury/collections",
     description: "Definición del tarifario, cobranzas y facturación integrada.",
     icon: CoinsIcon,
     status: "pending",
@@ -64,7 +64,7 @@ const MODULE_STATUS = [
   {
     code: "M5",
     title: "Personal y asistencia",
-    href: "/staff/reconocimiento",
+    href: "/staff/facial-recognition",
     description: "Mecanismo de reconocimiento facial, pre-planilla y asistencia.",
     icon: FingerprintIcon,
     status: "pending",
