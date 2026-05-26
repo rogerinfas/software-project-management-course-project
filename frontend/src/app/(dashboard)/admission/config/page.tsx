@@ -135,12 +135,10 @@ export default function ConfigPage() {
               return (
                 <div
                   key={s.id}
-                  className={`bg-muted/30 border border-border/50 flex flex-col sm:flex-row justify-between gap-3 rounded-lg p-4 transition-all ${
-                    isEditing ? "sm:items-end" : "sm:items-center"
-                  }`}
+                  className="bg-muted/30 border border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-lg p-4 transition-all"
                 >
                   {isEditing ? (
-                    <div className="flex flex-1 flex-col sm:flex-row items-end gap-3 w-full">
+                    <div className="flex flex-1 flex-col sm:flex-row items-center gap-3 w-full">
                       <div className="flex flex-col gap-1 w-full sm:w-2/3">
                         <Label htmlFor={`edit-name-${s.id}`} className="text-xs text-muted-foreground">Nombre</Label>
                         <Input
@@ -176,26 +174,29 @@ export default function ConfigPage() {
                   )}
 
                   {/* Actions */}
-                  <div className={`flex items-center gap-2 self-end ${isEditing ? "sm:self-end" : "sm:self-center"}`}>
+                  <div className="flex items-center gap-2 self-end sm:self-center">
                     {isEditing ? (
-                      <>
-                        <Button
-                          size="sm"
-                          onClick={() => handleSaveEdit(s.id)}
-                          className="cursor-pointer"
-                          disabled={updateMutation.isPending}
-                        >
-                          <Save className="size-3.5" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setEditingStageId(null)}
-                          className="cursor-pointer"
-                        >
-                          <X className="size-3.5" />
-                        </Button>
-                      </>
+                      <div className="flex flex-col gap-1 w-full sm:w-auto">
+                        <span className="text-xs text-transparent select-none invisible h-4 hidden sm:block">Spacer</span>
+                        <div className="flex items-center gap-2 h-9">
+                          <Button
+                            size="sm"
+                            onClick={() => handleSaveEdit(s.id)}
+                            className="cursor-pointer"
+                            disabled={updateMutation.isPending}
+                          >
+                            <Save className="size-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setEditingStageId(null)}
+                            className="cursor-pointer"
+                          >
+                            <X className="size-3.5" />
+                          </Button>
+                        </div>
+                      </div>
                     ) : (
                       <>
                         <Button
