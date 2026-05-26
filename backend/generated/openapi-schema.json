@@ -9361,6 +9361,306 @@
           "finePerMinute"
         ]
       },
+      "TariffResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID de la tarifa",
+            "example": "tariff-123"
+          },
+          "concept": {
+            "type": "string",
+            "description": "Concepto de la tarifa",
+            "example": "Pensión Mensual"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Monto de la tarifa",
+            "example": 450
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ONE_TIME",
+              "MONTHLY",
+              "EXTRA"
+            ],
+            "description": "Tipo de cobro de la tarifa"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "description": "Nivel educativo aplicable"
+          }
+        },
+        "required": [
+          "id",
+          "concept",
+          "amount",
+          "type",
+          "level"
+        ]
+      },
+      "CreateTariffDto": {
+        "type": "object",
+        "properties": {
+          "concept": {
+            "type": "string",
+            "description": "Concepto de la tarifa",
+            "example": "Pensión Mensual de Mayo"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Monto de la tarifa",
+            "example": 450
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ONE_TIME",
+              "MONTHLY",
+              "EXTRA"
+            ],
+            "description": "Tipo de cobro de la tarifa",
+            "example": "MONTHLY"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "description": "Nivel educativo aplicable",
+            "example": "PRIMARY"
+          }
+        },
+        "required": [
+          "concept",
+          "amount",
+          "type",
+          "level"
+        ]
+      },
+      "UpdateTariffDto": {
+        "type": "object",
+        "properties": {
+          "concept": {
+            "type": "string",
+            "description": "Concepto de la tarifa",
+            "example": "Pensión Mayo Modificada"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Monto de la tarifa",
+            "example": 480
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ONE_TIME",
+              "MONTHLY",
+              "EXTRA"
+            ],
+            "description": "Tipo de cobro de la tarifa",
+            "example": "MONTHLY"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "description": "Nivel educativo aplicable",
+            "example": "PRIMARY"
+          }
+        }
+      },
+      "ChargeResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID del cargo",
+            "example": "charge-123"
+          },
+          "studentId": {
+            "type": "string",
+            "description": "ID del estudiante",
+            "example": "student-123"
+          },
+          "student": {
+            "$ref": "#/components/schemas/StudentResponse"
+          },
+          "tariffId": {
+            "type": "string",
+            "description": "ID de la tarifa",
+            "example": "tariff-123"
+          },
+          "tariff": {
+            "$ref": "#/components/schemas/TariffResponse"
+          },
+          "originalAmount": {
+            "type": "number",
+            "description": "Monto original",
+            "example": 450
+          },
+          "pendingAmount": {
+            "type": "number",
+            "description": "Monto pendiente",
+            "example": 450
+          },
+          "dueDate": {
+            "type": "object",
+            "description": "Fecha de vencimiento",
+            "example": "2026-06-05T00:00:00.000Z",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Estado del cargo",
+            "example": "PENDING"
+          }
+        },
+        "required": [
+          "id",
+          "studentId",
+          "tariffId",
+          "originalAmount",
+          "pendingAmount",
+          "dueDate",
+          "status"
+        ]
+      },
+      "CreateChargeDto": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "description": "ID del estudiante",
+            "example": "student-123"
+          },
+          "tariffId": {
+            "type": "string",
+            "description": "ID de la tarifa",
+            "example": "tariff-123"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Fecha de vencimiento",
+            "example": "2026-06-05T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "studentId",
+          "tariffId"
+        ]
+      },
+      "GenerateBulkChargesDto": {
+        "type": "object",
+        "properties": {
+          "tariffId": {
+            "type": "string",
+            "description": "ID de la tarifa a aplicar",
+            "example": "tariff-123"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Fecha de vencimiento para los cargos",
+            "example": "2026-06-05T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "tariffId"
+        ]
+      },
+      "PaymentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID de la transacción de pago",
+            "example": "payment-123"
+          },
+          "chargeId": {
+            "type": "string",
+            "description": "ID del cargo asociado",
+            "example": "charge-123"
+          },
+          "charge": {
+            "$ref": "#/components/schemas/ChargeResponse"
+          },
+          "studentId": {
+            "type": "string",
+            "description": "ID del estudiante",
+            "example": "student-123"
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Monto pagado",
+            "example": 150
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "CASH",
+              "CARD",
+              "TRANSFER"
+            ],
+            "description": "Método de pago"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Fecha y hora de pago",
+            "example": "2026-05-25T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "chargeId",
+          "studentId",
+          "totalAmount",
+          "method",
+          "timestamp"
+        ]
+      },
+      "RegisterPaymentDto": {
+        "type": "object",
+        "properties": {
+          "chargeId": {
+            "type": "string",
+            "description": "ID del cargo a pagar",
+            "example": "charge-123"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Monto total a pagar",
+            "example": 150
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "CASH",
+              "CARD",
+              "TRANSFER"
+            ],
+            "description": "Método de pago",
+            "example": "CASH"
+          }
+        },
+        "required": [
+          "chargeId",
+          "amount",
+          "method"
+        ]
+      },
       "User": {
         "type": "object",
         "properties": {
