@@ -1754,6 +1754,269 @@
         ]
       }
     },
+    "/api/staff/profiles": {
+      "post": {
+        "operationId": "StaffController_createProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStaffProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffProfileEntity"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Registrar un nuevo perfil de personal",
+        "tags": [
+          "Staff & Attendance"
+        ]
+      },
+      "get": {
+        "operationId": "StaffController_getProfiles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffProfileEntity"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener todos los perfiles de personal",
+        "tags": [
+          "Staff & Attendance"
+        ]
+      }
+    },
+    "/api/staff/profiles/{id}": {
+      "get": {
+        "operationId": "StaffController_getProfileById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffProfileEntity"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener perfil de personal por ID",
+        "tags": [
+          "Staff & Attendance"
+        ]
+      },
+      "put": {
+        "operationId": "StaffController_updateProfile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStaffProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffProfileEntity"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Actualizar perfil de personal",
+        "tags": [
+          "Staff & Attendance"
+        ]
+      },
+      "delete": {
+        "operationId": "StaffController_deleteProfile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Eliminar un perfil de personal",
+        "tags": [
+          "Staff & Attendance"
+        ]
+      }
+    },
+    "/api/staff/attendance": {
+      "post": {
+        "operationId": "StaffController_registerAttendance",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterAttendanceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceRecordEntity"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Registrar marcación de asistencia (biometría)",
+        "tags": [
+          "Staff & Attendance"
+        ]
+      },
+      "get": {
+        "operationId": "StaffController_getAttendance",
+        "parameters": [
+          {
+            "name": "staffId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AttendanceRecordEntity"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener historial de asistencia completo o filtrado",
+        "tags": [
+          "Staff & Attendance"
+        ]
+      }
+    },
+    "/api/staff/rules": {
+      "get": {
+        "operationId": "StaffController_getRules",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceRuleEntity"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener reglas globales de asistencia",
+        "tags": [
+          "Staff & Attendance"
+        ]
+      },
+      "put": {
+        "operationId": "StaffController_updateRules",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAttendanceRulesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceRuleEntity"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Actualizar reglas globales de asistencia",
+        "tags": [
+          "Staff & Attendance"
+        ]
+      }
+    },
     "/api/auth/sign-in/social": {
       "post": {
         "tags": [
@@ -6917,7 +7180,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-25T21:39:58.024Z"
+            "example": "2026-05-26T14:43:33.947Z"
           },
           "path": {
             "type": "string",
@@ -7022,13 +7285,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T21:39:58.165Z"
+            "example": "2026-05-26T14:43:34.102Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-25T21:39:58.165Z"
+            "example": "2026-05-26T14:43:34.102Z"
           }
         },
         "required": [
@@ -7138,7 +7401,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Appointment date and time",
-            "example": "2026-05-25T21:39:58.815Z"
+            "example": "2026-05-26T14:43:34.629Z"
           },
           "type": {
             "type": "string",
@@ -7162,7 +7425,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T21:39:58.815Z"
+            "example": "2026-05-26T14:43:34.629Z"
           }
         },
         "required": [
@@ -7205,7 +7468,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Evaluation process date",
-            "example": "2026-05-25T21:39:58.819Z"
+            "example": "2026-05-26T14:43:34.630Z"
           },
           "evaluatorId": {
             "type": "object",
@@ -7287,7 +7550,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T21:39:58.819Z"
+            "example": "2026-05-26T14:43:34.630Z"
           }
         },
         "required": [
@@ -7330,13 +7593,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T21:39:58.819Z"
+            "example": "2026-05-26T14:43:34.630Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-25T21:39:58.819Z"
+            "example": "2026-05-26T14:43:34.630Z"
           }
         },
         "required": [
@@ -7508,7 +7771,7 @@
           "date": {
             "type": "string",
             "description": "Appointment date and time in ISO format",
-            "example": "2026-05-25T21:39:58.835Z"
+            "example": "2026-05-26T14:43:34.633Z"
           },
           "type": {
             "type": "string",
@@ -7942,7 +8205,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Fecha de la matrícula",
-            "example": "2026-05-25T21:39:59.059Z"
+            "example": "2026-05-26T14:43:34.656Z"
           },
           "status": {
             "type": "string",
@@ -8704,6 +8967,398 @@
           "chargeId",
           "amount",
           "method"
+        ]
+      },
+      "CreateStaffProfileDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "ID de usuario asignado al perfil"
+          },
+          "specialty": {
+            "type": "string",
+            "description": "Especialidad profesional"
+          },
+          "cvUrl": {
+            "type": "string",
+            "description": "URL del CV o expediente"
+          },
+          "entryTime": {
+            "type": "string",
+            "description": "Hora de entrada (HH:mm)",
+            "default": "08:00"
+          },
+          "exitTime": {
+            "type": "string",
+            "description": "Hora de salida (HH:mm)",
+            "default": "16:00"
+          },
+          "gracePeriod": {
+            "type": "number",
+            "description": "Minutos de gracia permitidos",
+            "default": 5
+          }
+        },
+        "required": [
+          "userId",
+          "specialty",
+          "entryTime",
+          "exitTime",
+          "gracePeriod"
+        ]
+      },
+      "UserEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the entity",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Indicates whether the entity is active or not",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp when the entity was created",
+            "example": "2026-05-26T14:43:34.107Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp when the entity was last updated",
+            "example": "2026-05-26T14:43:34.107Z"
+          },
+          "deletedAt": {
+            "type": "object",
+            "description": "Timestamp when the entity was deleted (for soft delete)",
+            "example": null
+          },
+          "email": {
+            "type": "string",
+            "description": "User email address",
+            "example": "user@example.com"
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "description": "Whether the email has been verified",
+            "example": true
+          },
+          "name": {
+            "type": "object",
+            "description": "User full name",
+            "example": "John Doe"
+          },
+          "image": {
+            "type": "object",
+            "description": "URL to the user avatar image"
+          },
+          "role": {
+            "type": "string",
+            "description": "User role in the system",
+            "enum": [
+              "ADMIN",
+              "TEACHER",
+              "STAFF",
+              "ADMISSION",
+              "TREASURY"
+            ],
+            "example": "ADMIN"
+          }
+        },
+        "required": [
+          "id",
+          "isActive",
+          "createdAt",
+          "updatedAt",
+          "email",
+          "emailVerified",
+          "role"
+        ]
+      },
+      "StaffProfileEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the entity",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Indicates whether the entity is active or not",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp when the entity was created",
+            "example": "2026-05-26T14:43:34.107Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp when the entity was last updated",
+            "example": "2026-05-26T14:43:34.107Z"
+          },
+          "deletedAt": {
+            "type": "object",
+            "description": "Timestamp when the entity was deleted (for soft delete)",
+            "example": null
+          },
+          "userId": {
+            "type": "string",
+            "description": "ID de usuario asociado"
+          },
+          "user": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserEntity"
+              }
+            ]
+          },
+          "specialty": {
+            "type": "string",
+            "description": "Especialidad profesional"
+          },
+          "cvUrl": {
+            "type": "object",
+            "description": "URL del CV o expediente",
+            "nullable": true
+          },
+          "entryTime": {
+            "type": "string",
+            "description": "Hora de entrada (HH:mm)",
+            "default": "08:00"
+          },
+          "exitTime": {
+            "type": "string",
+            "description": "Hora de salida (HH:mm)",
+            "default": "16:00"
+          },
+          "gracePeriod": {
+            "type": "number",
+            "description": "Minutos de gracia permitidos",
+            "default": 5
+          }
+        },
+        "required": [
+          "id",
+          "isActive",
+          "createdAt",
+          "updatedAt",
+          "userId",
+          "specialty",
+          "entryTime",
+          "exitTime",
+          "gracePeriod"
+        ]
+      },
+      "UpdateStaffProfileDto": {
+        "type": "object",
+        "properties": {
+          "specialty": {
+            "type": "string",
+            "description": "Especialidad profesional"
+          },
+          "cvUrl": {
+            "type": "string",
+            "description": "URL del CV o expediente"
+          },
+          "entryTime": {
+            "type": "string",
+            "description": "Hora de entrada (HH:mm)"
+          },
+          "exitTime": {
+            "type": "string",
+            "description": "Hora de salida (HH:mm)"
+          },
+          "gracePeriod": {
+            "type": "number",
+            "description": "Minutos de gracia permitidos"
+          }
+        }
+      },
+      "RegisterAttendanceDto": {
+        "type": "object",
+        "properties": {
+          "staffId": {
+            "type": "string",
+            "description": "ID del perfil de personal"
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo de marcación (entry, exit)"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Fecha y hora de marcación opcional (si no, actual)"
+          },
+          "method": {
+            "type": "string",
+            "description": "Método utilizado",
+            "default": "FACIAL"
+          }
+        },
+        "required": [
+          "staffId",
+          "type",
+          "timestamp",
+          "method"
+        ]
+      },
+      "AttendanceRecordEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the entity",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Indicates whether the entity is active or not",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp when the entity was created",
+            "example": "2026-05-26T14:43:34.107Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp when the entity was last updated",
+            "example": "2026-05-26T14:43:34.107Z"
+          },
+          "deletedAt": {
+            "type": "object",
+            "description": "Timestamp when the entity was deleted (for soft delete)",
+            "example": null
+          },
+          "staffId": {
+            "type": "string",
+            "description": "ID de perfil de personal"
+          },
+          "staff": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffProfileEntity"
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo de marcación (entry, exit)"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp de marcación"
+          },
+          "method": {
+            "type": "string",
+            "description": "Método de marcación",
+            "default": "FACIAL"
+          },
+          "delayMinutes": {
+            "type": "number",
+            "description": "Minutos de tardanza calculados",
+            "default": 0
+          },
+          "fineAmount": {
+            "type": "number",
+            "description": "Monto de multa calculado",
+            "default": 0
+          }
+        },
+        "required": [
+          "id",
+          "isActive",
+          "createdAt",
+          "updatedAt",
+          "staffId",
+          "type",
+          "timestamp",
+          "method",
+          "delayMinutes",
+          "fineAmount"
+        ]
+      },
+      "AttendanceRuleEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the entity",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Indicates whether the entity is active or not",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp when the entity was created",
+            "example": "2026-05-26T14:43:34.107Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Timestamp when the entity was last updated",
+            "example": "2026-05-26T14:43:34.107Z"
+          },
+          "deletedAt": {
+            "type": "object",
+            "description": "Timestamp when the entity was deleted (for soft delete)",
+            "example": null
+          },
+          "gracePeriodMinutes": {
+            "type": "number",
+            "description": "Minutos de gracia permitidos globalmente",
+            "default": 5
+          },
+          "finePerMinute": {
+            "type": "number",
+            "description": "Monto de multa cobrado por minuto de tardanza",
+            "default": 0.5
+          }
+        },
+        "required": [
+          "id",
+          "isActive",
+          "createdAt",
+          "updatedAt",
+          "gracePeriodMinutes",
+          "finePerMinute"
+        ]
+      },
+      "UpdateAttendanceRulesDto": {
+        "type": "object",
+        "properties": {
+          "gracePeriodMinutes": {
+            "type": "number",
+            "description": "Minutos de tolerancia globales"
+          },
+          "finePerMinute": {
+            "type": "number",
+            "description": "Multa cobrada por minuto de tardanza"
+          }
+        },
+        "required": [
+          "gracePeriodMinutes",
+          "finePerMinute"
         ]
       },
       "User": {
