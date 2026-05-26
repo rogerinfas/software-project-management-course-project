@@ -75,7 +75,13 @@ export default function EvaluationPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProspectId) return;
+    if (!selectedProspectId || !selectedProspect) return;
+
+    if (selectedProspect.evaluation?.aptitude === "FIT") {
+      toast.error("El dictamen final de APTO ya ha sido registrado y no puede ser modificado.");
+      setAptitudeStatus("FIT");
+      return;
+    }
 
     evaluateMutation.mutate({
       params: { path: { id: selectedProspectId } },
@@ -214,6 +220,15 @@ export default function EvaluationPage() {
               {/* Tab 1: Dictamen Final */}
               {activeTab === "verdict" && (
                 <div className="flex flex-col gap-6 animate-in fade-in-50 duration-200">
+                  {selectedProspect.evaluation?.aptitude === "FIT" && (
+                    <div className="bg-green-500/10 border border-green-500/30 text-green-600 dark:text-green-400 p-3.5 rounded-lg text-xs leading-relaxed flex items-start gap-2.5">
+                      <CheckCircle className="size-4 shrink-0 mt-0.5 text-green-500" />
+                      <div>
+                        <span className="font-bold">Dictamen Consolidado:</span> Este postulante ya ha sido calificado como <strong className="font-bold">APTO</strong>. El proceso de admisión para este alumno se encuentra finalizado y habilitado para el módulo de Matrícula. No se admiten modificaciones adicionales.
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-2">
                       <Label className="text-sm font-semibold">Dictamen de Aptitud *</Label>
@@ -228,7 +243,14 @@ export default function EvaluationPage() {
                             <button
                               key={opt.value}
                               type="button"
-                              onClick={() => setAptitudeStatus(opt.value as any)}
+                              onClick={() => {
+                                if (selectedProspect.evaluation?.aptitude === "FIT") {
+                                  toast.error("El dictamen final de APTO ya ha sido registrado y no puede ser modificado.");
+                                  setAptitudeStatus("FIT");
+                                  return;
+                                }
+                                setAptitudeStatus(opt.value as any);
+                              }}
                               className={`cursor-pointer border rounded-lg p-3 text-center text-xs font-semibold transition-all ${
                                 isActive
                                   ? `${opt.color} ring-1 ring-primary border-primary`
@@ -249,13 +271,18 @@ export default function EvaluationPage() {
                         placeholder="Detalla los puntos fuertes o limitaciones encontradas en la entrevista/examen..."
                         value={comments}
                         onChange={(e) => setComments(e.target.value)}
+                        disabled={selectedProspect.evaluation?.aptitude === "FIT"}
                         className="min-h-[120px]"
                       />
                     </div>
                   </div>
 
                   <div className="flex justify-end mt-2">
-                    <Button type="submit" disabled={evaluateMutation.isPending} className="cursor-pointer">
+                    <Button
+                      type="submit"
+                      disabled={evaluateMutation.isPending || selectedProspect.evaluation?.aptitude === "FIT"}
+                      className="cursor-pointer"
+                    >
                       {evaluateMutation.isPending ? "Guardando..." : "Guardar Calificación"}
                     </Button>
                   </div>
