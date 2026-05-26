@@ -253,18 +253,19 @@ export default function ApoderadosPage() {
               <Table className="table-fixed">
                 <TableHeader className="bg-muted/30">
                   <TableRow>
-                    <TableHead className="w-[22%]">Apoderado</TableHead>
-                    <TableHead className="w-[12%]">DNI</TableHead>
-                    <TableHead className="w-[22%]">Contacto</TableHead>
-                    <TableHead className="w-[18%]">Ocupación</TableHead>
-                    <TableHead className="w-[16%]">Alumnos Asociados</TableHead>
-                    <TableHead className="w-[10%] text-right">Acciones</TableHead>
+                    <TableHead className="w-[18%]">Apoderado</TableHead>
+                    <TableHead className="w-[11%]">DNI</TableHead>
+                    <TableHead className="w-[13%]">Teléfono</TableHead>
+                    <TableHead className="w-[17%]">Correo</TableHead>
+                    <TableHead className="w-[15%]">Ocupación</TableHead>
+                    <TableHead className="w-[14%]">Alumnos Asociados</TableHead>
+                    <TableHead className="w-[12%] text-right">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {list.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-muted-foreground text-center py-6 text-sm">
+                      <TableCell colSpan={7} className="text-muted-foreground text-center py-6 text-sm">
                         No se encontraron apoderados registrados.
                       </TableCell>
                     </TableRow>
@@ -288,20 +289,20 @@ export default function ApoderadosPage() {
                           />
                         </TableCell>
                         <TableCell className="overflow-hidden">
-                          <div className="space-y-1.5 py-1">
-                            <Input
-                              className="h-7 w-full text-xs bg-background"
-                              value={editTel}
-                              onChange={(e) => setEditTel(e.target.value)}
-                              placeholder="Teléfono"
-                            />
-                            <Input
-                              className="h-7 w-full text-xs bg-background"
-                              value={editCorreo}
-                              onChange={(e) => setEditCorreo(e.target.value)}
-                              placeholder="Correo"
-                            />
-                          </div>
+                          <Input
+                            className="h-8 w-full text-xs bg-background"
+                            value={editTel}
+                            onChange={(e) => setEditTel(e.target.value)}
+                            placeholder="Telefóno"
+                          />
+                        </TableCell>
+                        <TableCell className="overflow-hidden">
+                          <Input
+                            className="h-8 w-full text-xs bg-background"
+                            value={editCorreo}
+                            onChange={(e) => setEditCorreo(e.target.value)}
+                            placeholder="Correo"
+                          />
                         </TableCell>
                         <TableCell className="overflow-hidden">
                           <Input
@@ -338,10 +339,8 @@ export default function ApoderadosPage() {
                       <TableRow key={g.id} className="hover:bg-muted/10">
                         <TableCell className="font-semibold text-foreground">{g.name}</TableCell>
                         <TableCell className="font-mono text-xs">{g.dni}</TableCell>
-                        <TableCell className="text-xs">
-                          <span className="font-medium text-foreground">{g.phone}</span>
-                          {g.email && <><br /><span className="text-muted-foreground">{g.email}</span></>}
-                        </TableCell>
+                        <TableCell className="text-xs font-medium">{g.phone}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{g.email || "—"}</TableCell>
                         <TableCell className="text-xs">{g.occupation || "—"}</TableCell>
                         <TableCell>
                           {g.students && g.students.length > 0 ? (
