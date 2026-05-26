@@ -234,7 +234,7 @@ export default function PipelinePage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al crear el prospecto");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -244,7 +244,7 @@ export default function PipelinePage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al mover el postulante");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -389,7 +389,7 @@ export default function PipelinePage() {
       });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al registrar la interacción");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -404,7 +404,7 @@ export default function PipelinePage() {
       });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar la interacción");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

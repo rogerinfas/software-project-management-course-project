@@ -74,7 +74,7 @@ export default function FormalizacionPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/enrollment/documents"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al formalizar la matrícula");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

@@ -45,7 +45,7 @@ export default function RulesPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/staff/attendance"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar las reglas de asistencia");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

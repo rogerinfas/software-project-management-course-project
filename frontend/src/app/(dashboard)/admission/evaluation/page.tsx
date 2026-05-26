@@ -69,7 +69,7 @@ export default function EvaluationPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al registrar la evaluación");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

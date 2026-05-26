@@ -69,7 +69,7 @@ export default function AppointmentsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al agendar la cita");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

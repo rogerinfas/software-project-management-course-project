@@ -78,7 +78,7 @@ export default function TariffsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/tariffs"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al crear la tarifa");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -90,7 +90,7 @@ export default function TariffsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/tariffs"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar la tarifa");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -100,7 +100,7 @@ export default function TariffsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/tariffs"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar la tarifa");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

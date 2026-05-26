@@ -77,7 +77,7 @@ export default function ExpedientePage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/enrollment/students"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar apoderado");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

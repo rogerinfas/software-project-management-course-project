@@ -84,7 +84,7 @@ export default function SchedulesPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/schedules"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error de traslape: El aula o el docente tiene cruce de horario.");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -95,7 +95,7 @@ export default function SchedulesPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/schedules"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error de traslape: Conflicto con otra clase en esa hora.");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -105,7 +105,7 @@ export default function SchedulesPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/schedules"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar la asignación");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

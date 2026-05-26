@@ -101,7 +101,7 @@ export default function CollectionsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/charges"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al generar cargos masivos");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -115,7 +115,7 @@ export default function CollectionsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/charges"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al crear cargo");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -125,7 +125,7 @@ export default function CollectionsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/charges"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar cargo");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -140,7 +140,7 @@ export default function CollectionsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/payments"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al registrar pago");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

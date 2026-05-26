@@ -75,7 +75,7 @@ export default function AnnouncementsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/communications"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al publicar comunicado");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -87,7 +87,7 @@ export default function AnnouncementsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/communications"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar comunicado");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -97,7 +97,7 @@ export default function AnnouncementsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/communications"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar comunicado");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

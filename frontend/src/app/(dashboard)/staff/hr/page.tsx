@@ -68,7 +68,7 @@ export default function HrPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/staff/profiles"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al registrar el personal");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -80,7 +80,7 @@ export default function HrPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/staff/profiles"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar el personal");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -90,7 +90,7 @@ export default function HrPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/staff/profiles"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar el personal");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

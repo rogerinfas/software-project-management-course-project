@@ -69,7 +69,7 @@ export default function SectionsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/sections"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al crear la sección");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -81,7 +81,7 @@ export default function SectionsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/sections"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar la sección");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -91,7 +91,7 @@ export default function SectionsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/sections"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar la sección");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

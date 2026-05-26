@@ -62,7 +62,7 @@ export default function CurriculumPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/courses"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al crear curso");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -74,7 +74,7 @@ export default function CurriculumPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/courses"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar curso");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -84,7 +84,7 @@ export default function CurriculumPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/courses"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar curso");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

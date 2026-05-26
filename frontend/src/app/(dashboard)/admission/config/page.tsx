@@ -44,7 +44,7 @@ export default function ConfigPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al crear la etapa");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -55,7 +55,7 @@ export default function ConfigPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar la etapa");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -65,7 +65,7 @@ export default function ConfigPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar la etapa");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

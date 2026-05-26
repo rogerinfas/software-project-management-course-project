@@ -85,7 +85,7 @@ export default function ApoderadosPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/enrollment/guardians"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al registrar el apoderado");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -96,7 +96,7 @@ export default function ApoderadosPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/enrollment/guardians"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar los datos");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -106,7 +106,7 @@ export default function ApoderadosPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/enrollment/guardians"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar el apoderado");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
