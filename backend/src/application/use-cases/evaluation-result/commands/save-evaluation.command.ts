@@ -1,5 +1,5 @@
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
-import { Inject, NotFoundException } from '@nestjs/common';
+import { Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { IEvaluationResultRepository } from '../../../../domain/repositories/evaluation-result.repository.interface';
 import { IProspectRepository } from '../../../../domain/repositories/prospect.repository.interface';
 import { EvaluationResultEntity } from '../../../../domain/entities/evaluation-result.entity';
@@ -37,6 +37,13 @@ export class SaveEvaluationCommandHandler implements ICommandHandler<SaveEvaluat
     // En el CRM, un postulante puede tener solo una evaluación final (relación 1-a-1).
     const existing = await this.repository.findByProspectId(command.prospectId);
     if (existing) {
+      // Si el postulante ya tiene dictamen final de APTO (FIT), impedimos cualquier cambio
+      if (existing.aptitude === EvaluationStatus.FIT) {
+        throw new BadRequestException(
+          'El postulante ya cuenta con un dictamen final de APTO y su evaluación no puede ser modificada.',
+        );
+      }
+
       // 3. Caso de actualización (UPDATE):
       // Si la evaluación ya existe en la base de datos, actualizamos el dictamen 
       // (aptitude: FIT/UNFIT/PENDING) y los comentarios u observaciones.
