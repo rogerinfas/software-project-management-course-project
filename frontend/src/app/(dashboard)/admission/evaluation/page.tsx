@@ -237,15 +237,32 @@ export default function EvaluationPage() {
                             <button
                               key={opt.value}
                               type="button"
-                              disabled={selectedProspect.evaluation?.aptitude === "FIT"}
-                              onClick={() => setAptitudeStatus(opt.value as any)}
+                              onClick={() => {
+                                if (selectedProspect.evaluation?.aptitude === "FIT") {
+                                  // Intentar cambiar a otro estado fuerza la mutación al backend
+                                  // que lanzará ProspectAlreadyApprovedException (400)
+                                  // y la respuesta del servidor aparecerá en el toast de onError
+                                  evaluateMutation.mutate(
+                                    {
+                                      params: { path: { id: selectedProspectId! } },
+                                      body: { aptitude: opt.value as any, comments },
+                                    },
+                                    {
+                                      // Independientemente, siempre revertimos a FIT
+                                      onSettled: () => setAptitudeStatus("FIT"),
+                                    }
+                                  );
+                                  return;
+                                }
+                                setAptitudeStatus(opt.value as any);
+                              }}
                               className={`cursor-pointer border rounded-lg p-3 text-center text-xs font-semibold transition-all ${
                                 isActive
                                   ? `${opt.color} ring-1 ring-primary border-primary`
                                   : "border-border/60 hover:bg-muted/40"
                               } ${
-                                selectedProspect.evaluation?.aptitude === "FIT"
-                                  ? "opacity-60 cursor-not-allowed"
+                                selectedProspect.evaluation?.aptitude === "FIT" && opt.value !== "FIT"
+                                  ? "opacity-60"
                                   : ""
                               }`}
                             >
