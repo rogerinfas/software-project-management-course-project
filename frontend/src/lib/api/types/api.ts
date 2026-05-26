@@ -412,6 +412,112 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/treasury/tariffs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all active school tariffs */
+        get: operations["TreasuryController_getTariffs"];
+        put?: never;
+        /** Create a new school tariff */
+        post: operations["TreasuryController_createTariff"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasury/tariffs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update an existing tariff */
+        put: operations["TreasuryController_updateTariff"];
+        post?: never;
+        /** Delete a tariff concept */
+        delete: operations["TreasuryController_deleteTariff"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasury/charges": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all outstanding student charges */
+        get: operations["TreasuryController_getCharges"];
+        put?: never;
+        /** Create a direct charge for a student */
+        post: operations["TreasuryController_createCharge"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasury/charges/bulk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate monthly bulk charges */
+        post: operations["TreasuryController_generateBulkCharges"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasury/charges/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a pending charge */
+        delete: operations["TreasuryController_deleteCharge"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/treasury/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List recent cash/bank transaction payments */
+        get: operations["TreasuryController_getPayments"];
+        put?: never;
+        /** Register a payment receipt against a charge */
+        post: operations["TreasuryController_registerPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/sign-in/social": {
         parameters: {
             query?: never;
@@ -2132,7 +2238,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-05-25T20:14:00.001Z
+             * @example 2026-05-25T21:39:58.024Z
              */
             timestamp: string;
             /**
@@ -2203,13 +2309,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-25T20:14:00.110Z
+             * @example 2026-05-25T21:39:58.165Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-25T20:14:00.110Z
+             * @example 2026-05-25T21:39:58.165Z
              */
             updatedAt: string;
         };
@@ -2261,7 +2367,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Appointment date and time
-             * @example 2026-05-25T20:14:00.456Z
+             * @example 2026-05-25T21:39:58.815Z
              */
             date: string;
             /**
@@ -2279,7 +2385,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-25T20:14:00.456Z
+             * @example 2026-05-25T21:39:58.815Z
              */
             createdAt: string;
         };
@@ -2308,7 +2414,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Evaluation process date
-             * @example 2026-05-25T20:14:00.456Z
+             * @example 2026-05-25T21:39:58.819Z
              */
             date: string;
             /**
@@ -2362,7 +2468,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-25T20:14:00.456Z
+             * @example 2026-05-25T21:39:58.819Z
              */
             createdAt: string;
         };
@@ -2387,13 +2493,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-25T20:14:00.457Z
+             * @example 2026-05-25T21:39:58.819Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-25T20:14:00.457Z
+             * @example 2026-05-25T21:39:58.819Z
              */
             updatedAt: string;
         };
@@ -2486,7 +2592,7 @@ export interface components {
             prospectId: string;
             /**
              * @description Appointment date and time in ISO format
-             * @example 2026-05-25T20:14:00.459Z
+             * @example 2026-05-25T21:39:58.835Z
              */
             date: string;
             /**
@@ -2776,7 +2882,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Fecha de la matrícula
-             * @example 2026-05-25T20:14:00.472Z
+             * @example 2026-05-25T21:39:59.059Z
              */
             date: string;
             /**
@@ -3092,6 +3198,201 @@ export interface components {
              * @example CLOSED
              */
             status?: string;
+        };
+        TariffResponse: {
+            /**
+             * @description ID de la tarifa
+             * @example tariff-123
+             */
+            id: string;
+            /**
+             * @description Concepto de la tarifa
+             * @example Pensión Mensual
+             */
+            concept: string;
+            /**
+             * @description Monto de la tarifa
+             * @example 450
+             */
+            amount: number;
+            /**
+             * @description Tipo de cobro de la tarifa
+             * @enum {string}
+             */
+            type: "ONE_TIME" | "MONTHLY" | "EXTRA";
+            /**
+             * @description Nivel educativo aplicable
+             * @enum {string}
+             */
+            level: "INITIAL" | "PRIMARY" | "SECONDARY";
+        };
+        CreateTariffDto: {
+            /**
+             * @description Concepto de la tarifa
+             * @example Pensión Mensual de Mayo
+             */
+            concept: string;
+            /**
+             * @description Monto de la tarifa
+             * @example 450
+             */
+            amount: number;
+            /**
+             * @description Tipo de cobro de la tarifa
+             * @example MONTHLY
+             * @enum {string}
+             */
+            type: "ONE_TIME" | "MONTHLY" | "EXTRA";
+            /**
+             * @description Nivel educativo aplicable
+             * @example PRIMARY
+             * @enum {string}
+             */
+            level: "INITIAL" | "PRIMARY" | "SECONDARY";
+        };
+        UpdateTariffDto: {
+            /**
+             * @description Concepto de la tarifa
+             * @example Pensión Mayo Modificada
+             */
+            concept?: string;
+            /**
+             * @description Monto de la tarifa
+             * @example 480
+             */
+            amount?: number;
+            /**
+             * @description Tipo de cobro de la tarifa
+             * @example MONTHLY
+             * @enum {string}
+             */
+            type?: "ONE_TIME" | "MONTHLY" | "EXTRA";
+            /**
+             * @description Nivel educativo aplicable
+             * @example PRIMARY
+             * @enum {string}
+             */
+            level?: "INITIAL" | "PRIMARY" | "SECONDARY";
+        };
+        ChargeResponse: {
+            /**
+             * @description ID del cargo
+             * @example charge-123
+             */
+            id: string;
+            /**
+             * @description ID del estudiante
+             * @example student-123
+             */
+            studentId: string;
+            student?: components["schemas"]["StudentResponse"];
+            /**
+             * @description ID de la tarifa
+             * @example tariff-123
+             */
+            tariffId: string;
+            tariff?: components["schemas"]["TariffResponse"];
+            /**
+             * @description Monto original
+             * @example 450
+             */
+            originalAmount: number;
+            /**
+             * @description Monto pendiente
+             * @example 450
+             */
+            pendingAmount: number;
+            /**
+             * @description Fecha de vencimiento
+             * @example 2026-06-05T00:00:00.000Z
+             */
+            dueDate: Record<string, never> | null;
+            /**
+             * @description Estado del cargo
+             * @example PENDING
+             */
+            status: string;
+        };
+        CreateChargeDto: {
+            /**
+             * @description ID del estudiante
+             * @example student-123
+             */
+            studentId: string;
+            /**
+             * @description ID de la tarifa
+             * @example tariff-123
+             */
+            tariffId: string;
+            /**
+             * @description Fecha de vencimiento
+             * @example 2026-06-05T00:00:00.000Z
+             */
+            dueDate?: string;
+        };
+        GenerateBulkChargesDto: {
+            /**
+             * @description ID de la tarifa a aplicar
+             * @example tariff-123
+             */
+            tariffId: string;
+            /**
+             * @description Fecha de vencimiento para los cargos
+             * @example 2026-06-05T00:00:00.000Z
+             */
+            dueDate?: string;
+        };
+        PaymentResponse: {
+            /**
+             * @description ID de la transacción de pago
+             * @example payment-123
+             */
+            id: string;
+            /**
+             * @description ID del cargo asociado
+             * @example charge-123
+             */
+            chargeId: string;
+            charge?: components["schemas"]["ChargeResponse"];
+            /**
+             * @description ID del estudiante
+             * @example student-123
+             */
+            studentId: string;
+            /**
+             * @description Monto pagado
+             * @example 150
+             */
+            totalAmount: number;
+            /**
+             * @description Método de pago
+             * @enum {string}
+             */
+            method: "CASH" | "CARD" | "TRANSFER";
+            /**
+             * Format: date-time
+             * @description Fecha y hora de pago
+             * @example 2026-05-25T00:00:00.000Z
+             */
+            timestamp: string;
+        };
+        RegisterPaymentDto: {
+            /**
+             * @description ID del cargo a pagar
+             * @example charge-123
+             */
+            chargeId: string;
+            /**
+             * @description Monto total a pagar
+             * @example 150
+             */
+            amount: number;
+            /**
+             * @description Método de pago
+             * @example CASH
+             * @enum {string}
+             */
+            method: "CASH" | "CARD" | "TRANSFER";
         };
         User: {
             id?: string;
@@ -4175,6 +4476,223 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    TreasuryController_getTariffs: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TariffResponse"][];
+                };
+            };
+        };
+    };
+    TreasuryController_createTariff: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTariffDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TariffResponse"];
+                };
+            };
+        };
+    };
+    TreasuryController_updateTariff: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTariffDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TariffResponse"];
+                };
+            };
+        };
+    };
+    TreasuryController_deleteTariff: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TreasuryController_getCharges: {
+        parameters: {
+            query: {
+                studentId: string;
+                status: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChargeResponse"][];
+                };
+            };
+        };
+    };
+    TreasuryController_createCharge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateChargeDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChargeResponse"];
+                };
+            };
+        };
+    };
+    TreasuryController_generateBulkCharges: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateBulkChargesDto"];
+            };
+        };
+        responses: {
+            /** @description Number of charges successfully created. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TreasuryController_deleteCharge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    TreasuryController_getPayments: {
+        parameters: {
+            query: {
+                studentId: string;
+                chargeId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentResponse"][];
+                };
+            };
+        };
+    };
+    TreasuryController_registerPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterPaymentDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentResponse"];
+                };
             };
         };
     };

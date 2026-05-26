@@ -1443,6 +1443,317 @@
         ]
       }
     },
+    "/api/treasury/tariffs": {
+      "get": {
+        "operationId": "TreasuryController_getTariffs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TariffResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List all active school tariffs",
+        "tags": [
+          "treasury"
+        ]
+      },
+      "post": {
+        "operationId": "TreasuryController_createTariff",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTariffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TariffResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new school tariff",
+        "tags": [
+          "treasury"
+        ]
+      }
+    },
+    "/api/treasury/tariffs/{id}": {
+      "put": {
+        "operationId": "TreasuryController_updateTariff",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTariffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TariffResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an existing tariff",
+        "tags": [
+          "treasury"
+        ]
+      },
+      "delete": {
+        "operationId": "TreasuryController_deleteTariff",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a tariff concept",
+        "tags": [
+          "treasury"
+        ]
+      }
+    },
+    "/api/treasury/charges": {
+      "get": {
+        "operationId": "TreasuryController_getCharges",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChargeResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List all outstanding student charges",
+        "tags": [
+          "treasury"
+        ]
+      },
+      "post": {
+        "operationId": "TreasuryController_createCharge",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateChargeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChargeResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a direct charge for a student",
+        "tags": [
+          "treasury"
+        ]
+      }
+    },
+    "/api/treasury/charges/bulk": {
+      "post": {
+        "operationId": "TreasuryController_generateBulkCharges",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateBulkChargesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Number of charges successfully created."
+          }
+        },
+        "summary": "Generate monthly bulk charges",
+        "tags": [
+          "treasury"
+        ]
+      }
+    },
+    "/api/treasury/charges/{id}": {
+      "delete": {
+        "operationId": "TreasuryController_deleteCharge",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a pending charge",
+        "tags": [
+          "treasury"
+        ]
+      }
+    },
+    "/api/treasury/payments": {
+      "get": {
+        "operationId": "TreasuryController_getPayments",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chargeId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PaymentResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List recent cash/bank transaction payments",
+        "tags": [
+          "treasury"
+        ]
+      },
+      "post": {
+        "operationId": "TreasuryController_registerPayment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Register a payment receipt against a charge",
+        "tags": [
+          "treasury"
+        ]
+      }
+    },
     "/api/auth/sign-in/social": {
       "post": {
         "tags": [
@@ -6606,7 +6917,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-25T20:23:11.664Z"
+            "example": "2026-05-25T21:39:58.024Z"
           },
           "path": {
             "type": "string",
@@ -6711,13 +7022,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T20:23:11.849Z"
+            "example": "2026-05-25T21:39:58.165Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-25T20:23:11.849Z"
+            "example": "2026-05-25T21:39:58.165Z"
           }
         },
         "required": [
@@ -6827,7 +7138,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Appointment date and time",
-            "example": "2026-05-25T20:23:12.355Z"
+            "example": "2026-05-25T21:39:58.815Z"
           },
           "type": {
             "type": "string",
@@ -6851,7 +7162,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T20:23:12.355Z"
+            "example": "2026-05-25T21:39:58.815Z"
           }
         },
         "required": [
@@ -6894,7 +7205,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Evaluation process date",
-            "example": "2026-05-25T20:23:12.355Z"
+            "example": "2026-05-25T21:39:58.819Z"
           },
           "evaluatorId": {
             "type": "object",
@@ -6976,7 +7287,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T20:23:12.356Z"
+            "example": "2026-05-25T21:39:58.819Z"
           }
         },
         "required": [
@@ -7019,13 +7330,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-25T20:23:12.356Z"
+            "example": "2026-05-25T21:39:58.819Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-25T20:23:12.356Z"
+            "example": "2026-05-25T21:39:58.819Z"
           }
         },
         "required": [
@@ -7197,7 +7508,7 @@
           "date": {
             "type": "string",
             "description": "Appointment date and time in ISO format",
-            "example": "2026-05-25T20:23:12.359Z"
+            "example": "2026-05-25T21:39:58.835Z"
           },
           "type": {
             "type": "string",
@@ -7631,7 +7942,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Fecha de la matrícula",
-            "example": "2026-05-25T20:23:12.379Z"
+            "example": "2026-05-25T21:39:59.059Z"
           },
           "status": {
             "type": "string",
@@ -8094,6 +8405,306 @@
             "example": "CLOSED"
           }
         }
+      },
+      "TariffResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID de la tarifa",
+            "example": "tariff-123"
+          },
+          "concept": {
+            "type": "string",
+            "description": "Concepto de la tarifa",
+            "example": "Pensión Mensual"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Monto de la tarifa",
+            "example": 450
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ONE_TIME",
+              "MONTHLY",
+              "EXTRA"
+            ],
+            "description": "Tipo de cobro de la tarifa"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "description": "Nivel educativo aplicable"
+          }
+        },
+        "required": [
+          "id",
+          "concept",
+          "amount",
+          "type",
+          "level"
+        ]
+      },
+      "CreateTariffDto": {
+        "type": "object",
+        "properties": {
+          "concept": {
+            "type": "string",
+            "description": "Concepto de la tarifa",
+            "example": "Pensión Mensual de Mayo"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Monto de la tarifa",
+            "example": 450
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ONE_TIME",
+              "MONTHLY",
+              "EXTRA"
+            ],
+            "description": "Tipo de cobro de la tarifa",
+            "example": "MONTHLY"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "description": "Nivel educativo aplicable",
+            "example": "PRIMARY"
+          }
+        },
+        "required": [
+          "concept",
+          "amount",
+          "type",
+          "level"
+        ]
+      },
+      "UpdateTariffDto": {
+        "type": "object",
+        "properties": {
+          "concept": {
+            "type": "string",
+            "description": "Concepto de la tarifa",
+            "example": "Pensión Mayo Modificada"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Monto de la tarifa",
+            "example": 480
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "ONE_TIME",
+              "MONTHLY",
+              "EXTRA"
+            ],
+            "description": "Tipo de cobro de la tarifa",
+            "example": "MONTHLY"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "description": "Nivel educativo aplicable",
+            "example": "PRIMARY"
+          }
+        }
+      },
+      "ChargeResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID del cargo",
+            "example": "charge-123"
+          },
+          "studentId": {
+            "type": "string",
+            "description": "ID del estudiante",
+            "example": "student-123"
+          },
+          "student": {
+            "$ref": "#/components/schemas/StudentResponse"
+          },
+          "tariffId": {
+            "type": "string",
+            "description": "ID de la tarifa",
+            "example": "tariff-123"
+          },
+          "tariff": {
+            "$ref": "#/components/schemas/TariffResponse"
+          },
+          "originalAmount": {
+            "type": "number",
+            "description": "Monto original",
+            "example": 450
+          },
+          "pendingAmount": {
+            "type": "number",
+            "description": "Monto pendiente",
+            "example": 450
+          },
+          "dueDate": {
+            "type": "object",
+            "description": "Fecha de vencimiento",
+            "example": "2026-06-05T00:00:00.000Z",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Estado del cargo",
+            "example": "PENDING"
+          }
+        },
+        "required": [
+          "id",
+          "studentId",
+          "tariffId",
+          "originalAmount",
+          "pendingAmount",
+          "dueDate",
+          "status"
+        ]
+      },
+      "CreateChargeDto": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "description": "ID del estudiante",
+            "example": "student-123"
+          },
+          "tariffId": {
+            "type": "string",
+            "description": "ID de la tarifa",
+            "example": "tariff-123"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Fecha de vencimiento",
+            "example": "2026-06-05T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "studentId",
+          "tariffId"
+        ]
+      },
+      "GenerateBulkChargesDto": {
+        "type": "object",
+        "properties": {
+          "tariffId": {
+            "type": "string",
+            "description": "ID de la tarifa a aplicar",
+            "example": "tariff-123"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Fecha de vencimiento para los cargos",
+            "example": "2026-06-05T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "tariffId"
+        ]
+      },
+      "PaymentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID de la transacción de pago",
+            "example": "payment-123"
+          },
+          "chargeId": {
+            "type": "string",
+            "description": "ID del cargo asociado",
+            "example": "charge-123"
+          },
+          "charge": {
+            "$ref": "#/components/schemas/ChargeResponse"
+          },
+          "studentId": {
+            "type": "string",
+            "description": "ID del estudiante",
+            "example": "student-123"
+          },
+          "totalAmount": {
+            "type": "number",
+            "description": "Monto pagado",
+            "example": 150
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "CASH",
+              "CARD",
+              "TRANSFER"
+            ],
+            "description": "Método de pago"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Fecha y hora de pago",
+            "example": "2026-05-25T00:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "chargeId",
+          "studentId",
+          "totalAmount",
+          "method",
+          "timestamp"
+        ]
+      },
+      "RegisterPaymentDto": {
+        "type": "object",
+        "properties": {
+          "chargeId": {
+            "type": "string",
+            "description": "ID del cargo a pagar",
+            "example": "charge-123"
+          },
+          "amount": {
+            "type": "number",
+            "description": "Monto total a pagar",
+            "example": 150
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "CASH",
+              "CARD",
+              "TRANSFER"
+            ],
+            "description": "Método de pago",
+            "example": "CASH"
+          }
+        },
+        "required": [
+          "chargeId",
+          "amount",
+          "method"
+        ]
       },
       "User": {
         "type": "object",
