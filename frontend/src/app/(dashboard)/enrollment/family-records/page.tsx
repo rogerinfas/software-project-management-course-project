@@ -214,49 +214,49 @@ export default function ExpedientePage() {
                         <Table className="table-fixed">
                           <TableHeader className="bg-muted/30 font-sans">
                             <TableRow>
-                              <TableHead>Nombre Completo</TableHead>
-                              <TableHead>DNI</TableHead>
-                              <TableHead>Teléfono</TableHead>
-                              <TableHead>Correo Electrónico</TableHead>
-                              <TableHead>Ocupación</TableHead>
-                              <TableHead className="text-right">Acciones</TableHead>
+                              <TableHead className="w-[25%]">Nombre Completo</TableHead>
+                              <TableHead className="w-[12%]">DNI</TableHead>
+                              <TableHead className="w-[14%]">Teléfono</TableHead>
+                              <TableHead className="w-[22%]">Correo Electrónico</TableHead>
+                              <TableHead className="w-[17%]">Ocupación</TableHead>
+                              <TableHead className="w-[10%] text-right">Acciones</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody className="font-sans">
                             {editId === activeStudent.guardian.id ? (
                               <TableRow className="bg-muted/20">
-                                <TableCell className="max-w-[160px]">
+                                <TableCell className="overflow-hidden">
                                   <Input
-                                    className="h-8 w-full min-w-0 text-xs font-semibold"
+                                    className="h-8 w-full text-xs font-semibold"
                                     value={editName}
                                     onChange={(e) => setEditName(e.target.value)}
                                   />
                                 </TableCell>
-                                <TableCell className="max-w-[100px]">
+                                <TableCell className="overflow-hidden">
                                   <Input
-                                    className="h-8 w-full min-w-0 font-mono text-xs"
+                                    className="h-8 w-full font-mono text-xs"
                                     value={editDni}
                                     onChange={(e) => setEditDni(e.target.value)}
                                     maxLength={8}
                                   />
                                 </TableCell>
-                                <TableCell className="max-w-[140px]">
+                                <TableCell className="overflow-hidden">
                                   <Input
-                                    className="h-8 w-full min-w-0 text-xs"
+                                    className="h-8 w-full text-xs"
                                     value={editTel}
                                     onChange={(e) => setEditTel(e.target.value)}
                                   />
                                 </TableCell>
-                                <TableCell className="max-w-[180px]">
+                                <TableCell className="overflow-hidden">
                                   <Input
-                                    className="h-8 w-full min-w-0 text-xs"
+                                    className="h-8 w-full text-xs"
                                     value={editCorreo}
                                     onChange={(e) => setEditCorreo(e.target.value)}
                                   />
                                 </TableCell>
-                                <TableCell className="max-w-[140px]">
+                                <TableCell className="overflow-hidden">
                                   <Input
-                                    className="h-8 w-full min-w-0 text-xs"
+                                    className="h-8 w-full text-xs"
                                     value={editOcup}
                                     onChange={(e) => setEditOcup(e.target.value)}
                                   />

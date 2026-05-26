@@ -253,12 +253,12 @@ export default function ApoderadosPage() {
               <Table className="table-fixed">
                 <TableHeader className="bg-muted/30">
                   <TableRow>
-                    <TableHead>Apoderado</TableHead>
-                    <TableHead>DNI</TableHead>
-                    <TableHead>Contacto</TableHead>
-                    <TableHead>Ocupación</TableHead>
-                    <TableHead>Alumnos Asociados</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
+                    <TableHead className="w-[22%]">Apoderado</TableHead>
+                    <TableHead className="w-[12%]">DNI</TableHead>
+                    <TableHead className="w-[22%]">Contacto</TableHead>
+                    <TableHead className="w-[18%]">Ocupación</TableHead>
+                    <TableHead className="w-[16%]">Alumnos Asociados</TableHead>
+                    <TableHead className="w-[10%] text-right">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -272,40 +272,40 @@ export default function ApoderadosPage() {
                   {list.map((g: any) =>
                     editId === g.id ? (
                       <TableRow key={g.id} className="bg-muted/20">
-                        <TableCell className="max-w-[160px]">
+                        <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full min-w-0 text-xs font-semibold"
+                            className="h-8 w-full text-xs font-semibold"
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
                           />
                         </TableCell>
-                        <TableCell className="max-w-[100px]">
+                        <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full min-w-0 font-mono text-xs"
+                            className="h-8 w-full font-mono text-xs"
                             value={editDni}
                             onChange={(e) => setEditDni(e.target.value)}
                             maxLength={8}
                           />
                         </TableCell>
-                        <TableCell className="max-w-[160px]">
+                        <TableCell className="overflow-hidden">
                           <div className="space-y-1.5 py-1">
                             <Input
-                              className="h-7 w-full min-w-0 text-xs"
+                              className="h-7 w-full text-xs"
                               value={editTel}
                               onChange={(e) => setEditTel(e.target.value)}
                               placeholder="Teléfono"
                             />
                             <Input
-                              className="h-7 w-full min-w-0 text-xs"
+                              className="h-7 w-full text-xs"
                               value={editCorreo}
                               onChange={(e) => setEditCorreo(e.target.value)}
                               placeholder="Correo"
                             />
                           </div>
                         </TableCell>
-                        <TableCell className="max-w-[140px]">
+                        <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full min-w-0 text-xs"
+                            className="h-8 w-full text-xs"
                             value={editOcup}
                             onChange={(e) => setEditOcup(e.target.value)}
                           />
