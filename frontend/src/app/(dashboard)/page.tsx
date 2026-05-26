@@ -47,9 +47,9 @@ const MODULE_STATUS = [
     href: "/academic/curriculum",
     description: "Mallas curriculares, carga de docentes, secciones y horarios.",
     icon: BookOpenIcon,
-    status: "active",
-    statusLabel: "En Construcción",
-    badgeColor: "bg-amber-500/10 text-amber-500 border-amber-500/20"
+    status: "ready",
+    statusLabel: "Fase 3 Lista",
+    badgeColor: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
   },
   {
     code: "M4",
@@ -57,9 +57,9 @@ const MODULE_STATUS = [
     href: "/treasury/collections",
     description: "Definición del tarifario, cobranzas y facturación integrada.",
     icon: CoinsIcon,
-    status: "pending",
-    statusLabel: "Pendiente",
-    badgeColor: "bg-muted text-muted-foreground border-border/40"
+    status: "ready",
+    statusLabel: "Fase 4 Lista",
+    badgeColor: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
   },
   {
     code: "M5",
@@ -67,9 +67,9 @@ const MODULE_STATUS = [
     href: "/staff/facial-recognition",
     description: "Mecanismo de reconocimiento facial, pre-planilla y asistencia.",
     icon: FingerprintIcon,
-    status: "pending",
-    statusLabel: "Pendiente",
-    badgeColor: "bg-muted text-muted-foreground border-border/40"
+    status: "ready",
+    statusLabel: "Fase 5 Lista",
+    badgeColor: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
   }
 ];
 
