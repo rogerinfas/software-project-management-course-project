@@ -147,6 +147,41 @@ export interface paths {
         patch: operations["AdmissionController_saveEvaluation"];
         trace?: never;
     };
+    "/api/admission/prospects/{id}/interactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all interactions for a prospect */
+        get: operations["AdmissionController_getInteractions"];
+        put?: never;
+        /** Create a new interaction for a prospect */
+        post: operations["AdmissionController_createInteraction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admission/interactions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Update an existing interaction */
+        put: operations["AdmissionController_updateInteraction"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/enrollment/guardians": {
         parameters: {
             query?: never;
@@ -2311,8 +2346,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-05-26T14:06:14.324Z
-             * @example 2026-05-25T21:39:58.024Z
+             * @example 2026-05-26T17:27:35.149Z
              */
             timestamp: string;
             /**
@@ -2383,13 +2417,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-26T14:06:14.437Z
+             * @example 2026-05-26T17:27:35.250Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-26T14:06:14.437Z
+             * @example 2026-05-26T17:27:35.250Z
              */
             updatedAt: string;
         };
@@ -2441,7 +2475,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Appointment date and time
-             * @example 2026-05-26T14:06:14.999Z
+             * @example 2026-05-26T17:27:35.769Z
              */
             date: string;
             /**
@@ -2459,7 +2493,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-26T14:06:14.999Z
+             * @example 2026-05-26T17:27:35.769Z
              */
             createdAt: string;
         };
@@ -2488,7 +2522,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Evaluation process date
-             * @example 2026-05-26T14:06:15.004Z
+             * @example 2026-05-26T17:27:35.774Z
              */
             date: string;
             /**
@@ -2542,7 +2576,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-26T14:06:15.004Z
+             * @example 2026-05-26T17:27:35.774Z
              */
             createdAt: string;
         };
@@ -2567,13 +2601,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-26T14:06:15.004Z
+             * @example 2026-05-26T17:27:35.774Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-26T14:06:15.004Z
+             * @example 2026-05-26T17:27:35.774Z
              */
             updatedAt: string;
         };
@@ -2666,7 +2700,7 @@ export interface components {
             prospectId: string;
             /**
              * @description Appointment date and time in ISO format
-             * @example 2026-05-26T14:06:15.018Z
+             * @example 2026-05-26T17:27:35.787Z
              */
             date: string;
             /**
@@ -2692,6 +2726,73 @@ export interface components {
              * @example Buen desempeño en habilidades sociales.
              */
             comments?: string;
+        };
+        ProspectInteractionResponse: {
+            /**
+             * @description Unique interaction identifier
+             * @example interaction-123
+             */
+            id: string;
+            /**
+             * @description ID of the associated prospect
+             * @example prospect-123
+             */
+            prospectId: string;
+            /**
+             * @description Type of interaction (e.g. llamada, correo, nota)
+             * @example llamada
+             */
+            type: string;
+            /**
+             * @description Summary of the interaction
+             * @example Llamada para coordinar examen.
+             */
+            summary: string;
+            /**
+             * @description Author of the record
+             * @example Admisión
+             */
+            author: string;
+            /**
+             * Format: date-time
+             * @description Date and time of the interaction
+             * @example 2026-05-26T17:27:35.796Z
+             */
+            date: string;
+        };
+        CreateInteractionRequest: {
+            /**
+             * @description Type of interaction (e.g. llamada, correo, entrevista, nota)
+             * @example llamada
+             */
+            type: string;
+            /**
+             * @description Summary of the interaction details
+             * @example Se llamó al apoderado para coordinar la fecha del examen.
+             */
+            summary: string;
+            /**
+             * @description Author of the interaction record
+             * @example Admisión
+             */
+            author: string;
+        };
+        UpdateInteractionRequest: {
+            /**
+             * @description Type of interaction (e.g. llamada, correo, entrevista, nota)
+             * @example correo
+             */
+            type: string;
+            /**
+             * @description Summary of the interaction details
+             * @example Se envió correo de confirmación de entrevista académica.
+             */
+            summary: string;
+            /**
+             * @description Author of the interaction record
+             * @example Admisión
+             */
+            author?: string;
         };
         SectionResponse: {
             /**
@@ -2956,7 +3057,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Fecha de la matrícula
-             * @example 2026-05-26T14:06:15.199Z
+             * @example 2026-05-26T17:27:35.980Z
              */
             date: string;
             /**
@@ -3505,13 +3606,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-05-26T14:06:14.509Z
+             * @example 2026-05-26T17:27:35.316Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-05-26T14:06:14.509Z
+             * @example 2026-05-26T17:27:35.316Z
              */
             updatedAt: string;
             /**
@@ -3557,13 +3658,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-05-26T14:06:14.509Z
+             * @example 2026-05-26T17:27:35.316Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-05-26T14:06:14.509Z
+             * @example 2026-05-26T17:27:35.316Z
              */
             updatedAt: string;
             /**
@@ -3633,13 +3734,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-05-26T14:06:14.509Z
+             * @example 2026-05-26T17:27:35.316Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-05-26T14:06:14.509Z
+             * @example 2026-05-26T17:27:35.316Z
              */
             updatedAt: string;
             /**
@@ -3687,13 +3788,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-05-26T14:06:14.509Z
+             * @example 2026-05-26T17:27:35.316Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-05-26T14:06:14.509Z
+             * @example 2026-05-26T17:27:35.316Z
              */
             updatedAt: string;
             /**
@@ -4215,6 +4316,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EvaluationResultResponse"];
+                };
+            };
+        };
+    };
+    AdmissionController_getInteractions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Return all interactions. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProspectInteractionResponse"][];
+                };
+            };
+        };
+    };
+    AdmissionController_createInteraction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInteractionRequest"];
+            };
+        };
+        responses: {
+            /** @description Interaction created successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProspectInteractionResponse"];
+                };
+            };
+        };
+    };
+    AdmissionController_updateInteraction: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateInteractionRequest"];
+            };
+        };
+        responses: {
+            /** @description Interaction updated successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProspectInteractionResponse"];
                 };
             };
         };
@@ -5213,7 +5388,6 @@ export interface operations {
             };
         };
     };
-
     socialSignIn: {
         parameters: {
             query?: never;

@@ -19,7 +19,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -203,6 +203,11 @@ const GRADOS_POR_NIVEL = {
 export default function PipelinePage() {
   const queryClient = useQueryClient();
 
+  // Detalle / interacción
+  const [selectedId, setSelectedId] = React.useState<string | null>(null);
+  const [tipo, setTipo] = React.useState<string>("llamada");
+  const [resumen, setResumen] = React.useState("");
+
   // Queries
   const { data: stagesData, isLoading } = backend.useQuery("get", "/api/admission/stages", {});
 
@@ -243,20 +248,29 @@ export default function PipelinePage() {
     },
   });
 
-  // Local storage based interactions for perfect demo fidelity
-  const [localInteractions, setLocalInteractions] = React.useState<any[]>([]);
-
-  React.useEffect(() => {
-    const saved = localStorage.getItem("pipeline_interactions");
-    if (saved) {
-      setLocalInteractions(JSON.parse(saved));
+  // Fetch interactions from backend
+  const { data: interactionsData } = backend.useQuery(
+    "get",
+    "/api/admission/prospects/{id}/interactions",
+    {
+      params: {
+        path: { id: selectedId || "" },
+      },
+    },
+    {
+      enabled: !!selectedId,
     }
-  }, []);
+  );
 
-  const saveInteractions = (newInteractions: any[]) => {
-    setLocalInteractions(newInteractions);
-    localStorage.setItem("pipeline_interactions", JSON.stringify(newInteractions));
-  };
+  const history = React.useMemo(() => {
+    if (!interactionsData) return [];
+    return [...(interactionsData as any)].sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
+  }, [interactionsData]);
+
+  // Inline edit state variables
+  const [editingId, setEditingId] = React.useState<string | null>(null);
+  const [editType, setEditType] = React.useState<string>("llamada");
+  const [editSummary, setEditSummary] = React.useState<string>("");
 
   // Nuevo prospecto
   const [newOpen, setNewOpen] = React.useState(false);
@@ -272,10 +286,7 @@ export default function PipelinePage() {
     setGrado(GRADOS_POR_NIVEL[typedNivel][0]);
   };
 
-  // Detalle / interacción
-  const [selectedId, setSelectedId] = React.useState<string | null>(null);
-  const [tipo, setTipo] = React.useState<string>("llamada");
-  const [resumen, setResumen] = React.useState("");
+
 
   // DnD state
   const [activeId, setActiveId] = React.useState<string | null>(null);
@@ -288,12 +299,6 @@ export default function PipelinePage() {
   const selected = selectedId
     ? prospects.find((p: any) => p.id === selectedId) ?? null
     : null;
-
-  const history = selectedId
-    ? localInteractions
-        .filter((i) => i.prospectId === selectedId)
-        .sort((a, b) => (a.fecha < b.fecha ? 1 : -1))
-    : [];
 
   const activeProspect = activeId
     ? prospects.find((p: any) => p.id === activeId)
@@ -375,21 +380,45 @@ export default function PipelinePage() {
     });
   }
 
+  const createInteractionMutation = backend.useMutation("post", "/api/admission/prospects/{id}/interactions", {
+    onSuccess: () => {
+      toast.success("Interacción registrada con éxito");
+      setResumen("");
+      queryClient.invalidateQueries({
+        queryKey: ["get", "/api/admission/prospects/{id}/interactions", { params: { path: { id: selectedId || "" } } }],
+      });
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Error al registrar la interacción");
+    },
+  });
+
+  const updateInteractionMutation = backend.useMutation("put", "/api/admission/interactions/{id}", {
+    onSuccess: () => {
+      toast.success("Interacción actualizada con éxito");
+      setEditingId(null);
+      setEditSummary("");
+      setEditType("llamada");
+      queryClient.invalidateQueries({
+        queryKey: ["get", "/api/admission/prospects/{id}/interactions", { params: { path: { id: selectedId || "" } } }],
+      });
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Error al actualizar la interacción");
+    },
+  });
+
   function submitInteraction() {
     if (!selectedId || !resumen.trim()) return;
 
-    const newInt = {
-      id: Math.random().toString(),
-      prospectId: selectedId,
-      fecha: new Date().toISOString(),
-      tipo,
-      resumen: resumen.trim(),
-      autor: "Admisión",
-    };
-
-    saveInteractions([...localInteractions, newInt]);
-    setResumen("");
-    toast.success("Interacción registrada");
+    createInteractionMutation.mutate({
+      params: { path: { id: selectedId } },
+      body: {
+        type: tipo,
+        summary: resumen.trim(),
+        author: "Admisión",
+      },
+    });
   }
 
   if (isLoading) {
@@ -566,14 +595,86 @@ export default function PipelinePage() {
                   <ul className="space-y-3 text-xs">
                     {history.map((i: any) => (
                       <li key={i.id} className="rounded-lg border border-border/50 bg-muted/20 p-3 flex flex-col gap-1.5">
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold uppercase tracking-wider text-primary">{i.tipo}</span>
-                          <span className="text-muted-foreground">
-                            {new Date(i.fecha).toLocaleString("es-PE")}
-                          </span>
-                        </div>
-                        <p className="text-foreground leading-relaxed">{i.resumen}</p>
-                        <p className="text-muted-foreground text-[10px]">Registrado por {i.autor}</p>
+                        {editingId === i.id ? (
+                          <div className="flex flex-col gap-2.5 p-0.5">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-bold text-muted-foreground uppercase">Editar Tipo:</span>
+                              <Select value={editType} onValueChange={(v) => setEditType(v ?? "llamada")}>
+                                <SelectTrigger className="h-7 w-[160px] text-[11px] p-2 bg-background border">
+                                  <SelectValue placeholder="Tipo" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="llamada">Llamada Telefónica</SelectItem>
+                                  <SelectItem value="correo">Correo Electrónico</SelectItem>
+                                  <SelectItem value="entrevista">Entrevista Presencial</SelectItem>
+                                  <SelectItem value="nota">Nota de Seguimiento</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <Textarea
+                                rows={2}
+                                value={editSummary}
+                                onChange={(e) => setEditSummary(e.target.value)}
+                                className="text-xs p-2 bg-background border"
+                                placeholder="Detalles de la interacción..."
+                              />
+                            </div>
+                            <div className="flex justify-end gap-1.5">
+                              <Button
+                                size="xs"
+                                variant="outline"
+                                onClick={() => setEditingId(null)}
+                                className="h-7 text-[10px] px-2.5 cursor-pointer"
+                              >
+                                Cancelar
+                              </Button>
+                              <Button
+                                size="xs"
+                                onClick={() => {
+                                  if (!editSummary.trim()) return;
+                                  updateInteractionMutation.mutate({
+                                    params: { path: { id: i.id } },
+                                    body: {
+                                      type: editType,
+                                      summary: editSummary.trim(),
+                                      author: "Admisión",
+                                    },
+                                  });
+                                }}
+                                className="h-7 text-[10px] px-2.5 cursor-pointer"
+                                disabled={updateInteractionMutation.isPending}
+                              >
+                                {updateInteractionMutation.isPending ? "Guardando..." : "Guardar"}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold uppercase tracking-wider text-primary">{i.type}</span>
+                                <Button
+                                  size="xs"
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0 text-muted-foreground hover:text-primary hover:bg-muted cursor-pointer rounded-full inline-flex items-center justify-center shrink-0"
+                                  onClick={() => {
+                                    setEditingId(i.id);
+                                    setEditType(i.type);
+                                    setEditSummary(i.summary);
+                                  }}
+                                >
+                                  <Pencil className="size-3" />
+                                </Button>
+                              </div>
+                              <span className="text-muted-foreground">
+                                {new Date(i.date).toLocaleString("es-PE")}
+                              </span>
+                            </div>
+                            <p className="text-foreground leading-relaxed whitespace-pre-wrap">{i.summary}</p>
+                            <p className="text-muted-foreground text-[10px]">Registrado por {i.author}</p>
+                          </>
+                        )}
                       </li>
                     ))}
                   </ul>
