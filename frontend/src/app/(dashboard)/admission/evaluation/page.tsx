@@ -75,13 +75,7 @@ export default function EvaluationPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProspectId || !selectedProspect) return;
-
-    if (selectedProspect.evaluation?.aptitude === "FIT") {
-      toast.error("El dictamen final de APTO ya ha sido registrado y no puede ser modificado.");
-      setAptitudeStatus("FIT");
-      return;
-    }
+    if (!selectedProspectId) return;
 
     evaluateMutation.mutate({
       params: { path: { id: selectedProspectId } },
@@ -243,18 +237,16 @@ export default function EvaluationPage() {
                             <button
                               key={opt.value}
                               type="button"
-                              onClick={() => {
-                                if (selectedProspect.evaluation?.aptitude === "FIT") {
-                                  toast.error("El dictamen final de APTO ya ha sido registrado y no puede ser modificado.");
-                                  setAptitudeStatus("FIT");
-                                  return;
-                                }
-                                setAptitudeStatus(opt.value as any);
-                              }}
+                              disabled={selectedProspect.evaluation?.aptitude === "FIT"}
+                              onClick={() => setAptitudeStatus(opt.value as any)}
                               className={`cursor-pointer border rounded-lg p-3 text-center text-xs font-semibold transition-all ${
                                 isActive
                                   ? `${opt.color} ring-1 ring-primary border-primary`
                                   : "border-border/60 hover:bg-muted/40"
+                              } ${
+                                selectedProspect.evaluation?.aptitude === "FIT"
+                                  ? "opacity-60 cursor-not-allowed"
+                                  : ""
                               }`}
                             >
                               {opt.label}
