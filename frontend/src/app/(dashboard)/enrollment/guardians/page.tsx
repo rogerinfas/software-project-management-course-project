@@ -274,14 +274,14 @@ export default function ApoderadosPage() {
                       <TableRow key={g.id} className="bg-muted/20">
                         <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full text-xs font-semibold"
+                            className="h-8 w-full text-xs font-semibold bg-background"
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
                           />
                         </TableCell>
                         <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full font-mono text-xs"
+                            className="h-8 w-full font-mono text-xs bg-background"
                             value={editDni}
                             onChange={(e) => setEditDni(e.target.value)}
                             maxLength={8}
@@ -290,13 +290,13 @@ export default function ApoderadosPage() {
                         <TableCell className="overflow-hidden">
                           <div className="space-y-1.5 py-1">
                             <Input
-                              className="h-7 w-full text-xs"
+                              className="h-7 w-full text-xs bg-background"
                               value={editTel}
                               onChange={(e) => setEditTel(e.target.value)}
                               placeholder="Teléfono"
                             />
                             <Input
-                              className="h-7 w-full text-xs"
+                              className="h-7 w-full text-xs bg-background"
                               value={editCorreo}
                               onChange={(e) => setEditCorreo(e.target.value)}
                               placeholder="Correo"
@@ -305,7 +305,7 @@ export default function ApoderadosPage() {
                         </TableCell>
                         <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full text-xs"
+                            className="h-8 w-full text-xs bg-background"
                             value={editOcup}
                             onChange={(e) => setEditOcup(e.target.value)}
                           />
