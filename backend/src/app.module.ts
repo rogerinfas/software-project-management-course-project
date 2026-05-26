@@ -4,6 +4,7 @@ import { AuthModule } from './auth.module';
 import { AdmissionModule } from './admission.module';
 import { EnrollmentModule } from './enrollment.module';
 import { AcademicModule } from './academic.module';
+import { TreasuryModule } from './treasury.module';
 
 @Module({
   imports: [
@@ -12,9 +13,9 @@ import { AcademicModule } from './academic.module';
     AdmissionModule,
     EnrollmentModule,
     AcademicModule,
+    TreasuryModule,
   ],
   controllers: [],
   providers: [],
 })
 export class AppModule {}
-
