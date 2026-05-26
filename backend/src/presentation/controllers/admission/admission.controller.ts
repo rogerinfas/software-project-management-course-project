@@ -28,6 +28,11 @@ import { CreateAppointmentCommand } from '../../../application/use-cases/appoint
 import { GetAppointmentsQuery } from '../../../application/use-cases/appointment/queries/get-appointments.query';
 
 import { SaveEvaluationCommand } from '../../../application/use-cases/evaluation-result/commands/save-evaluation.command';
+import {
+  CreateInteractionCommand,
+  UpdateInteractionCommand,
+  GetInteractionsQuery,
+} from '../../../application/use-cases/interaction';
 
 // DTOs
 import {
@@ -43,6 +48,9 @@ import {
   AppointmentResponse,
   SaveEvaluationRequest,
   EvaluationResultResponse,
+  CreateInteractionRequest,
+  UpdateInteractionRequest,
+  ProspectInteractionResponse,
 } from './dto';
 
 // Domain Entities
@@ -50,6 +58,7 @@ import { AdmissionStageEntity } from '../../../domain/entities/admission-stage.e
 import { ProspectEntity } from '../../../domain/entities/prospect.entity';
 import { AppointmentEntity } from '../../../domain/entities/appointment.entity';
 import { EvaluationResultEntity } from '../../../domain/entities/evaluation-result.entity';
+import { ProspectInteractionEntity } from '../../../domain/entities/interaction.entity';
 import { PaginatedResult } from '../../../domain/repositories/prospect.repository.interface';
 
 @ApiTags('Admission')
@@ -236,6 +245,73 @@ export class AdmissionController {
       SaveEvaluationCommand,
       EvaluationResultEntity
     >(new SaveEvaluationCommand(id, dto.aptitude, dto.comments));
+    return result.toDto();
+  }
+
+  @Get('prospects/:id/interactions')
+  @ApiOperation({ summary: 'Get all interactions for a prospect' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all interactions.',
+    type: [ProspectInteractionResponse],
+  })
+  async getInteractions(
+    @Param('id') id: string,
+  ): Promise<ProspectInteractionResponse[]> {
+    const results = await this.queryBus.execute<
+      GetInteractionsQuery,
+      ProspectInteractionEntity[]
+    >(new GetInteractionsQuery(id));
+    return results.map((r) => r.toDto());
+  }
+
+  @Post('prospects/:id/interactions')
+  @ApiOperation({ summary: 'Create a new interaction for a prospect' })
+  @ApiResponse({
+    status: 201,
+    description: 'Interaction created successfully.',
+    type: ProspectInteractionResponse,
+  })
+  async createInteraction(
+    @Param('id') prospectId: string,
+    @Body() dto: CreateInteractionRequest,
+  ): Promise<ProspectInteractionResponse> {
+    const result = await this.commandBus.execute<
+      CreateInteractionCommand,
+      ProspectInteractionEntity
+    >(
+      new CreateInteractionCommand(
+        prospectId,
+        dto.type,
+        dto.summary,
+        dto.author,
+      ),
+    );
+    return result.toDto();
+  }
+
+  @Put('interactions/:id')
+  @ApiOperation({ summary: 'Update an existing interaction' })
+  @ApiResponse({
+    status: 200,
+    description: 'Interaction updated successfully.',
+    type: ProspectInteractionResponse,
+  })
+  async updateInteraction(
+    @Param('id') id: string,
+    @Body() dto: UpdateInteractionRequest,
+  ): Promise<ProspectInteractionResponse> {
+    const result = await this.commandBus.execute<
+      UpdateInteractionCommand,
+      ProspectInteractionEntity
+    >(
+      new UpdateInteractionCommand(
+        id,
+        dto.type,
+        dto.summary,
+        dto.author,
+      ),
+    );
     return result.toDto();
   }
 }

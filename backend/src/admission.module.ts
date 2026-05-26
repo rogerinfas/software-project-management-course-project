@@ -8,6 +8,7 @@ import { PrismaAdmissionStageRepository } from './infrastructure/persistence/pri
 import { PrismaProspectRepository } from './infrastructure/persistence/prisma/repositories/prisma-prospect.repository';
 import { PrismaAppointmentRepository } from './infrastructure/persistence/prisma/repositories/prisma-appointment.repository';
 import { PrismaEvaluationResultRepository } from './infrastructure/persistence/prisma/repositories/prisma-evaluation-result.repository';
+import { PrismaProspectInteractionRepository } from './infrastructure/persistence/prisma/repositories/prisma-interaction.repository';
 
 // Handlers
 import { StageCommandHandlers } from './application/use-cases/admission-stage/commands';
@@ -17,6 +18,7 @@ import { ProspectQueryHandlers } from './application/use-cases/prospect/queries/
 import { AppointmentCommandHandlers } from './application/use-cases/appointment/commands';
 import { AppointmentQueryHandlers } from './application/use-cases/appointment/queries';
 import { EvaluationCommandHandlers } from './application/use-cases/evaluation-result/commands';
+import { InteractionCommandHandlers, InteractionQueryHandlers } from './application/use-cases/interaction';
 
 @Module({
   imports: [CqrsModule],
@@ -39,6 +41,10 @@ import { EvaluationCommandHandlers } from './application/use-cases/evaluation-re
       provide: 'IEvaluationResultRepository',
       useClass: PrismaEvaluationResultRepository,
     },
+    {
+      provide: 'IProspectInteractionRepository',
+      useClass: PrismaProspectInteractionRepository,
+    },
     ...StageCommandHandlers,
     ...StageQueryHandlers,
     ...ProspectCommandHandlers,
@@ -46,6 +52,8 @@ import { EvaluationCommandHandlers } from './application/use-cases/evaluation-re
     ...AppointmentCommandHandlers,
     ...AppointmentQueryHandlers,
     ...EvaluationCommandHandlers,
+    ...InteractionCommandHandlers,
+    ...InteractionQueryHandlers,
   ],
   exports: [CqrsModule],
 })

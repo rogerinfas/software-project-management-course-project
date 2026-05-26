@@ -581,6 +581,120 @@
         ]
       }
     },
+    "/api/admission/prospects/{id}/interactions": {
+      "get": {
+        "operationId": "AdmissionController_getInteractions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return all interactions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProspectInteractionResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all interactions for a prospect",
+        "tags": [
+          "Admission"
+        ]
+      },
+      "post": {
+        "operationId": "AdmissionController_createInteraction",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInteractionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Interaction created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProspectInteractionResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a new interaction for a prospect",
+        "tags": [
+          "Admission"
+        ]
+      }
+    },
+    "/api/admission/interactions/{id}": {
+      "put": {
+        "operationId": "AdmissionController_updateInteraction",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateInteractionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Interaction updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProspectInteractionResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Update an existing interaction",
+        "tags": [
+          "Admission"
+        ]
+      }
+    },
     "/api/enrollment/guardians": {
       "get": {
         "operationId": "EnrollmentController_getGuardians",
@@ -7180,7 +7294,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-26T14:43:33.947Z"
+            "example": "2026-05-26T17:27:35.149Z"
           },
           "path": {
             "type": "string",
@@ -7285,13 +7399,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-26T14:43:34.102Z"
+            "example": "2026-05-26T17:27:35.250Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-26T14:43:34.102Z"
+            "example": "2026-05-26T17:27:35.250Z"
           }
         },
         "required": [
@@ -7401,7 +7515,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Appointment date and time",
-            "example": "2026-05-26T14:43:34.629Z"
+            "example": "2026-05-26T17:27:35.769Z"
           },
           "type": {
             "type": "string",
@@ -7425,7 +7539,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-26T14:43:34.629Z"
+            "example": "2026-05-26T17:27:35.769Z"
           }
         },
         "required": [
@@ -7468,7 +7582,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Evaluation process date",
-            "example": "2026-05-26T14:43:34.630Z"
+            "example": "2026-05-26T17:27:35.774Z"
           },
           "evaluatorId": {
             "type": "object",
@@ -7550,7 +7664,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-26T14:43:34.630Z"
+            "example": "2026-05-26T17:27:35.774Z"
           }
         },
         "required": [
@@ -7593,13 +7707,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-26T14:43:34.630Z"
+            "example": "2026-05-26T17:27:35.774Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-26T14:43:34.630Z"
+            "example": "2026-05-26T17:27:35.774Z"
           }
         },
         "required": [
@@ -7771,7 +7885,7 @@
           "date": {
             "type": "string",
             "description": "Appointment date and time in ISO format",
-            "example": "2026-05-26T14:43:34.633Z"
+            "example": "2026-05-26T17:27:35.787Z"
           },
           "type": {
             "type": "string",
@@ -7811,6 +7925,99 @@
         },
         "required": [
           "aptitude"
+        ]
+      },
+      "ProspectInteractionResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique interaction identifier",
+            "example": "interaction-123"
+          },
+          "prospectId": {
+            "type": "string",
+            "description": "ID of the associated prospect",
+            "example": "prospect-123"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of interaction (e.g. llamada, correo, nota)",
+            "example": "llamada"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Summary of the interaction",
+            "example": "Llamada para coordinar examen."
+          },
+          "author": {
+            "type": "string",
+            "description": "Author of the record",
+            "example": "Admisión"
+          },
+          "date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date and time of the interaction",
+            "example": "2026-05-26T17:27:35.796Z"
+          }
+        },
+        "required": [
+          "id",
+          "prospectId",
+          "type",
+          "summary",
+          "author",
+          "date"
+        ]
+      },
+      "CreateInteractionRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of interaction (e.g. llamada, correo, entrevista, nota)",
+            "example": "llamada"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Summary of the interaction details",
+            "example": "Se llamó al apoderado para coordinar la fecha del examen."
+          },
+          "author": {
+            "type": "string",
+            "description": "Author of the interaction record",
+            "example": "Admisión"
+          }
+        },
+        "required": [
+          "type",
+          "summary",
+          "author"
+        ]
+      },
+      "UpdateInteractionRequest": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of interaction (e.g. llamada, correo, entrevista, nota)",
+            "example": "correo"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Summary of the interaction details",
+            "example": "Se envió correo de confirmación de entrevista académica."
+          },
+          "author": {
+            "type": "string",
+            "description": "Author of the interaction record",
+            "example": "Admisión"
+          }
+        },
+        "required": [
+          "type",
+          "summary"
         ]
       },
       "SectionResponse": {
@@ -8205,7 +8412,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Fecha de la matrícula",
-            "example": "2026-05-26T14:43:34.656Z"
+            "example": "2026-05-26T17:27:35.980Z"
           },
           "status": {
             "type": "string",
@@ -9025,13 +9232,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-05-26T14:43:34.107Z"
+            "example": "2026-05-26T17:27:35.316Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-05-26T14:43:34.107Z"
+            "example": "2026-05-26T17:27:35.316Z"
           },
           "deletedAt": {
             "type": "object",
@@ -9097,13 +9304,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-05-26T14:43:34.107Z"
+            "example": "2026-05-26T17:27:35.316Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-05-26T14:43:34.107Z"
+            "example": "2026-05-26T17:27:35.316Z"
           },
           "deletedAt": {
             "type": "object",
@@ -9230,13 +9437,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-05-26T14:43:34.107Z"
+            "example": "2026-05-26T17:27:35.316Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-05-26T14:43:34.107Z"
+            "example": "2026-05-26T17:27:35.316Z"
           },
           "deletedAt": {
             "type": "object",
@@ -9311,13 +9518,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-05-26T14:43:34.107Z"
+            "example": "2026-05-26T17:27:35.316Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-05-26T14:43:34.107Z"
+            "example": "2026-05-26T17:27:35.316Z"
           },
           "deletedAt": {
             "type": "object",
@@ -9359,306 +9566,6 @@
         "required": [
           "gracePeriodMinutes",
           "finePerMinute"
-        ]
-      },
-      "TariffResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "ID de la tarifa",
-            "example": "tariff-123"
-          },
-          "concept": {
-            "type": "string",
-            "description": "Concepto de la tarifa",
-            "example": "Pensión Mensual"
-          },
-          "amount": {
-            "type": "number",
-            "description": "Monto de la tarifa",
-            "example": 450
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "ONE_TIME",
-              "MONTHLY",
-              "EXTRA"
-            ],
-            "description": "Tipo de cobro de la tarifa"
-          },
-          "level": {
-            "type": "string",
-            "enum": [
-              "INITIAL",
-              "PRIMARY",
-              "SECONDARY"
-            ],
-            "description": "Nivel educativo aplicable"
-          }
-        },
-        "required": [
-          "id",
-          "concept",
-          "amount",
-          "type",
-          "level"
-        ]
-      },
-      "CreateTariffDto": {
-        "type": "object",
-        "properties": {
-          "concept": {
-            "type": "string",
-            "description": "Concepto de la tarifa",
-            "example": "Pensión Mensual de Mayo"
-          },
-          "amount": {
-            "type": "number",
-            "description": "Monto de la tarifa",
-            "example": 450
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "ONE_TIME",
-              "MONTHLY",
-              "EXTRA"
-            ],
-            "description": "Tipo de cobro de la tarifa",
-            "example": "MONTHLY"
-          },
-          "level": {
-            "type": "string",
-            "enum": [
-              "INITIAL",
-              "PRIMARY",
-              "SECONDARY"
-            ],
-            "description": "Nivel educativo aplicable",
-            "example": "PRIMARY"
-          }
-        },
-        "required": [
-          "concept",
-          "amount",
-          "type",
-          "level"
-        ]
-      },
-      "UpdateTariffDto": {
-        "type": "object",
-        "properties": {
-          "concept": {
-            "type": "string",
-            "description": "Concepto de la tarifa",
-            "example": "Pensión Mayo Modificada"
-          },
-          "amount": {
-            "type": "number",
-            "description": "Monto de la tarifa",
-            "example": 480
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "ONE_TIME",
-              "MONTHLY",
-              "EXTRA"
-            ],
-            "description": "Tipo de cobro de la tarifa",
-            "example": "MONTHLY"
-          },
-          "level": {
-            "type": "string",
-            "enum": [
-              "INITIAL",
-              "PRIMARY",
-              "SECONDARY"
-            ],
-            "description": "Nivel educativo aplicable",
-            "example": "PRIMARY"
-          }
-        }
-      },
-      "ChargeResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "ID del cargo",
-            "example": "charge-123"
-          },
-          "studentId": {
-            "type": "string",
-            "description": "ID del estudiante",
-            "example": "student-123"
-          },
-          "student": {
-            "$ref": "#/components/schemas/StudentResponse"
-          },
-          "tariffId": {
-            "type": "string",
-            "description": "ID de la tarifa",
-            "example": "tariff-123"
-          },
-          "tariff": {
-            "$ref": "#/components/schemas/TariffResponse"
-          },
-          "originalAmount": {
-            "type": "number",
-            "description": "Monto original",
-            "example": 450
-          },
-          "pendingAmount": {
-            "type": "number",
-            "description": "Monto pendiente",
-            "example": 450
-          },
-          "dueDate": {
-            "type": "object",
-            "description": "Fecha de vencimiento",
-            "example": "2026-06-05T00:00:00.000Z",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "description": "Estado del cargo",
-            "example": "PENDING"
-          }
-        },
-        "required": [
-          "id",
-          "studentId",
-          "tariffId",
-          "originalAmount",
-          "pendingAmount",
-          "dueDate",
-          "status"
-        ]
-      },
-      "CreateChargeDto": {
-        "type": "object",
-        "properties": {
-          "studentId": {
-            "type": "string",
-            "description": "ID del estudiante",
-            "example": "student-123"
-          },
-          "tariffId": {
-            "type": "string",
-            "description": "ID de la tarifa",
-            "example": "tariff-123"
-          },
-          "dueDate": {
-            "type": "string",
-            "description": "Fecha de vencimiento",
-            "example": "2026-06-05T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "studentId",
-          "tariffId"
-        ]
-      },
-      "GenerateBulkChargesDto": {
-        "type": "object",
-        "properties": {
-          "tariffId": {
-            "type": "string",
-            "description": "ID de la tarifa a aplicar",
-            "example": "tariff-123"
-          },
-          "dueDate": {
-            "type": "string",
-            "description": "Fecha de vencimiento para los cargos",
-            "example": "2026-06-05T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "tariffId"
-        ]
-      },
-      "PaymentResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "ID de la transacción de pago",
-            "example": "payment-123"
-          },
-          "chargeId": {
-            "type": "string",
-            "description": "ID del cargo asociado",
-            "example": "charge-123"
-          },
-          "charge": {
-            "$ref": "#/components/schemas/ChargeResponse"
-          },
-          "studentId": {
-            "type": "string",
-            "description": "ID del estudiante",
-            "example": "student-123"
-          },
-          "totalAmount": {
-            "type": "number",
-            "description": "Monto pagado",
-            "example": 150
-          },
-          "method": {
-            "type": "string",
-            "enum": [
-              "CASH",
-              "CARD",
-              "TRANSFER"
-            ],
-            "description": "Método de pago"
-          },
-          "timestamp": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Fecha y hora de pago",
-            "example": "2026-05-25T00:00:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "chargeId",
-          "studentId",
-          "totalAmount",
-          "method",
-          "timestamp"
-        ]
-      },
-      "RegisterPaymentDto": {
-        "type": "object",
-        "properties": {
-          "chargeId": {
-            "type": "string",
-            "description": "ID del cargo a pagar",
-            "example": "charge-123"
-          },
-          "amount": {
-            "type": "number",
-            "description": "Monto total a pagar",
-            "example": 150
-          },
-          "method": {
-            "type": "string",
-            "enum": [
-              "CASH",
-              "CARD",
-              "TRANSFER"
-            ],
-            "description": "Método de pago",
-            "example": "CASH"
-          }
-        },
-        "required": [
-          "chargeId",
-          "amount",
-          "method"
         ]
       },
       "User": {
