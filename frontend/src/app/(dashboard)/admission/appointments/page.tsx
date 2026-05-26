@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { SelectInfinite } from "@/components/ui/select-infinite";
 import { backend } from "@/lib/api/types/backend";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -37,57 +36,25 @@ export default function AppointmentsPage() {
   const [appointmentType, setAppointmentType] = React.useState("ENTREVISTA");
   const [appointmentNotes, setAppointmentNotes] = React.useState("");
 
-  // Search state for SelectInfinite
+  // Search state for prospects
   const [prospectSearch, setProspectSearch] = React.useState("");
-  const [debouncedSearch, setDebouncedSearch] = React.useState("");
-
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(prospectSearch);
-    }, 300);
-    return () => clearTimeout(handler);
-  }, [prospectSearch]);
 
   // Queries
   const { data: appointments, isLoading: appointmentsLoading } = backend.useQuery("get", "/api/admission/appointments", {});
+  const { data: stagesData } = backend.useQuery("get", "/api/admission/stages", {});
 
-  // Infinite query for prospects search
-  const {
-    data: prospectsData,
-    fetchNextPage: fetchNextProspectsPage,
-    hasNextPage: hasNextProspectsPage,
-    isFetchingNextPage: isFetchingNextProspectsPage,
-    isLoading: prospectsLoading,
-  } = backend.useInfiniteQuery(
-    "get",
-    "/api/admission/prospects",
-    {
-      params: {
-        query: {
-          size: 15,
-          search: debouncedSearch || undefined,
-        },
-      },
-    },
-    {
-      initialPageParam: 1,
-      getNextPageParam: (lastPage: any) => {
-        if (!lastPage || !lastPage.meta) return undefined;
-        return lastPage.meta.hasNext ? lastPage.meta.page + 1 : undefined;
-      },
-    }
-  );
+  // Extract flat list of prospects
+  const prospects = React.useMemo(() => {
+    if (!stagesData) return [];
+    return (stagesData as any).flatMap((s: any) => s.prospects || []);
+  }, [stagesData]);
 
-  // Flatten prospects from paginated pages
-  const prospectsOptions = React.useMemo(() => {
-    if (!prospectsData) return [];
-    return prospectsData.pages.flatMap((page: any) =>
-      (page.data || []).map((p: any) => ({
-        value: p.id,
-        label: `${p.name} (${p.targetGrade})`,
-      }))
+  // Filtered prospects based on search input
+  const filteredProspectsList = React.useMemo(() => {
+    return prospects.filter((p: any) =>
+      p.name.toLowerCase().includes(prospectSearch.toLowerCase())
     );
-  }, [prospectsData]);
+  }, [prospects, prospectSearch]);
 
   // Mutations
   const scheduleMutation = backend.useMutation("post", "/api/admission/appointments", {
@@ -223,23 +190,39 @@ export default function AppointmentsPage() {
 
               <div className="flex flex-col gap-1.5 mt-2">
                 <Label htmlFor="prospect">Postulante *</Label>
-                <div className="flex flex-col gap-2">
+                <div className="relative">
+                  <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                   <Input
-                    placeholder="Escribe para buscar..."
+                    placeholder="Buscar postulante..."
                     value={prospectSearch}
                     onChange={(e) => setProspectSearch(e.target.value)}
-                    className="h-8 text-xs"
+                    className="pl-9 h-9"
                   />
-                  <SelectInfinite
-                    value={selectedProspectId}
-                    onValueChange={setSelectedProspectId}
-                    options={prospectsOptions}
-                    placeholder="Selecciona un postulante..."
-                    onScrollEnd={fetchNextProspectsPage}
-                    hasNextPage={hasNextProspectsPage}
-                    isLoadingMore={isFetchingNextProspectsPage}
-                    emptyMessage={prospectsLoading ? "Buscando postulantes..." : "No se encontraron postulantes"}
-                  />
+                </div>
+                
+                {/* Scrollable list of Candidates */}
+                <div className="flex flex-col gap-1 overflow-y-auto max-h-[160px] border border-border/50 rounded-lg p-2 bg-muted/10">
+                  {filteredProspectsList.length === 0 ? (
+                    <div className="text-muted-foreground py-6 text-center text-xs">
+                      No se encontraron postulantes
+                    </div>
+                  ) : (
+                    filteredProspectsList.map((p: any) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setSelectedProspectId(p.id)}
+                        className={`w-full flex items-center justify-between rounded p-2 text-left text-xs transition-all cursor-pointer ${
+                          selectedProspectId === p.id
+                            ? "bg-primary/10 border-primary/40 border text-primary font-semibold"
+                            : "hover:bg-muted/60 border border-transparent"
+                        }`}
+                      >
+                        <span>{p.name}</span>
+                        <span className="text-[10px] text-muted-foreground">{p.targetGrade}</span>
+                      </button>
+                    ))
+                  )}
                 </div>
               </div>
 
