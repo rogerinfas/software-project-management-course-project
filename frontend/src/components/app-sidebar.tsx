@@ -49,7 +49,6 @@ const nav = [
     label: "General",
     items: [
       { href: "/", title: "Panel", icon: LayoutDashboard },
-      { href: "/about", title: "Alcance EDT", icon: ScrollText },
       { href: "/landing", title: "Landing pública", icon: Globe2 },
     ],
   },
