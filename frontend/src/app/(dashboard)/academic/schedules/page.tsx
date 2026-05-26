@@ -235,7 +235,7 @@ export default function SchedulesPage() {
               <p className="text-muted-foreground text-sm">No hay clases programadas para esta sección.</p>
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-5">
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-5">
               {DAYS_OF_WEEK.map((day) => {
                 const daySchedules = list.filter((s: any) => s.day === day.value);
                 daySchedules.sort((a, b) => a.startTime.localeCompare(b.startTime));
