@@ -1,9 +1,10 @@
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
-import { Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 import { IEvaluationResultRepository } from '../../../../domain/repositories/evaluation-result.repository.interface';
 import { IProspectRepository } from '../../../../domain/repositories/prospect.repository.interface';
 import { EvaluationResultEntity } from '../../../../domain/entities/evaluation-result.entity';
 import { EvaluationStatus } from '@prisma/client';
+import { ProspectAlreadyApprovedException } from '../../../../domain/exceptions/admission-domain.exceptions';
 
 export class SaveEvaluationCommand implements ICommand {
   constructor(
@@ -39,9 +40,7 @@ export class SaveEvaluationCommandHandler implements ICommandHandler<SaveEvaluat
     if (existing) {
       // Si el postulante ya tiene dictamen final de APTO (FIT), impedimos cualquier cambio
       if (existing.aptitude === EvaluationStatus.FIT) {
-        throw new BadRequestException(
-          'El postulante ya cuenta con un dictamen final de APTO y su evaluación no puede ser modificada.',
-        );
+        throw new ProspectAlreadyApprovedException(command.prospectId);
       }
 
       // 3. Caso de actualización (UPDATE):
