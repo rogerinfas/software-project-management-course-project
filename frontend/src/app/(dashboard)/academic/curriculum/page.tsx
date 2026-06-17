@@ -2,6 +2,10 @@
 
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
 import { Plus, Pencil, Trash2, Check, X, BookOpen, GraduationCap, Code, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 
@@ -26,22 +30,41 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { backend } from "@/lib/api/types/backend";
 
+const courseSchema = z.object({
+  name: z.string().min(3, "El nombre del curso debe tener al menos 3 caracteres"),
+  description: z.string().optional(),
+});
+
 export default function CurriculumPage() {
   const queryClient = useQueryClient();
 
   // State
   const [search, setSearch] = React.useState("");
 
-  // Create state
+  // Dialog open state
   const [newOpen, setNewOpen] = React.useState(false);
-  const [nName, setNName] = React.useState("");
-  const [nDesc, setNDesc] = React.useState("");
-
-  // Edit state
   const [editOpen, setEditOpen] = React.useState(false);
   const [editId, setEditId] = React.useState<string | null>(null);
-  const [eName, setEName] = React.useState("");
-  const [eDesc, setEDesc] = React.useState("");
+
+  // React Hook Form for creation
+  const createForm = useForm({
+    resolver: zodResolver(courseSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+    },
+  });
+  const { formState: { errors: createErrors } } = createForm;
+
+  // React Hook Form for edit
+  const editForm = useForm({
+    resolver: zodResolver(courseSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+    },
+  });
+  const { formState: { errors: editErrors } } = editForm;
 
   // Queries
   const { data: courses, isLoading } = backend.useQuery("get", "/api/academic/courses", {
@@ -56,8 +79,7 @@ export default function CurriculumPage() {
   const createMutation = backend.useMutation("post", "/api/academic/courses", {
     onSuccess: () => {
       toast.success("Curso creado exitosamente");
-      setNName("");
-      setNDesc("");
+      createForm.reset();
       setNewOpen(false);
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/courses"] });
     },
@@ -88,31 +110,29 @@ export default function CurriculumPage() {
     },
   });
 
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nName.trim()) {
+  const handleCreate = (data: any) => {
+    if (!data.name.trim()) {
       toast.error("El nombre del curso es obligatorio");
       return;
     }
     createMutation.mutate({
       body: {
-        name: nName,
-        description: nDesc || undefined,
+        name: data.name,
+        description: data.description || undefined,
       },
     });
   };
 
-  const handleUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editId || !eName.trim()) {
+  const handleUpdate = (data: any) => {
+    if (!editId || !data.name.trim()) {
       toast.error("El nombre del curso es obligatorio");
       return;
     }
     updateMutation.mutate({
       params: { path: { id: editId } },
       body: {
-        name: eName,
-        description: eDesc || undefined,
+        name: data.name,
+        description: data.description || undefined,
       },
     });
   };
@@ -125,8 +145,10 @@ export default function CurriculumPage() {
 
   const startEdit = (c: any) => {
     setEditId(c.id);
-    setEName(c.name);
-    setEDesc(c.description || "");
+    editForm.reset({
+      name: c.name,
+      description: c.description || "",
+    });
     setEditOpen(true);
   };
 
@@ -239,27 +261,31 @@ export default function CurriculumPage() {
           <DialogHeader>
             <DialogTitle>Añadir Curso al Plan Curricular</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleCreate} className="space-y-4">
+          <form onSubmit={createForm.handleSubmit(handleCreate)} className="space-y-4">
             <div className="space-y-3">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="name">Nombre del Curso *</Label>
+                <Label htmlFor="name" className={cn(createErrors.name && "text-red-500")}>Nombre del Curso *</Label>
                 <Input
                   id="name"
-                  value={nName}
-                  onChange={(e) => setNName(e.target.value)}
+                  {...createForm.register("name")}
                   placeholder="ej. Álgebra y Geometría"
-                  required
+                  className={cn(createErrors.name && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {createErrors.name?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.name.message)}</p>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="desc">Descripción / Silabo (Opcional)</Label>
+                <Label htmlFor="desc" className={cn(createErrors.description && "text-red-500")}>Descripción / Silabo (Opcional)</Label>
                 <Textarea
                   id="desc"
-                  value={nDesc}
-                  onChange={(e) => setNDesc(e.target.value)}
+                  {...createForm.register("description")}
                   placeholder="Describe brevemente las áreas de competencia..."
-                  className="min-h-[100px]"
+                  className={cn("min-h-[100px]", createErrors.description && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {createErrors.description?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.description.message)}</p>
+                )}
               </div>
             </div>
             <DialogFooter>
@@ -280,25 +306,29 @@ export default function CurriculumPage() {
           <DialogHeader>
             <DialogTitle>Editar Asignatura</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdate} className="space-y-4">
+          <form onSubmit={editForm.handleSubmit(handleUpdate)} className="space-y-4">
             <div className="space-y-3">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="edit-name">Nombre del Curso *</Label>
+                <Label htmlFor="edit-name" className={cn(editErrors.name && "text-red-500")}>Nombre del Curso *</Label>
                 <Input
                   id="edit-name"
-                  value={eName}
-                  onChange={(e) => setEName(e.target.value)}
-                  required
+                  {...editForm.register("name")}
+                  className={cn(editErrors.name && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {editErrors.name?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(editErrors.name.message)}</p>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="edit-desc">Descripción / Silabo (Opcional)</Label>
+                <Label htmlFor="edit-desc" className={cn(editErrors.description && "text-red-500")}>Descripción / Silabo (Opcional)</Label>
                 <Textarea
                   id="edit-desc"
-                  value={eDesc}
-                  onChange={(e) => setEDesc(e.target.value)}
-                  className="min-h-[100px]"
+                  {...editForm.register("description")}
+                  className={cn("min-h-[100px]", editErrors.description && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {editErrors.description?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(editErrors.description.message)}</p>
+                )}
               </div>
             </div>
             <DialogFooter>
