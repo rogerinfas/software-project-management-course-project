@@ -32,6 +32,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { backend } from "@/lib/api/types/backend";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
+
+const guardianSchema = z.object({
+  name: z.string().min(5, "El nombre completo debe tener al menos 5 caracteres"),
+  dni: z.string().length(8, "DNI debe tener exactamente 8 caracteres"),
+  phone: z.string().min(6, "Teléfono inválido"),
+  email: z.string().email("Correo electrónico inválido").or(z.literal("")),
+  occupation: z.string().optional(),
+});
 
 export default function ApoderadosPage() {
   const queryClient = useQueryClient();
@@ -43,19 +55,34 @@ export default function ApoderadosPage() {
 
   // Edit inline state
   const [editId, setEditId] = React.useState<string | null>(null);
-  const [editDni, setEditDni] = React.useState("");
-  const [editName, setEditName] = React.useState("");
-  const [editTel, setEditTel] = React.useState("");
-  const [editCorreo, setEditCorreo] = React.useState("");
-  const [editOcup, setEditOcup] = React.useState("");
 
   // New apoderado dialog state
   const [newOpen, setNewOpen] = React.useState(false);
-  const [nNombre, setNNombre] = React.useState("");
-  const [nDni, setNDni] = React.useState("");
-  const [nTel, setNTel] = React.useState("");
-  const [nCorreo, setNCorreo] = React.useState("");
-  const [nOcupacion, setNOcupacion] = React.useState("");
+
+  // React Hook Form setups
+  const createForm = useForm({
+    resolver: zodResolver(guardianSchema),
+    defaultValues: {
+      name: "",
+      dni: "",
+      phone: "",
+      email: "",
+      occupation: "",
+    },
+  });
+  const { formState: { errors: createErrors } } = createForm;
+
+  const editForm = useForm({
+    resolver: zodResolver(guardianSchema),
+    defaultValues: {
+      name: "",
+      dni: "",
+      phone: "",
+      email: "",
+      occupation: "",
+    },
+  });
+  const { formState: { errors: editErrors } } = editForm;
 
   // Queries
   const { data: guardiansData, isLoading } = backend.useQuery(
@@ -76,11 +103,7 @@ export default function ApoderadosPage() {
   const createMutation = backend.useMutation("post", "/api/enrollment/guardians", {
     onSuccess: () => {
       toast.success("Apoderado registrado con éxito");
-      setNNombre("");
-      setNDni("");
-      setNTel("");
-      setNCorreo("");
-      setNOcupacion("");
+      createForm.reset();
       setNewOpen(false);
       queryClient.invalidateQueries({ queryKey: ["get", "/api/enrollment/guardians"] });
     },
@@ -93,6 +116,7 @@ export default function ApoderadosPage() {
     onSuccess: () => {
       toast.success("Datos del apoderado actualizados");
       setEditId(null);
+      editForm.reset();
       queryClient.invalidateQueries({ queryKey: ["get", "/api/enrollment/guardians"] });
     },
     onError: (err: any) => {
@@ -112,44 +136,43 @@ export default function ApoderadosPage() {
 
   function startEdit(g: any) {
     setEditId(g.id);
-    setEditDni(g.dni);
-    setEditName(g.name);
-    setEditTel(g.phone);
-    setEditCorreo(g.email || "");
-    setEditOcup(g.occupation || "");
+    editForm.setValue("name", g.name);
+    editForm.setValue("dni", g.dni);
+    editForm.setValue("phone", g.phone);
+    editForm.setValue("email", g.email || "");
+    editForm.setValue("occupation", g.occupation || "");
   }
 
-  function saveEdit() {
+  function saveEdit(data: { name: string; dni: string; phone: string; email: string; occupation?: string }) {
     if (!editId) return;
-    if (!editName.trim() || !editDni.trim()) {
+    if (!data.name.trim() || !data.dni.trim()) {
       toast.error("El nombre y el DNI son requeridos");
       return;
     }
     updateMutation.mutate({
       params: { path: { id: editId } },
       body: {
-        dni: editDni,
-        name: editName,
-        phone: editTel,
-        email: editCorreo || undefined,
-        occupation: editOcup || undefined,
+        dni: data.dni,
+        name: data.name,
+        phone: data.phone,
+        email: data.email || undefined,
+        occupation: data.occupation || undefined,
       },
     });
   }
 
-  function handleAdd(e: React.FormEvent) {
-    e.preventDefault();
-    if (!nNombre.trim() || !nDni.trim() || !nTel.trim()) {
+  function handleAdd(data: { name: string; dni: string; phone: string; email: string; occupation?: string }) {
+    if (!data.name.trim() || !data.dni.trim() || !data.phone.trim()) {
       toast.error("El nombre, DNI y teléfono son obligatorios");
       return;
     }
     createMutation.mutate({
       body: {
-        dni: nDni,
-        name: nNombre,
-        phone: nTel,
-        email: nCorreo || undefined,
-        occupation: nOcupacion || undefined,
+        dni: data.dni,
+        name: data.name,
+        phone: data.phone,
+        email: data.email || undefined,
+        occupation: data.occupation || undefined,
       },
     });
   }
@@ -275,41 +298,51 @@ export default function ApoderadosPage() {
                       <TableRow key={g.id} className="bg-muted/20">
                         <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full text-xs font-semibold bg-background"
-                            value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
+                            className={cn("h-8 w-full text-xs font-semibold bg-background", editErrors.name && "border-red-500 focus-visible:ring-red-500")}
+                            {...editForm.register("name")}
                           />
+                          {editErrors.name?.message && (
+                            <p className="text-red-500 text-[9px] mt-0.5 leading-none">{String(editErrors.name.message)}</p>
+                          )}
                         </TableCell>
                         <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full font-mono text-xs bg-background"
-                            value={editDni}
-                            onChange={(e) => setEditDni(e.target.value)}
+                            className={cn("h-8 w-full font-mono text-xs bg-background", editErrors.dni && "border-red-500 focus-visible:ring-red-500")}
                             maxLength={8}
+                            {...editForm.register("dni")}
                           />
+                          {editErrors.dni?.message && (
+                            <p className="text-red-500 text-[9px] mt-0.5 leading-none">{String(editErrors.dni.message)}</p>
+                          )}
                         </TableCell>
                         <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full text-xs bg-background"
-                            value={editTel}
-                            onChange={(e) => setEditTel(e.target.value)}
-                            placeholder="Telefóno"
+                            className={cn("h-8 w-full text-xs bg-background", editErrors.phone && "border-red-500 focus-visible:ring-red-500")}
+                            placeholder="Teléfono"
+                            {...editForm.register("phone")}
                           />
+                          {editErrors.phone?.message && (
+                            <p className="text-red-500 text-[9px] mt-0.5 leading-none">{String(editErrors.phone.message)}</p>
+                          )}
                         </TableCell>
                         <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full text-xs bg-background"
-                            value={editCorreo}
-                            onChange={(e) => setEditCorreo(e.target.value)}
+                            className={cn("h-8 w-full text-xs bg-background", editErrors.email && "border-red-500 focus-visible:ring-red-500")}
                             placeholder="Correo"
+                            {...editForm.register("email")}
                           />
+                          {editErrors.email?.message && (
+                            <p className="text-red-500 text-[9px] mt-0.5 leading-none">{String(editErrors.email.message)}</p>
+                          )}
                         </TableCell>
                         <TableCell className="overflow-hidden">
                           <Input
-                            className="h-8 w-full text-xs bg-background"
-                            value={editOcup}
-                            onChange={(e) => setEditOcup(e.target.value)}
+                            className={cn("h-8 w-full text-xs bg-background", editErrors.occupation && "border-red-500 focus-visible:ring-red-500")}
+                            {...editForm.register("occupation")}
                           />
+                          {editErrors.occupation?.message && (
+                            <p className="text-red-500 text-[9px] mt-0.5 leading-none">{String(editErrors.occupation.message)}</p>
+                          )}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline">
@@ -319,7 +352,7 @@ export default function ApoderadosPage() {
                         <TableCell className="text-right space-x-1.5">
                           <Button
                             size="xs"
-                            onClick={saveEdit}
+                            onClick={editForm.handleSubmit(saveEdit)}
                             disabled={updateMutation.isPending}
                             className="cursor-pointer"
                           >
@@ -417,60 +450,71 @@ export default function ApoderadosPage() {
           <DialogHeader>
             <DialogTitle>Registrar Apoderado</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleAdd} className="space-y-4">
+          <form onSubmit={createForm.handleSubmit(handleAdd)} className="space-y-4">
             <div className="grid gap-3 py-2">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="new-name">Nombre Completo *</Label>
+                <Label htmlFor="new-name" className={cn(createErrors.name && "text-red-500")}>Nombre Completo *</Label>
                 <Input
                   id="new-name"
-                  value={nNombre}
-                  onChange={(e) => setNNombre(e.target.value)}
                   placeholder="ej. Juan Pérez Delgado"
-                  required
+                  {...createForm.register("name")}
+                  className={cn(createErrors.name && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {createErrors.name?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.name.message)}</p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="new-dni">DNI *</Label>
+                  <Label htmlFor="new-dni" className={cn(createErrors.dni && "text-red-500")}>DNI *</Label>
                   <Input
                     id="new-dni"
-                    value={nDni}
-                    onChange={(e) => setNDni(e.target.value)}
                     maxLength={8}
                     placeholder="8 dígitos"
-                    className="font-mono"
-                    required
+                    className={cn("font-mono", createErrors.dni && "border-red-500 focus-visible:ring-red-500")}
+                    {...createForm.register("dni")}
                   />
+                  {createErrors.dni?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.dni.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="new-phone">Teléfono *</Label>
+                  <Label htmlFor="new-phone" className={cn(createErrors.phone && "text-red-500")}>Teléfono *</Label>
                   <Input
                     id="new-phone"
-                    value={nTel}
-                    onChange={(e) => setNTel(e.target.value)}
                     placeholder="987654321"
-                    required
+                    {...createForm.register("phone")}
+                    className={cn(createErrors.phone && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {createErrors.phone?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.phone.message)}</p>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="new-email">Correo Electrónico</Label>
+                <Label htmlFor="new-email" className={cn(createErrors.email && "text-red-500")}>Correo Electrónico</Label>
                 <Input
                   id="new-email"
                   type="email"
-                  value={nCorreo}
-                  onChange={(e) => setNCorreo(e.target.value)}
                   placeholder="juan.perez@ejemplo.com"
+                  {...createForm.register("email")}
+                  className={cn(createErrors.email && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {createErrors.email?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.email.message)}</p>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="new-ocup">Ocupación o Profesión</Label>
+                <Label htmlFor="new-ocup" className={cn(createErrors.occupation && "text-red-500")}>Ocupación o Profesión</Label>
                 <Input
                   id="new-ocup"
-                  value={nOcupacion}
-                  onChange={(e) => setNOcupacion(e.target.value)}
                   placeholder="ej. Ingeniero de Sistemas"
+                  {...createForm.register("occupation")}
+                  className={cn(createErrors.occupation && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {createErrors.occupation?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.occupation.message)}</p>
+                )}
               </div>
               <p className="text-[10px] text-muted-foreground italic">
                 * Campos obligatorios. Para simular deudas pasadas y ver el bloqueo de matrícula en acción, introduce un DNI que termine en "99".
