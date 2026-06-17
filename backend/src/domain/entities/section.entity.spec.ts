@@ -7,7 +7,7 @@ describe('SectionEntity', () => {
       id: 'section-1',
       name: 'Aula A',
       grade: '1',
-      level: EducationalLevel.PRIMARIA,
+      level: EducationalLevel.PRIMARY,
       capacity: 30,
       status: 'ACTIVE',
       isActive: true,
