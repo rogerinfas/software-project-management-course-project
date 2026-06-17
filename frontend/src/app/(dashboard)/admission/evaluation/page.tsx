@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import {
   Award,
   Search,
@@ -17,15 +18,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { backend } from "@/lib/api/types/backend";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
+
+const evaluationSchema = z.object({
+  aptitude: z.enum(["PENDING", "FIT", "UNFIT"]),
+  comments: z.string().min(5, "Los comentarios deben tener al menos 5 caracteres"),
+});
 
 export default function EvaluationPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = React.useState("");
   const [selectedProspectId, setSelectedProspectId] = React.useState<string | null>(null);
 
-  // Form states
-  const [aptitudeStatus, setAptitudeStatus] = React.useState<"FIT" | "UNFIT" | "PENDING">("PENDING");
-  const [comments, setComments] = React.useState("");
+  // React Hook Form
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
+    resolver: zodResolver(evaluationSchema),
+    defaultValues: {
+      aptitude: "PENDING" as "PENDING" | "FIT" | "UNFIT",
+      comments: "",
+    },
+  });
+
+  const aptitudeStatus = watch("aptitude");
+
   const [activeTab, setActiveTab] = React.useState<"verdict" | "process" | "profile">("verdict");
 
   // Queries
@@ -56,11 +73,13 @@ export default function EvaluationPage() {
   // Set default form values when prospect changes
   React.useEffect(() => {
     if (selectedProspect) {
-      setAptitudeStatus((selectedProspect.evaluation?.aptitude as any) || "PENDING");
-      setComments(selectedProspect.evaluation?.comments || "");
+      reset({
+        aptitude: (selectedProspect.evaluation?.aptitude as any) || "PENDING",
+        comments: selectedProspect.evaluation?.comments || "",
+      });
       setActiveTab("verdict");
     }
-  }, [selectedProspect]);
+  }, [selectedProspect, reset]);
 
   // Mutations
   const evaluateMutation = backend.useMutation("patch", "/api/admission/prospects/{id}/evaluation", {
@@ -73,15 +92,14 @@ export default function EvaluationPage() {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmitForm = (data: any) => {
     if (!selectedProspectId) return;
 
     evaluateMutation.mutate({
       params: { path: { id: selectedProspectId } },
       body: {
-        aptitude: aptitudeStatus,
-        comments: comments,
+        aptitude: data.aptitude as any,
+        comments: data.comments,
       },
     });
   };
@@ -160,7 +178,7 @@ export default function EvaluationPage() {
         {/* Right Column: Evaluation Form & details */}
         <div className="bg-card border-border/80 flex flex-col justify-between rounded-xl border p-6 md:col-span-2">
           {selectedProspect ? (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <form onSubmit={handleSubmit(onSubmitForm)} className="flex flex-col gap-6">
               {/* Profile Overview */}
               <div className="border-b border-border/60 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -245,16 +263,16 @@ export default function EvaluationPage() {
                                   evaluateMutation.mutate(
                                     {
                                       params: { path: { id: selectedProspectId! } },
-                                      body: { aptitude: opt.value as any, comments },
+                                      body: { aptitude: opt.value as any, comments: watch("comments") },
                                     },
                                     {
                                       // Independientemente, siempre revertimos a FIT
-                                      onSettled: () => setAptitudeStatus("FIT"),
+                                      onSettled: () => setValue("aptitude", "FIT"),
                                     }
                                   );
                                   return;
                                 }
-                                setAptitudeStatus(opt.value as any);
+                                setValue("aptitude", opt.value as any);
                               }}
                               className={`cursor-pointer border rounded-lg p-3 text-center text-xs font-semibold transition-all ${
                                 isActive
@@ -274,15 +292,17 @@ export default function EvaluationPage() {
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="comments">Observaciones / Comentarios del Evaluador</Label>
+                      <Label htmlFor="comments" className={cn(errors.comments && "text-red-500")}>Observaciones / Comentarios del Evaluador</Label>
                       <Textarea
                         id="comments"
                         placeholder="Detalla los puntos fuertes o limitaciones encontradas en la entrevista/examen..."
-                        value={comments}
-                        onChange={(e) => setComments(e.target.value)}
+                        {...register("comments")}
                         disabled={selectedProspect.evaluation?.aptitude === "FIT"}
-                        className="min-h-[120px]"
+                        className={cn("min-h-[120px]", errors.comments && "border-red-500 focus-visible:ring-red-500")}
                       />
+                      {errors.comments?.message && (
+                        <p className="text-red-500 text-xs mt-1">{String(errors.comments.message)}</p>
+                      )}
                     </div>
                   </div>
 
