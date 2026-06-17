@@ -14,9 +14,9 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest --passWithNoTests",
+    "test": "jest --passWithNoTests --forceExit",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test:cov": "jest --coverage --forceExit",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --forceExit"
   },
@@ -76,15 +76,24 @@
     "moduleFileExtensions": [
       "js",
       "json",
-      "ts"
+      "ts",
+      "mjs"
     ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.ts$": "ts-jest",
+      "^.+\\.(mjs|js)$": "../test/mjs-transformer.cjs"
     },
+    "transformIgnorePatterns": [
+      "node_modules/(?!.*(?:better-auth|thallesp|better-fetch|better-call|jose|noble|nanostores|rou3))"
+    ],
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!**/*.module.(t|j)s",
+      "!main.(t|j)s",
+      "!generate-openapi.(t|j)s",
+      "!seed-*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
