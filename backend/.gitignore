@@ -1,6 +1,7 @@
 /node_modules
 /dist
 /coverage
+/test_plan.md
 
 # Env files
 .env

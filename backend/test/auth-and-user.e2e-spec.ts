@@ -1,5 +1,3 @@
-import { describe, test, before, after } from 'node:test';
-import assert from 'node:assert';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
@@ -8,7 +6,7 @@ import cookieParser from 'cookie-parser';
 import { PrismaService } from '../src/infrastructure/persistence/prisma/prisma.service';
 import { HttpExceptionFilter } from '../src/presentation/filters/http-exception.filter';
 
-describe('🚀 Auth & User Module Integration Tests', () => {
+describe('🚀 Auth & User Module Integration Tests (Jest E2E)', () => {
   let app: INestApplication;
   let prismaService: PrismaService;
   let cookie: string;
@@ -18,7 +16,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
   const testPassword = 'Password123!';
   const testName = 'Test User Integration';
 
-  before(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -38,7 +36,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
     await app.init();
   });
 
-  after(async () => {
+  afterAll(async () => {
     // Limpiar usuario creado en los tests
     if (userId) {
       try {
@@ -53,7 +51,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
   });
 
   describe('Better Auth Endpoints', () => {
-    test('POST /api/auth/sign-up/email - should register a new user and return user info', async () => {
+    it('POST /api/auth/sign-up/email - should register a new user and return user info', async () => {
       try {
         const res = await request(app.getHttpServer())
           .post('/api/auth/sign-up/email')
@@ -71,14 +69,10 @@ describe('🚀 Auth & User Module Integration Tests', () => {
         );
         console.log('DEBUG sign-up: Cookies are:', res.headers['set-cookie']);
 
-        assert.strictEqual(res.status, 200);
-        assert.ok(res.body.user, 'User object should be returned');
-        assert.strictEqual(
-          res.body.user.email,
-          testEmail,
-          'Email should match',
-        );
-        assert.strictEqual(res.body.user.name, testName, 'Name should match');
+        expect(res.status).toBe(200);
+        expect(res.body.user).toBeDefined();
+        expect(res.body.user.email).toBe(testEmail);
+        expect(res.body.user.name).toBe(testName);
 
         userId = res.body.user.id;
 
@@ -102,7 +96,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
       }
     });
 
-    test('POST /api/auth/sign-in/email - should authenticate and return session cookie', async () => {
+    it('POST /api/auth/sign-in/email - should authenticate and return session cookie', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/auth/sign-in/email')
         .set('Origin', 'http://localhost:5000')
@@ -114,19 +108,19 @@ describe('🚀 Auth & User Module Integration Tests', () => {
       console.log('DEBUG sign-in: Status is:', res.status);
       console.log('DEBUG sign-in: Body is:', JSON.stringify(res.body, null, 2));
 
-      assert.strictEqual(res.status, 200);
-      assert.ok(res.body.user, 'User object should be returned');
+      expect(res.status).toBe(200);
+      expect(res.body.user).toBeDefined();
 
       const cookies = res.headers['set-cookie'] as any as string[];
-      assert.ok(cookies, 'Cookies should be set');
+      expect(cookies).toBeDefined();
       const foundCookie = cookies.find((c: string) =>
         c.startsWith('better-auth.session_token'),
       );
-      assert.ok(foundCookie, 'Better Auth session cookie should be found');
-      cookie = foundCookie;
+      expect(foundCookie).toBeDefined();
+      cookie = foundCookie!;
     });
 
-    test('GET /api/auth/get-session - should return session info when cookie is supplied', async () => {
+    it('GET /api/auth/get-session - should return session info when cookie is supplied', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/auth/get-session')
         .set('Cookie', [cookie]);
@@ -137,77 +131,59 @@ describe('🚀 Auth & User Module Integration Tests', () => {
         JSON.stringify(res.body, null, 2),
       );
 
-      assert.strictEqual(res.status, 200);
-      assert.ok(res.body.session, 'Session object should be returned');
-      assert.ok(res.body.user, 'User object should be returned');
-      assert.strictEqual(res.body.user.email, testEmail, 'Email should match');
+      expect(res.status).toBe(200);
+      expect(res.body.session).toBeDefined();
+      expect(res.body.user).toBeDefined();
+      expect(res.body.user.email).toBe(testEmail);
     });
   });
 
   describe('User Administration Endpoints (CRUD)', () => {
-    test('GET /api/users - should reject unauthorized requests (no session cookie)', async () => {
+    it('GET /api/users - should reject unauthorized requests (no session cookie)', async () => {
       await request(app.getHttpServer()).get('/api/users').expect(401);
     });
 
-    test('GET /api/users - should fetch users list when authenticated', async () => {
+    it('GET /api/users - should fetch users list when authenticated', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/users')
         .set('Cookie', [cookie])
         .expect(200);
 
-      assert.ok(
-        res.body.data,
-        'Paginated response should contain a data field',
-      );
-      assert.ok(
-        res.body.meta,
-        'Paginated response should contain a meta field',
-      );
-      assert.ok(
-        Array.isArray(res.body.data),
-        'Response data should be an array',
-      );
-      assert.ok(
-        res.body.data.length >= 1,
-        'Array should have at least 1 element',
-      );
+      expect(res.body.data).toBeDefined();
+      expect(res.body.meta).toBeDefined();
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data.length).toBeGreaterThanOrEqual(1);
 
       const user = res.body.data.find((u: any) => u.id === userId);
-      assert.ok(user, 'User should be in the list');
-      assert.strictEqual(user.email, testEmail);
+      expect(user).toBeDefined();
+      expect(user.email).toBe(testEmail);
     });
 
-    test('GET /api/users - should fetch paginated users list when page and size are supplied', async () => {
+    it('GET /api/users - should fetch paginated users list when page and size are supplied', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/users?page=1&size=5')
         .set('Cookie', [cookie])
         .expect(200);
 
-      assert.ok(
-        res.body.data,
-        'Paginated response should contain a data field',
-      );
-      assert.ok(
-        res.body.meta,
-        'Paginated response should contain a meta field',
-      );
-      assert.ok(Array.isArray(res.body.data), 'data should be an array');
-      assert.strictEqual(res.body.meta.page, 1);
-      assert.strictEqual(res.body.meta.pageSize, 5);
-      assert.ok(typeof res.body.meta.total === 'number');
+      expect(res.body.data).toBeDefined();
+      expect(res.body.meta).toBeDefined();
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.meta.page).toBe(1);
+      expect(res.body.meta.pageSize).toBe(5);
+      expect(typeof res.body.meta.total).toBe('number');
     });
 
-    test('GET /api/users/:id - should fetch a single user by ID', async () => {
+    it('GET /api/users/:id - should fetch a single user by ID', async () => {
       const res = await request(app.getHttpServer())
         .get(`/api/users/${userId}`)
         .set('Cookie', [cookie])
         .expect(200);
 
-      assert.strictEqual(res.body.id, userId);
-      assert.strictEqual(res.body.email, testEmail);
+      expect(res.body.id).toBe(userId);
+      expect(res.body.email).toBe(testEmail);
     });
 
-    test('PUT /api/users/:id - should update user name', async () => {
+    it('PUT /api/users/:id - should update user name', async () => {
       const updatedName = 'Updated Test Name Integration';
       const res = await request(app.getHttpServer())
         .put(`/api/users/${userId}`)
@@ -217,10 +193,10 @@ describe('🚀 Auth & User Module Integration Tests', () => {
         })
         .expect(200);
 
-      assert.strictEqual(res.body.name, updatedName);
+      expect(res.body.name).toBe(updatedName);
     });
 
-    test('DELETE /api/users/:id - should delete a user', async () => {
+    it('DELETE /api/users/:id - should delete a user', async () => {
       try {
         const tempEmail = `temp-${Date.now()}@example.com`;
         const signUpRes = await request(app.getHttpServer())
@@ -238,7 +214,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
           JSON.stringify(signUpRes.body, null, 2),
         );
 
-        assert.strictEqual(signUpRes.status, 200);
+        expect(signUpRes.status).toBe(200);
         const tempId = signUpRes.body.user.id;
 
         const deleteRes = await request(app.getHttpServer())
@@ -251,7 +227,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
           JSON.stringify(deleteRes.body, null, 2),
         );
 
-        assert.strictEqual(deleteRes.status, 200);
+        expect(deleteRes.status).toBe(200);
 
         const getRes = await request(app.getHttpServer())
           .get(`/api/users/${tempId}`)
@@ -259,7 +235,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
 
         console.log('DEBUG delete verify: Status is:', getRes.status);
 
-        assert.strictEqual(getRes.status, 404);
+        expect(getRes.status).toBe(404);
       } catch (err: any) {
         console.error(
           '💥 Test delete user crashed with error:',
@@ -272,7 +248,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
   });
 
   describe('Sign Out Endpoint', () => {
-    test('POST /api/auth/sign-out - should destroy session', async () => {
+    it('POST /api/auth/sign-out - should destroy session', async () => {
       try {
         const res = await request(app.getHttpServer())
           .post('/api/auth/sign-out')
@@ -285,7 +261,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
           JSON.stringify(res.body, null, 2),
         );
 
-        assert.strictEqual(res.status, 200);
+        expect(res.status).toBe(200);
 
         const sessionRes = await request(app.getHttpServer())
           .get('/api/auth/get-session')
@@ -297,11 +273,7 @@ describe('🚀 Auth & User Module Integration Tests', () => {
           JSON.stringify(sessionRes.body, null, 2),
         );
 
-        assert.strictEqual(
-          sessionRes.body,
-          null,
-          'Session should be null after sign-out',
-        );
+        expect(sessionRes.body).toBeNull();
       } catch (err: any) {
         console.error(
           '💥 Test sign-out crashed with error:',

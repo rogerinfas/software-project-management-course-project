@@ -1,13 +1,21 @@
 {
   "moduleFileExtensions": ["js", "json", "ts", "mjs"],
-  "rootDir": ".",
+  "rootDir": "..",
   "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
+  "testRegex": "test/.*\\.e2e-spec\\.ts$",
   "transform": {
-    "^.+\\.(t|j)sx?$": "ts-jest",
-    "^.+\\.mjs$": "ts-jest"
+    "^.+\\.ts$": "ts-jest",
+    "^.+\\.(mjs|js)$": "./test/mjs-transformer.cjs"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!(better-auth|@thallesp)/)"
-  ]
+    "node_modules/(?!.*(?:better-auth|thallesp|better-fetch|better-call|jose|noble|nanostores|rou3))"
+  ],
+  "collectCoverageFrom": [
+    "src/**/*.(t|j)s",
+    "!src/**/*.module.(t|j)s",
+    "!src/main.(t|j)s",
+    "!src/generate-openapi.(t|j)s",
+    "!src/seed-*.(t|j)s"
+  ],
+  "coverageDirectory": "coverage"
 }
