@@ -18,6 +18,9 @@ import {
 import * as React from "react";
 import { toast } from "sonner";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +28,12 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { backend } from "@/lib/api/types/backend";
+
+const loginSchema = z.object({
+  email: z.string().email("Correo electrónico inválido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  remember: z.boolean().optional(),
+});
 
 function DecoIcon({
   className,
@@ -50,10 +59,17 @@ export function LoginView() {
   const router = useRouter();
   const queryClient = useQueryClient();
   
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
   const [showPass, setShowPass] = React.useState(false);
-  const [remember, setRemember] = React.useState(false);
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      remember: false,
+    },
+  });
+
+  const remember = watch("remember");
 
   // Connection with Better Auth via OpenAPI React Query Mutation
   const loginMutation = backend.useMutation("post", "/api/auth/sign-in/email", {
@@ -71,24 +87,18 @@ export function LoginView() {
     onError: (error: any) => {
       console.error("Login Error details:", error);
       const errorMessage =
-        error && typeof error === "object" && "message" in error
-          ? (error.message as string)
-          : "Credenciales incorrectas o error en el servidor";
+          error && typeof error === "object" && "message" in error
+              ? (error.message as string)
+              : "Credenciales incorrectas o error en el servidor";
       toast.error(errorMessage);
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      toast.warning("Por favor complete todos los campos");
-      return;
-    }
-    
+  const onSubmit = (data: any) => {
     loginMutation.mutate({
       body: {
-        email,
-        password,
+        email: data.email,
+        password: data.password,
       },
     });
   };
@@ -183,27 +193,32 @@ export function LoginView() {
                 </p>
               </div>
 
-              <form className="space-y-6" onSubmit={handleSubmit}>
+              <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                 <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-foreground/90">
+                  <Label htmlFor="login-email" className={cn("text-foreground/90", errors.email && "text-red-500")}>
                     Email
                   </Label>
                   <div className="relative">
-                    <MailIcon className="text-muted-foreground pointer-events-none absolute bottom-2.5 left-0 size-4" />
+                    <MailIcon className={cn("text-muted-foreground pointer-events-none absolute bottom-2.5 left-0 size-4", errors.email && "text-red-400")} />
                     <Input
                       id="login-email"
                       type="email"
                       autoComplete="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      {...register("email")}
                       placeholder="Ingrese su correo electrónico"
-                      className="border-input rounded-none border-0 border-b bg-transparent pl-7 shadow-none ring-0 focus-visible:border-primary focus-visible:ring-0"
+                      className={cn(
+                        "border-input rounded-none border-0 border-b bg-transparent pl-7 shadow-none ring-0 focus-visible:border-primary focus-visible:ring-0",
+                        errors.email && "border-red-500 focus-visible:border-red-500"
+                      )}
                     />
                   </div>
+                  {errors.email && (
+                    <p className="text-red-500 text-xs font-semibold mt-1">{errors.email.message}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="login-pass" className="text-foreground/90">
+                  <Label htmlFor="login-pass" className={cn("text-foreground/90", errors.password && "text-red-500")}>
                     Contraseña
                   </Label>
                   <div className="relative">
@@ -211,10 +226,12 @@ export function LoginView() {
                       id="login-pass"
                       type={showPass ? "text" : "password"}
                       autoComplete="current-password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      {...register("password")}
                       placeholder="Ingrese su contraseña"
-                      className="border-input rounded-none border-0 border-b bg-transparent pr-10 shadow-none ring-0 focus-visible:border-primary focus-visible:ring-0"
+                      className={cn(
+                        "border-input rounded-none border-0 border-b bg-transparent pr-10 shadow-none ring-0 focus-visible:border-primary focus-visible:ring-0",
+                        errors.password && "border-red-500 focus-visible:border-red-500"
+                      )}
                     />
                     <button
                       type="button"
@@ -231,6 +248,9 @@ export function LoginView() {
                       )}
                     </button>
                   </div>
+                  {errors.password && (
+                    <p className="text-red-500 text-xs font-semibold mt-1">{errors.password.message}</p>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between gap-3">
@@ -243,7 +263,7 @@ export function LoginView() {
                   <Switch
                     id="remember"
                     checked={remember}
-                    onCheckedChange={setRemember}
+                    onCheckedChange={(val) => setValue("remember", val)}
                   />
                 </div>
 
