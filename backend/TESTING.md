@@ -1,72 +1,72 @@
-# 🧪 Backend Testing Strategy & Architecture Guide
+# 🧪 Guía de Arquitectura y Estrategia de Pruebas del Backend
 
-This guide describes the testing setup, the migrated Jest integration tests, code coverage reporting, execution commands, and recommended architectural patterns for scaling the backend test suite.
-
----
-
-## 🚀 1. Migrated E2E Integration Tests
-
-We have migrated the legacy Node-native test runner (`node:test`) to **Jest** under the file [`test/auth-and-user.e2e-spec.ts`](file:///home/acide/Escritorio/universidad/software-project-management-course-project/backend/test/auth-and-user.e2e-spec.ts).
-
-### Covered Features
-1. **Authentication (Better Auth):**
-   - Registration (`POST /api/auth/sign-up/email`)
-   - Authentication & session cookie generation (`POST /api/auth/sign-in/email`)
-   - Session retrieval using cookies (`GET /api/auth/get-session`)
-   - Session destruction (`POST /api/auth/sign-out`)
-2. **User Administration (CRUD):**
-   - Access rejection for unauthenticated users (`401 Unauthorized`)
-   - Paginated user list queries (`GET /api/users`) with size & page parameters
-   - Retrieve a single user profile by ID (`GET /api/users/:id`)
-   - Update user properties (`PUT /api/users/:id`)
-   - Delete user profiles (`DELETE /api/users/:id`)
+Esta guía describe la configuración de pruebas, las pruebas de integración migradas a Jest, el reporte de cobertura de código, los comandos de ejecución y los patrones de arquitectura recomendados para escalar la suite de pruebas del backend.
 
 ---
 
-## 📊 2. Execution & Code Coverage
+## 🚀 1. Pruebas de Integración E2E Migradas
 
-Tests are executed in a CommonJS wrapper utilizing a custom transpiler to enable compilation of ESM dependencies like `better-auth`.
+Hemos migrado el ejecutor de pruebas nativo de Node (`node:test`) a **Jest** bajo el archivo [`test/auth-and-user.e2e-spec.ts`](file:///home/acide/Escritorio/universidad/software-project-management-course-project/backend/test/auth-and-user.e2e-spec.ts).
 
-### Commands
+### Funcionalidades Cubiertas
+1. **Autenticación (Better Auth):**
+   - Registro (`POST /api/auth/sign-up/email`)
+   - Autenticación y generación de cookies de sesión (`POST /api/auth/sign-in/email`)
+   - Obtención de sesión usando cookies (`GET /api/auth/get-session`)
+   - Destrucción de sesión (`POST /api/auth/sign-out`)
+2. **Administración de Usuarios (CRUD):**
+   - Rechazo de accesos no autorizados sin cookie de sesión (`401 Unauthorized`)
+   - Obtención paginada de la lista de usuarios (`GET /api/users`) con parámetros de tamaño y página
+   - Obtención de un usuario específico por ID (`GET /api/users/:id`)
+   - Actualización de datos de usuario (`PUT /api/users/:id`)
+   - Eliminación de usuarios (`DELETE /api/users/:id`)
 
-* **Run E2E Tests:**
+---
+
+## 📊 2. Ejecución y Cobertura de Código
+
+Las pruebas se ejecutan en un entorno CommonJS utilizando un transpilador personalizado para permitir la compilación de dependencias ESM puras como `better-auth`.
+
+### Comandos
+
+* **Ejecutar Pruebas E2E:**
   ```bash
   pnpm run test:e2e
   ```
-  *(Runs Jest using config in `test/jest-e2e.json` and automatically issues `--forceExit` to shut down background DB connection pools).*
+  *(Ejecuta Jest usando la configuración en `test/jest-e2e.json` y automáticamente aplica la bandera `--forceExit` para cerrar los pools de conexión a la base de datos).*
 
-* **Run E2E Tests with Coverage:**
+* **Ejecutar Pruebas E2E con Cobertura:**
   ```bash
   pnpm run test:e2e --coverage
   ```
-  *(Runs tests and writes a comprehensive coverage report to the `coverage/` directory).*
+  *(Ejecuta las pruebas y genera un reporte detallado de cobertura en el directorio `coverage/`).*
 
 ---
 
-## 🏛️ 3. Recommended Backend Testing Architecture
+## 🏛️ 3. Arquitectura Recomendada para Pruebas del Backend
 
-To expand coverage and maintain a clean test suite, we recommend dividing tests into three distinct layers matching the NestJS Hexagonal/Clean architecture style of the project:
+Para expandir la cobertura y mantener un conjunto de pruebas limpio, recomendamos dividir las pruebas en tres capas bien diferenciadas, siguiendo el estilo de arquitectura limpia y hexagonal del proyecto:
 
 ```mermaid
 graph TD
-    A[Unit Tests] -->|Focus| B[Domain Entities & Use Cases]
-    C[Integration Tests] -->|Focus| D[Infrastructure & Database Repositories]
-    E[E2E Tests] -->|Focus| F[HTTP Handlers & Controller Endpoints]
+    A[Pruebas Unitarias] -->|Enfocado en| B[Entidades del Dominio y Casos de Uso]
+    C[Pruebas de Integración] -->|Enfocado en| D[Infraestructura y Repositorios de Base de Datos]
+    E[Pruebas E2E] -->|Enfocado en| F[Controladores HTTP y Endpoints]
 ```
 
-### Layer 1: Unit Tests (High Speed, High Coverage)
-- **Target:** Domain Entities (`src/domain/entities`) and Use Cases (`src/application/use-cases`).
-- **Strategy:** Mock all external infrastructure services (e.g. repositories, email providers) using Jest's mocking capabilities (`jest.fn()`).
-- **Goal:** Cover business rules, validation constraints, edge cases, and custom exceptions without opening database connections.
+### Capa 1: Pruebas Unitarias (Alta Velocidad, Alta Cobertura)
+- **Objetivo:** Entidades de Dominio (`src/domain/entities`) y Casos de Uso (`src/application/use-cases`).
+- **Estrategia:** Mockear todos los servicios externos e infraestructura (por ejemplo, repositorios, proveedores de correo) utilizando las capacidades de simulación de Jest (`jest.fn()`).
+- **Meta:** Cubrir reglas de negocio, validaciones, casos límite y excepciones personalizadas sin abrir conexiones a la base de datos.
 
-### Layer 2: Integration Tests (Medium Speed, High Reliability)
-- **Target:** Database Repositories (`src/infrastructure/persistence/prisma/repositories`).
-- **Strategy:** Verify query logic, constraints, and relationships.
-- **Tools:** Use a local test database instance (or a lightweight SQLite in-memory database if schema matches, or Postgres container).
+### Capa 2: Pruebas de Integración (Velocidad Media, Alta Confiabilidad)
+- **Objetivo:** Repositorios de base de datos de Prisma (`src/infrastructure/persistence/prisma/repositories`).
+- **Estrategia:** Verificar la lógica de consultas, restricciones de base de datos y relaciones.
+- **Herramientas:** Usar una instancia de base de datos local de prueba (o contenedores ligeros mediante Testcontainers-postgres).
 
-### Layer 3: End-to-End (E2E) Tests (Low Speed, High Confidence)
-- **Target:** API Gateways/HTTP Layer (`src/presentation/controllers`).
-- **Strategy:** Bootstrapping the entire application container (`AppModule`) using `@nestjs/testing` and firing actual HTTP requests using `supertest`.
-- **Database State Control:** For each test suite run, reset/seed database states. We recommend:
-  - Wrapping tests in a rollback-only database transaction.
-  - Or cleaning up/deleting records in `beforeEach`/`afterEach` hooks (as done in `auth-and-user.e2e-spec.ts`).
+### Capa 3: Pruebas End-to-End (E2E) (Velocidad Baja, Máxima Confianza)
+- **Objetivo:** Capa de controladores y HTTP (`src/presentation/controllers`).
+- **Estrategia:** Levantar el contenedor completo de la aplicación (`AppModule`) mediante `@nestjs/testing` y realizar peticiones HTTP reales usando `supertest`.
+- **Control de Estado de BD:** Limpiar y resetear el estado de la base de datos para cada suite de prueba. Recomendamos:
+  - Envolver las pruebas en transacciones con rollback automático.
+  - O realizar limpieza explícita de registros en hooks `beforeEach`/`afterEach` (como se implementó en `auth-and-user.e2e-spec.ts`).
