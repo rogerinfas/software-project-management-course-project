@@ -2,8 +2,12 @@
 
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import { Sliders, Clock, DollarSign, Save, Loader2, AlertCircle, Sparkles, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,12 +15,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { backend } from "@/lib/api/types/backend";
 
+const ruleSchema = z.object({
+  gracePeriod: z.string().min(1, "El periodo de gracia es requerido").refine((val) => !isNaN(parseInt(val, 10)) && parseInt(val, 10) >= 0, {
+    message: "Tolerancia inválida (debe ser mayor o igual a 0)",
+  }),
+  finePerMinute: z.string().min(1, "La multa es requerida").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, {
+    message: "Multa inválida (debe ser mayor o igual a 0)",
+  }),
+});
+
 export default function RulesPage() {
   const queryClient = useQueryClient();
 
-  // Form states
-  const [gracePeriod, setGracePeriod] = React.useState("5");
-  const [finePerMinute, setFinePerMinute] = React.useState("0.5");
+  // React Hook Form
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
+    resolver: zodResolver(ruleSchema),
+    defaultValues: {
+      gracePeriod: "5",
+      finePerMinute: "0.5",
+    },
+  });
+
+  const gracePeriod = watch("gracePeriod");
+  const finePerMinute = watch("finePerMinute");
 
   // Simulated calculations state
   const [testMinutes, setTestMinutes] = React.useState("15");
@@ -31,10 +52,12 @@ export default function RulesPage() {
   // Sync state with queried data once loaded
   React.useEffect(() => {
     if (rules) {
-      setGracePeriod(String(rules.gracePeriodMinutes));
-      setFinePerMinute(String(rules.finePerMinute));
+      reset({
+        gracePeriod: String(rules.gracePeriodMinutes),
+        finePerMinute: String(rules.finePerMinute),
+      });
     }
-  }, [rules]);
+  }, [rules, reset]);
 
   // Mutations
   const updateMutation = backend.useMutation("put", "/api/staff/rules", {
@@ -49,12 +72,11 @@ export default function RulesPage() {
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmitForm = (data: any) => {
     updateMutation.mutate({
       body: {
-        gracePeriodMinutes: parseInt(gracePeriod, 10),
-        finePerMinute: parseFloat(finePerMinute),
+        gracePeriodMinutes: parseInt(data.gracePeriod, 10),
+        finePerMinute: parseFloat(data.finePerMinute),
       },
     });
   };
@@ -100,7 +122,7 @@ export default function RulesPage() {
                 Cargando políticas de asistencia...
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
                 {/* Minutos de Gracia */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
@@ -111,16 +133,19 @@ export default function RulesPage() {
                   </div>
                   <div className="flex gap-4 items-center">
                     <Clock className="w-5 h-5 text-muted-foreground shrink-0" />
-                    <Input
-                      id="grace"
-                      type="number"
-                      min="0"
-                      max="60"
-                      className="bg-background/50 border-border/40 rounded-xl"
-                      value={gracePeriod}
-                      onChange={(e) => setGracePeriod(e.target.value)}
-                      required
-                    />
+                    <div className="flex-1">
+                      <Input
+                        id="grace"
+                        type="number"
+                        min="0"
+                        max="60"
+                        className={cn("bg-background/50 border-border/40 rounded-xl", errors.gracePeriod && "border-red-500 focus-visible:ring-red-500")}
+                        {...register("gracePeriod")}
+                      />
+                      {errors.gracePeriod?.message && (
+                        <p className="text-red-500 text-xs mt-1">{String(errors.gracePeriod.message)}</p>
+                      )}
+                    </div>
                   </div>
                   <p className="text-[10px] text-muted-foreground/80 leading-relaxed pl-9">
                     Margen de tiempo concedido después de la hora oficial de entrada para que el empleado marque como puntual.
@@ -133,21 +158,24 @@ export default function RulesPage() {
                     <Label htmlFor="fine" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       Costo de Multa por Minuto
                     </Label>
-                    <span className="text-xs font-black text-red-500">S/ {parseFloat(finePerMinute).toFixed(2)}</span>
+                    <span className="text-xs font-black text-red-500">S/ {parseFloat(finePerMinute || "0").toFixed(2)}</span>
                   </div>
-                  <div className="flex gap-4 items-center">
+                   <div className="flex gap-4 items-center">
                     <DollarSign className="w-5 h-5 text-muted-foreground shrink-0" />
-                    <Input
-                      id="fine"
-                      type="number"
-                      step="0.01"
-                      min="0.00"
-                      max="10.00"
-                      className="bg-background/50 border-border/40 rounded-xl"
-                      value={finePerMinute}
-                      onChange={(e) => setFinePerMinute(e.target.value)}
-                      required
-                    />
+                    <div className="flex-1">
+                      <Input
+                        id="fine"
+                        type="number"
+                        step="0.01"
+                        min="0.00"
+                        max="10.00"
+                        className={cn("bg-background/50 border-border/40 rounded-xl", errors.finePerMinute && "border-red-500 focus-visible:ring-red-500")}
+                        {...register("finePerMinute")}
+                      />
+                      {errors.finePerMinute?.message && (
+                        <p className="text-red-500 text-xs mt-1">{String(errors.finePerMinute.message)}</p>
+                      )}
+                    </div>
                   </div>
                   <p className="text-[10px] text-muted-foreground/80 leading-relaxed pl-9">
                     Monto cobrado/deducido por cada minuto transcurrido de tardanza si se supera la tolerancia global.
