@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import {
   Settings,
   Plus,
@@ -17,14 +18,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { backend } from "@/lib/api/types/backend";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
+
+const stageSchema = z.object({
+  name: z.string().min(3, "El nombre de la etapa debe tener al menos 3 caracteres"),
+  order: z.preprocess((val) => Number(val), z.number().int().min(0)),
+});
 
 export default function ConfigPage() {
   const queryClient = useQueryClient();
   
   // State for creating stage
-  const [newStageName, setNewStageName] = React.useState("");
-  const [newStageOrder, setNewStageOrder] = React.useState(0);
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
+
+  // React Hook Form for creating stage
+  const { register, handleSubmit, reset, formState: { errors } } = useForm({
+    resolver: zodResolver(stageSchema),
+    defaultValues: {
+      name: "",
+      order: 0,
+    },
+  });
 
   // State for editing stage
   const [editingStageId, setEditingStageId] = React.useState<string | null>(null);
@@ -38,8 +54,7 @@ export default function ConfigPage() {
   const createMutation = backend.useMutation("post", "/api/admission/stages", {
     onSuccess: () => {
       toast.success("Etapa creada con éxito");
-      setNewStageName("");
-      setNewStageOrder(0);
+      reset();
       setIsCreateOpen(false);
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
@@ -69,13 +84,11 @@ export default function ConfigPage() {
     },
   });
 
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newStageName) return;
+  const handleCreate = (data: any) => {
     createMutation.mutate({
       body: {
-        name: newStageName,
-        order: Number(newStageOrder),
+        name: data.name,
+        order: Number(data.order),
       },
     });
   };
@@ -238,33 +251,37 @@ export default function ConfigPage() {
         {/* Informational Panel or Create stage panel */}
         <div className="bg-card border-border/80 flex flex-col justify-between rounded-xl border p-6 md:col-span-1">
           {isCreateOpen ? (
-            <form onSubmit={handleCreate} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit(handleCreate)} className="flex flex-col gap-4">
               <h3 className="text-foreground text-lg font-semibold">Agregar Nueva Etapa</h3>
               <p className="text-muted-foreground text-xs leading-relaxed">
                 Registra una etapa personalizada para estructurar el embudo de postulaciones.
               </p>
 
               <div className="flex flex-col gap-1.5 mt-2">
-                <Label htmlFor="stage-name">Nombre de Etapa *</Label>
+                <Label htmlFor="stage-name" className={cn(errors.name && "text-red-500")}>Nombre de Etapa *</Label>
                 <Input
                   id="stage-name"
                   placeholder="ej. Examen de Admisión"
-                  value={newStageName}
-                  onChange={(e) => setNewStageName(e.target.value)}
-                  required
+                  {...register("name")}
+                  className={cn(errors.name && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {errors.name?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(errors.name.message)}</p>
+                )}
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="stage-order">Orden numérico *</Label>
+                <Label htmlFor="stage-order" className={cn(errors.order && "text-red-500")}>Orden numérico *</Label>
                 <Input
                   id="stage-order"
                   type="number"
                   placeholder="ej. 3"
-                  value={newStageOrder}
-                  onChange={(e) => setNewStageOrder(Number(e.target.value))}
-                  required
+                  {...register("order")}
+                  className={cn(errors.order && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {errors.order?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(errors.order.message)}</p>
+                )}
               </div>
 
               <div className="mt-4 flex items-center justify-end gap-3">
