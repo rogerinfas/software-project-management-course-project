@@ -27,6 +27,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { backend } from "@/lib/api/types/backend";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
+
+const announcementSchema = z.object({
+  title: z.string().min(5, "El título debe tener al menos 5 caracteres"),
+  content: z.string().min(10, "El contenido debe tener al menos 10 caracteres"),
+  category: z.string().min(1, "La categoría es obligatoria"),
+  expiresAt: z.string().optional().or(z.literal("")),
+});
+
 export default function AnnouncementsPage() {
   const queryClient = useQueryClient();
 
@@ -34,20 +46,38 @@ export default function AnnouncementsPage() {
   const [search, setSearch] = React.useState("");
   const [categoryFilter, setCategoryFilter] = React.useState("ALL");
 
-  // Create Announcement Dialog
+  // Dialog open state
   const [newOpen, setNewOpen] = React.useState(false);
-  const [nTitle, setNTitle] = React.useState("");
-  const [nContent, setNContent] = React.useState("");
-  const [nCategory, setNCategory] = React.useState("Informativo");
-  const [nExpiresAt, setNExpiresAt] = React.useState("");
-
-  // Edit State
   const [editOpen, setEditOpen] = React.useState(false);
   const [editId, setEditId] = React.useState<string | null>(null);
-  const [eTitle, setETitle] = React.useState("");
-  const [eContent, setEContent] = React.useState("");
-  const [eCategory, setECategory] = React.useState("Informativo");
-  const [eExpiresAt, setEExpiresAt] = React.useState("");
+
+  // React Hook Form for creation
+  const createForm = useForm({
+    resolver: zodResolver(announcementSchema),
+    defaultValues: {
+      title: "",
+      content: "",
+      category: "Informativo",
+      expiresAt: "",
+    },
+  });
+  const { formState: { errors: createErrors } } = createForm;
+
+  const nCategory = createForm.watch("category");
+
+  // React Hook Form for edit
+  const editForm = useForm({
+    resolver: zodResolver(announcementSchema),
+    defaultValues: {
+      title: "",
+      content: "",
+      category: "Informativo",
+      expiresAt: "",
+    },
+  });
+  const { formState: { errors: editErrors } } = editForm;
+
+  const eCategory = editForm.watch("category");
 
   // Queries
   const { data: communications, isLoading } = backend.useQuery(
@@ -67,10 +97,7 @@ export default function AnnouncementsPage() {
   const createMutation = backend.useMutation("post", "/api/academic/communications", {
     onSuccess: () => {
       toast.success("Comunicado publicado con éxito");
-      setNTitle("");
-      setNContent("");
-      setNCategory("Informativo");
-      setNExpiresAt("");
+      createForm.reset();
       setNewOpen(false);
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/communications"] });
     },
@@ -101,36 +128,34 @@ export default function AnnouncementsPage() {
     },
   });
 
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nTitle.trim() || !nContent.trim()) {
+  const handleCreate = (data: any) => {
+    if (!data.title.trim() || !data.content.trim()) {
       toast.error("El título y el contenido son obligatorios");
       return;
     }
     createMutation.mutate({
       body: {
-        title: nTitle,
-        content: nContent,
-        category: nCategory,
-        expiresAt: nExpiresAt ? new Date(nExpiresAt).toISOString() : null,
+        title: data.title,
+        content: data.content,
+        category: data.category,
+        expiresAt: data.expiresAt ? new Date(data.expiresAt).toISOString() : null,
       } as any,
     });
   };
 
-  const handleUpdateSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpdateSubmit = (data: any) => {
     if (!editId) return;
-    if (!eTitle.trim() || !eContent.trim()) {
+    if (!data.title.trim() || !data.content.trim()) {
       toast.error("El título y el contenido son obligatorios");
       return;
     }
     updateMutation.mutate({
       params: { path: { id: editId } },
       body: {
-        title: eTitle,
-        content: eContent,
-        category: eCategory,
-        expiresAt: eExpiresAt ? new Date(eExpiresAt).toISOString() : null,
+        title: data.title,
+        content: data.content,
+        category: data.category,
+        expiresAt: data.expiresAt ? new Date(data.expiresAt).toISOString() : null,
       } as any,
     });
   };
@@ -143,10 +168,12 @@ export default function AnnouncementsPage() {
 
   const startEdit = (c: any) => {
     setEditId(c.id);
-    setETitle(c.title);
-    setEContent(c.content);
-    setECategory(c.category);
-    setEExpiresAt(c.expiresAt ? new Date(c.expiresAt).toISOString().split("T")[0] : "");
+    editForm.reset({
+      title: c.title,
+      content: c.content,
+      category: c.category,
+      expiresAt: c.expiresAt ? new Date(c.expiresAt).toISOString().split("T")[0] : "",
+    });
     setEditOpen(true);
   };
 
@@ -300,34 +327,40 @@ export default function AnnouncementsPage() {
           <DialogHeader>
             <DialogTitle>Crear Comunicado</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleCreate} className="space-y-4">
+          <form onSubmit={createForm.handleSubmit(handleCreate)} className="space-y-4">
             <div className="space-y-3">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="title">Título *</Label>
+                <Label htmlFor="title" className={cn(createErrors.title && "text-red-500")}>Título *</Label>
                 <Input
                   id="title"
-                  value={nTitle}
-                  onChange={(e) => setNTitle(e.target.value)}
+                  {...createForm.register("title")}
                   placeholder="ej. Comunicado de matrícula extemporánea"
-                  required
+                  className={cn(createErrors.title && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {createErrors.title?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.title.message)}</p>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="content">Contenido del Comunicado *</Label>
+                <Label htmlFor="content" className={cn(createErrors.content && "text-red-500")}>Contenido del Comunicado *</Label>
                 <Textarea
                   id="content"
-                  value={nContent}
-                  onChange={(e) => setNContent(e.target.value)}
+                  {...createForm.register("content")}
                   placeholder="Escribe el cuerpo del mensaje..."
-                  className="min-h-[120px]"
-                  required
+                  className={cn("min-h-[120px]", createErrors.content && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {createErrors.content?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.content.message)}</p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="category">Categoría</Label>
-                  <Select value={nCategory} onValueChange={(val) => setNCategory(val ?? "Informativo")}>
-                    <SelectTrigger id="category">
+                  <Label htmlFor="category" className={cn(createErrors.category && "text-red-500")}>Categoría</Label>
+                  <Select value={nCategory} onValueChange={(val) => {
+                    createForm.setValue("category", val ?? "Informativo");
+                    createForm.clearErrors("category");
+                  }}>
+                    <SelectTrigger id="category" className={cn(createErrors.category && "border-red-500 focus:ring-red-500")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -336,15 +369,21 @@ export default function AnnouncementsPage() {
                       <SelectItem value="Evento">Evento</SelectItem>
                     </SelectContent>
                   </Select>
+                  {createErrors.category?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.category.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="expires">Vencimiento (Opcional)</Label>
+                  <Label htmlFor="expires" className={cn(createErrors.expiresAt && "text-red-500")}>Vencimiento (Opcional)</Label>
                   <Input
                     id="expires"
                     type="date"
-                    value={nExpiresAt}
-                    onChange={(e) => setNExpiresAt(e.target.value)}
+                    {...createForm.register("expiresAt")}
+                    className={cn(createErrors.expiresAt && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {createErrors.expiresAt?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.expiresAt.message)}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -366,32 +405,38 @@ export default function AnnouncementsPage() {
           <DialogHeader>
             <DialogTitle>Editar Comunicado</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdateSubmit} className="space-y-4">
+          <form onSubmit={editForm.handleSubmit(handleUpdateSubmit)} className="space-y-4">
             <div className="space-y-3">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="edit-title">Título *</Label>
+                <Label htmlFor="edit-title" className={cn(editErrors.title && "text-red-500")}>Título *</Label>
                 <Input
                   id="edit-title"
-                  value={eTitle}
-                  onChange={(e) => setETitle(e.target.value)}
-                  required
+                  {...editForm.register("title")}
+                  className={cn(editErrors.title && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {editErrors.title?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(editErrors.title.message)}</p>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="edit-content">Contenido del Comunicado *</Label>
+                <Label htmlFor="edit-content" className={cn(editErrors.content && "text-red-500")}>Contenido del Comunicado *</Label>
                 <Textarea
                   id="edit-content"
-                  value={eContent}
-                  onChange={(e) => setEContent(e.target.value)}
-                  className="min-h-[120px]"
-                  required
+                  {...editForm.register("content")}
+                  className={cn("min-h-[120px]", editErrors.content && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {editErrors.content?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(editErrors.content.message)}</p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="edit-category">Categoría</Label>
-                  <Select value={eCategory} onValueChange={(val) => setECategory(val ?? "Informativo")}>
-                    <SelectTrigger id="edit-category">
+                  <Label htmlFor="edit-category" className={cn(editErrors.category && "text-red-500")}>Categoría</Label>
+                  <Select value={eCategory} onValueChange={(val) => {
+                    editForm.setValue("category", val ?? "Informativo");
+                    editForm.clearErrors("category");
+                  }}>
+                    <SelectTrigger id="edit-category" className={cn(editErrors.category && "border-red-500 focus:ring-red-500")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -400,15 +445,21 @@ export default function AnnouncementsPage() {
                       <SelectItem value="Evento">Evento</SelectItem>
                     </SelectContent>
                   </Select>
+                  {editErrors.category?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.category.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="edit-expires">Vencimiento (Opcional)</Label>
+                  <Label htmlFor="edit-expires" className={cn(editErrors.expiresAt && "text-red-500")}>Vencimiento (Opcional)</Label>
                   <Input
                     id="edit-expires"
                     type="date"
-                    value={eExpiresAt}
-                    onChange={(e) => setEExpiresAt(e.target.value)}
+                    {...editForm.register("expiresAt")}
+                    className={cn(editErrors.expiresAt && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {editErrors.expiresAt?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.expiresAt.message)}</p>
+                  )}
                 </div>
               </div>
             </div>
