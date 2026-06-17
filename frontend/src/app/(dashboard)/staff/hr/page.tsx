@@ -2,6 +2,10 @@
 
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
 import { UserPlus, Pencil, Trash2, ShieldAlert, Award, Briefcase, Clock, FileText, Search, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -15,6 +19,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { backend } from "@/lib/api/types/backend";
 
+const hrSchema = z.object({
+  userId: z.string().optional(),
+  specialty: z.string().min(2, "La especialidad debe tener al menos 2 caracteres"),
+  cvUrl: z.string().url("CV URL debe ser una URL válida").or(z.literal("")),
+  entryTime: z.string().min(1, "Hora de entrada es requerida"),
+  exitTime: z.string().min(1, "Hora de salida es requerida"),
+  gracePeriod: z.string().min(1, "Tiempo de tolerancia es requerido").refine((val) => !isNaN(parseInt(val, 10)) && parseInt(val, 10) >= 0, {
+    message: "Tolerancia inválida (debe ser mayor o igual a 0)",
+  }),
+});
+
 export default function HrPage() {
   const queryClient = useQueryClient();
 
@@ -25,21 +40,48 @@ export default function HrPage() {
   const [createOpen, setCreateOpen] = React.useState(false);
   const [editOpen, setEditOpen] = React.useState(false);
 
-  // Form states
-  const [selectedUserId, setSelectedUserId] = React.useState("");
-  const [specialty, setSpecialty] = React.useState("");
-  const [cvUrl, setCvUrl] = React.useState("");
-  const [entryTime, setEntryTime] = React.useState("08:00");
-  const [exitTime, setExitTime] = React.useState("16:00");
-  const [gracePeriod, setGracePeriod] = React.useState("5");
+  // React Hook Form for creation
+  const createForm = useForm({
+    resolver: zodResolver(hrSchema),
+    defaultValues: {
+      userId: "",
+      specialty: "",
+      cvUrl: "",
+      entryTime: "08:00",
+      exitTime: "16:00",
+      gracePeriod: "5",
+    },
+  });
+  const { formState: { errors: createErrors } } = createForm;
 
-  // Edit form states
+  const selectedUserId = createForm.watch("userId");
+  const specialty = createForm.watch("specialty");
+  const cvUrl = createForm.watch("cvUrl");
+  const entryTime = createForm.watch("entryTime");
+  const exitTime = createForm.watch("exitTime");
+  const gracePeriod = createForm.watch("gracePeriod");
+
+  // React Hook Form for edit
+  const editForm = useForm({
+    resolver: zodResolver(hrSchema),
+    defaultValues: {
+      specialty: "",
+      cvUrl: "",
+      entryTime: "08:00",
+      exitTime: "16:00",
+      gracePeriod: "5",
+    },
+  });
+  const { formState: { errors: editErrors } } = editForm;
+
+  const editSpecialty = editForm.watch("specialty");
+  const editCvUrl = editForm.watch("cvUrl");
+  const editEntryTime = editForm.watch("entryTime");
+  const editExitTime = editForm.watch("exitTime");
+  const editGracePeriod = editForm.watch("gracePeriod");
+
+  // Edit profile state
   const [editId, setEditId] = React.useState<string | null>(null);
-  const [editSpecialty, setEditSpecialty] = React.useState("");
-  const [editCvUrl, setEditCvUrl] = React.useState("");
-  const [editEntryTime, setEditEntryTime] = React.useState("08:00");
-  const [editExitTime, setEditExitTime] = React.useState("16:00");
-  const [editGracePeriod, setEditGracePeriod] = React.useState("5");
 
   // Queries
   const { data: staffList, isLoading: loadingStaff } = backend.useQuery(
@@ -58,17 +100,12 @@ export default function HrPage() {
   const createMutation = backend.useMutation("post", "/api/staff/profiles", {
     onSuccess: () => {
       toast.success("Perfil de personal creado con éxito");
+      createForm.reset();
       setCreateOpen(false);
-      setSelectedUserId("");
-      setSpecialty("");
-      setCvUrl("");
-      setEntryTime("08:00");
-      setExitTime("16:00");
-      setGracePeriod("5");
       queryClient.invalidateQueries({ queryKey: ["get", "/api/staff/profiles"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al registrar el personal");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -80,7 +117,7 @@ export default function HrPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/staff/profiles"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar el personal");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -90,7 +127,7 @@ export default function HrPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/staff/profiles"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar el personal");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -126,46 +163,46 @@ export default function HrPage() {
 
   const handleEditClick = (staff: any) => {
     setEditId(staff.id);
-    setEditSpecialty(staff.specialty);
-    setEditCvUrl(staff.cvUrl || "");
-    setEditEntryTime(staff.entryTime);
-    setEditExitTime(staff.exitTime);
-    setEditGracePeriod(String(staff.gracePeriod));
+    editForm.reset({
+      specialty: staff.specialty,
+      cvUrl: staff.cvUrl || "",
+      entryTime: staff.entryTime,
+      exitTime: staff.exitTime,
+      gracePeriod: String(staff.gracePeriod),
+    });
     setEditOpen(true);
   };
 
-  const handleCreateSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedUserId || !specialty) {
+  const handleCreateSubmit = (data: any) => {
+    if (!data.userId || !data.specialty) {
       toast.error("Por favor, rellene todos los campos obligatorios");
       return;
     }
     createMutation.mutate({
       body: {
-        userId: selectedUserId,
-        specialty,
-        cvUrl: cvUrl || undefined,
-        entryTime,
-        exitTime,
-        gracePeriod: parseInt(gracePeriod, 10),
+        userId: data.userId,
+        specialty: data.specialty,
+        cvUrl: data.cvUrl || undefined,
+        entryTime: data.entryTime,
+        exitTime: data.exitTime,
+        gracePeriod: parseInt(data.gracePeriod, 10),
       },
     });
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editId || !editSpecialty) {
+  const handleEditSubmit = (data: any) => {
+    if (!editId || !data.specialty) {
       toast.error("Por favor, rellene todos los campos obligatorios");
       return;
     }
     updateMutation.mutate({
       params: { path: { id: editId } },
       body: {
-        specialty: editSpecialty,
-        cvUrl: editCvUrl || undefined,
-        entryTime: editEntryTime,
-        exitTime: editExitTime,
-        gracePeriod: parseInt(editGracePeriod, 10),
+        specialty: data.specialty,
+        cvUrl: data.cvUrl || undefined,
+        entryTime: data.entryTime,
+        exitTime: data.exitTime,
+        gracePeriod: parseInt(data.gracePeriod, 10),
       },
     });
   };
@@ -352,11 +389,14 @@ export default function HrPage() {
               Registrar Perfil de Personal
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleCreateSubmit} className="space-y-4 pt-2">
+          <form onSubmit={createForm.handleSubmit(handleCreateSubmit)} className="space-y-4 pt-2">
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Asignar a Usuario Registrado</Label>
-              <Select value={selectedUserId} onValueChange={(val) => setSelectedUserId(val || "")}>
-                <SelectTrigger className="bg-background/50 border-border/40">
+              <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", createErrors.userId && "text-red-500")}>Asignar a Usuario Registrado</Label>
+              <Select value={selectedUserId} onValueChange={(val) => {
+                createForm.setValue("userId", val || "");
+                createForm.clearErrors("userId");
+              }}>
+                <SelectTrigger className={cn("bg-background/50 border-border/40", createErrors.userId && "border-red-500 focus:ring-red-500")}>
                   <SelectValue placeholder="Seleccione un usuario de la lista..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -373,57 +413,66 @@ export default function HrPage() {
                   )}
                 </SelectContent>
               </Select>
+              {createErrors.userId?.message && (
+                <p className="text-red-500 text-xs mt-0.5">{String(createErrors.userId.message)}</p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Especialidad / Cargo</Label>
+              <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", createErrors.specialty && "text-red-500")}>Especialidad / Cargo</Label>
               <Input
                 placeholder="Ej. Docente de Ciencias, Asistente Contable"
-                className="bg-background/50 border-border/40"
-                value={specialty}
-                onChange={(e) => setSpecialty(e.target.value)}
-                required
+                className={cn("bg-background/50 border-border/40", createErrors.specialty && "border-red-500 focus-visible:ring-red-500")}
+                {...createForm.register("specialty")}
               />
+              {createErrors.specialty?.message && (
+                <p className="text-red-500 text-xs mt-0.5">{String(createErrors.specialty.message)}</p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">URL Expediente CV (Opcional)</Label>
+              <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", createErrors.cvUrl && "text-red-500")}>URL Expediente CV (Opcional)</Label>
               <Input
                 placeholder="https://drive.google.com/..."
-                className="bg-background/50 border-border/40"
-                value={cvUrl}
-                onChange={(e) => setCvUrl(e.target.value)}
+                className={cn("bg-background/50 border-border/40", createErrors.cvUrl && "border-red-500 focus-visible:ring-red-500")}
+                {...createForm.register("cvUrl")}
               />
+              {createErrors.cvUrl?.message && (
+                <p className="text-red-500 text-xs mt-0.5">{String(createErrors.cvUrl.message)}</p>
+              )}
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Entrada (HH:mm)</Label>
+                <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", createErrors.entryTime && "text-red-500")}>Entrada (HH:mm)</Label>
                 <Input
-                  className="bg-background/50 border-border/40"
-                  value={entryTime}
-                  onChange={(e) => setEntryTime(e.target.value)}
-                  required
+                  className={cn("bg-background/50 border-border/40", createErrors.entryTime && "border-red-500 focus-visible:ring-red-500")}
+                  {...createForm.register("entryTime")}
                 />
+                {createErrors.entryTime?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.entryTime.message)}</p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Salida (HH:mm)</Label>
+                <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", createErrors.exitTime && "text-red-500")}>Salida (HH:mm)</Label>
                 <Input
-                  className="bg-background/50 border-border/40"
-                  value={exitTime}
-                  onChange={(e) => setExitTime(e.target.value)}
-                  required
+                  className={cn("bg-background/50 border-border/40", createErrors.exitTime && "border-red-500 focus-visible:ring-red-500")}
+                  {...createForm.register("exitTime")}
                 />
+                {createErrors.exitTime?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.exitTime.message)}</p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Gracia (min)</Label>
+                <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", createErrors.gracePeriod && "text-red-500")}>Gracia (min)</Label>
                 <Input
                   type="number"
-                  className="bg-background/50 border-border/40"
-                  value={gracePeriod}
-                  onChange={(e) => setGracePeriod(e.target.value)}
-                  required
+                  className={cn("bg-background/50 border-border/40", createErrors.gracePeriod && "border-red-500 focus-visible:ring-red-500")}
+                  {...createForm.register("gracePeriod")}
                 />
+                {createErrors.gracePeriod?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.gracePeriod.message)}</p>
+                )}
               </div>
             </div>
 
@@ -456,50 +505,61 @@ export default function HrPage() {
               Editar Perfil de Personal
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleEditSubmit} className="space-y-4 pt-2">
+          <form onSubmit={editForm.handleSubmit(handleEditSubmit)} className="space-y-4 pt-2">
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Especialidad / Cargo</Label>
+              <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", editErrors.specialty && "text-red-500")}>Especialidad / Cargo</Label>
               <Input
-                value={editSpecialty}
-                onChange={(e) => setEditSpecialty(e.target.value)}
-                required
+                {...editForm.register("specialty")}
+                className={cn(editErrors.specialty && "border-red-500 focus-visible:ring-red-500")}
               />
+              {editErrors.specialty?.message && (
+                <p className="text-red-500 text-xs mt-0.5">{String(editErrors.specialty.message)}</p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">URL Expediente CV (Opcional)</Label>
+              <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", editErrors.cvUrl && "text-red-500")}>URL Expediente CV (Opcional)</Label>
               <Input
                 placeholder="https://drive.google.com/..."
-                value={editCvUrl}
-                onChange={(e) => setEditCvUrl(e.target.value)}
+                {...editForm.register("cvUrl")}
+                className={cn(editErrors.cvUrl && "border-red-500 focus-visible:ring-red-500")}
               />
+              {editErrors.cvUrl?.message && (
+                <p className="text-red-500 text-xs mt-0.5">{String(editErrors.cvUrl.message)}</p>
+              )}
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Entrada (HH:mm)</Label>
+                <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", editErrors.entryTime && "text-red-500")}>Entrada (HH:mm)</Label>
                 <Input
-                  value={editEntryTime}
-                  onChange={(e) => setEditEntryTime(e.target.value)}
-                  required
+                  {...editForm.register("entryTime")}
+                  className={cn(editErrors.entryTime && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {editErrors.entryTime?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(editErrors.entryTime.message)}</p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Salida (HH:mm)</Label>
+                <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", editErrors.exitTime && "text-red-500")}>Salida (HH:mm)</Label>
                 <Input
-                  value={editExitTime}
-                  onChange={(e) => setEditExitTime(e.target.value)}
-                  required
+                  {...editForm.register("exitTime")}
+                  className={cn(editErrors.exitTime && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {editErrors.exitTime?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(editErrors.exitTime.message)}</p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Gracia (min)</Label>
+                <Label className={cn("text-xs font-bold uppercase tracking-wider text-muted-foreground", editErrors.gracePeriod && "text-red-500")}>Gracia (min)</Label>
                 <Input
                   type="number"
-                  value={editGracePeriod}
-                  onChange={(e) => setEditGracePeriod(e.target.value)}
-                  required
+                  {...editForm.register("gracePeriod")}
+                  className={cn(editErrors.gracePeriod && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {editErrors.gracePeriod?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(editErrors.gracePeriod.message)}</p>
+                )}
               </div>
             </div>
 

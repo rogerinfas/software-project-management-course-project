@@ -33,6 +33,28 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { backend } from "@/lib/api/types/backend";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
+
+const bulkSchema = z.object({
+  tariffId: z.string().min(1, "Selecciona una tarifa"),
+  dueDate: z.string().min(1, "Fecha de vencimiento es requerida"),
+});
+
+const singleSchema = z.object({
+  studentId: z.string().min(1, "Selecciona un estudiante"),
+  tariffId: z.string().min(1, "Selecciona una tarifa"),
+  dueDate: z.string().min(1, "Fecha de vencimiento es requerida"),
+});
+
+const paymentSchema = z.object({
+  amount: z.string().min(1, "Monto es requerido").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
+    message: "El monto debe ser un número válido mayor a 0",
+  }),
+  method: z.enum(["CASH", "CARD", "TRANSFER"]),
+});
 
 export default function CollectionsPage() {
   const queryClient = useQueryClient();
@@ -43,20 +65,42 @@ export default function CollectionsPage() {
 
   // Bulk charges dialog
   const [bulkOpen, setBulkOpen] = React.useState(false);
-  const [bulkTariffId, setBulkTariffId] = React.useState("");
-  const [bulkDueDate, setBulkDueDate] = React.useState("");
 
   // Direct charge dialog
   const [singleOpen, setSingleOpen] = React.useState(false);
-  const [sStudentId, setSStudentId] = React.useState("");
-  const [sTariffId, setSTariffId] = React.useState("");
-  const [sDueDate, setSDueDate] = React.useState("");
 
   // Register payment inline dialog
   const [payOpen, setPayOpen] = React.useState(false);
   const [payCharge, setPayCharge] = React.useState<any>(null);
-  const [payAmount, setPayAmount] = React.useState("");
-  const [payMethod, setPayMethod] = React.useState<"CASH" | "CARD" | "TRANSFER">("CASH");
+
+  // React Hook Form setup
+  const bulkForm = useForm({
+    resolver: zodResolver(bulkSchema),
+    defaultValues: {
+      tariffId: "",
+      dueDate: "",
+    },
+  });
+  const { formState: { errors: bulkErrors } } = bulkForm;
+
+  const singleForm = useForm({
+    resolver: zodResolver(singleSchema),
+    defaultValues: {
+      studentId: "",
+      tariffId: "",
+      dueDate: "",
+    },
+  });
+  const { formState: { errors: singleErrors } } = singleForm;
+
+  const paymentForm = useForm({
+    resolver: zodResolver(paymentSchema),
+    defaultValues: {
+      amount: "",
+      method: "CASH" as "CASH" | "CARD" | "TRANSFER",
+    },
+  });
+  const { formState: { errors: paymentErrors } } = paymentForm;
 
   // Queries
   const { data: charges, isLoading: loadingCharges } = backend.useQuery(
@@ -96,12 +140,11 @@ export default function CollectionsPage() {
     onSuccess: (res: any) => {
       toast.success(`Cargos masivos generados con éxito: ${res.count || 0} alumnos cobrados.`);
       setBulkOpen(false);
-      setBulkTariffId("");
-      setBulkDueDate("");
+      bulkForm.reset();
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/charges"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al generar cargos masivos");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -109,13 +152,11 @@ export default function CollectionsPage() {
     onSuccess: () => {
       toast.success("Cargo registrado de forma individual");
       setSingleOpen(false);
-      setSStudentId("");
-      setSTariffId("");
-      setSDueDate("");
+      singleForm.reset();
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/charges"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al crear cargo");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -125,7 +166,7 @@ export default function CollectionsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/charges"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar cargo");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -134,53 +175,49 @@ export default function CollectionsPage() {
       toast.success("Pago registrado correctamente");
       setPayOpen(false);
       setPayCharge(null);
-      setPayAmount("");
-      setPayMethod("CASH");
+      paymentForm.reset();
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/charges"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/payments"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al registrar pago");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
-  const handleBulkSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!bulkTariffId) {
+  const handleBulkSubmit = (data: { tariffId: string; dueDate: string }) => {
+    if (!data.tariffId) {
       toast.error("Selecciona un concepto tarifario");
       return;
     }
     generateBulkMutation.mutate({
       body: {
-        tariffId: bulkTariffId,
-        dueDate: bulkDueDate ? new Date(bulkDueDate).toISOString() : undefined,
+        tariffId: data.tariffId,
+        dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined,
       },
     });
   };
 
-  const handleSingleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!sStudentId || !sTariffId) {
+  const handleSingleSubmit = (data: { studentId: string; tariffId: string; dueDate: string }) => {
+    if (!data.studentId || !data.tariffId) {
       toast.error("Selecciona estudiante y concepto tarifario");
       return;
     }
     createSingleMutation.mutate({
       body: {
-        studentId: sStudentId,
-        tariffId: sTariffId,
-        dueDate: sDueDate ? new Date(sDueDate).toISOString() : undefined,
+        studentId: data.studentId,
+        tariffId: data.tariffId,
+        dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined,
       },
     });
   };
 
-  const handlePaymentSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!payCharge || !payAmount) return;
+  const handlePaymentSubmit = (data: { amount: string; method: "CASH" | "CARD" | "TRANSFER" }) => {
+    if (!payCharge || !data.amount) return;
     registerPaymentMutation.mutate({
       body: {
         chargeId: payCharge.id,
-        amount: parseFloat(payAmount),
-        method: payMethod,
+        amount: parseFloat(data.amount),
+        method: data.method,
       },
     });
   };
@@ -398,7 +435,7 @@ export default function CollectionsPage() {
                               <Button
                                 onClick={() => {
                                   setPayCharge(charge);
-                                  setPayAmount(charge.pendingAmount.toString());
+                                  paymentForm.setValue("amount", charge.pendingAmount.toString());
                                   setPayOpen(true);
                                 }}
                                 className="h-7 px-3 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white"
@@ -436,11 +473,14 @@ export default function CollectionsPage() {
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Generación de Cargos Masivos</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleBulkSubmit} className="space-y-4 pt-2">
+          <form onSubmit={bulkForm.handleSubmit(handleBulkSubmit)} className="space-y-4 pt-2">
             <div className="space-y-2">
-              <Label>Concepto Tarifario a Cobrar</Label>
-              <Select value={bulkTariffId} onValueChange={(val) => setBulkTariffId(val || "")}>
-                <SelectTrigger className="h-9">
+              <Label className={cn(bulkErrors.tariffId && "text-red-500")}>Concepto Tarifario a Cobrar</Label>
+              <Select value={bulkForm.watch("tariffId")} onValueChange={(val) => {
+                bulkForm.setValue("tariffId", val || "");
+                bulkForm.clearErrors("tariffId");
+              }}>
+                <SelectTrigger className={cn("h-9", bulkErrors.tariffId && "border-red-500 focus:ring-red-500")}>
                   <SelectValue placeholder="Selecciona una tarifa" />
                 </SelectTrigger>
                 <SelectContent>
@@ -451,17 +491,21 @@ export default function CollectionsPage() {
                   ))}
                 </SelectContent>
               </Select>
+              {bulkErrors.tariffId?.message && (
+                <p className="text-red-500 text-xs mt-1">{String(bulkErrors.tariffId.message)}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bulk-due-date">Fecha de Vencimiento</Label>
+              <Label htmlFor="bulk-due-date" className={cn(bulkErrors.dueDate && "text-red-500")}>Fecha de Vencimiento</Label>
               <Input
                 id="bulk-due-date"
                 type="date"
-                value={bulkDueDate}
-                onChange={(e) => setBulkDueDate(e.target.value)}
-                required
-                className="h-9"
+                {...bulkForm.register("dueDate")}
+                className={cn("h-9", bulkErrors.dueDate && "border-red-500 focus-visible:ring-red-500")}
               />
+              {bulkErrors.dueDate?.message && (
+                <p className="text-red-500 text-xs mt-1">{String(bulkErrors.dueDate.message)}</p>
+              )}
             </div>
             <div className="p-3 bg-muted border border-border rounded-xl text-xs text-muted-foreground leading-relaxed">
               <strong>Nota Importante:</strong> Se generará un cargo financiero individual para todos los estudiantes matriculados en el nivel académico correspondiente al concepto seleccionado.
@@ -493,11 +537,14 @@ export default function CollectionsPage() {
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Generar Cargo Individual</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSingleSubmit} className="space-y-4 pt-2">
+          <form onSubmit={singleForm.handleSubmit(handleSingleSubmit)} className="space-y-4 pt-2">
             <div className="space-y-2">
-              <Label>Selecciona Alumno</Label>
-              <Select value={sStudentId} onValueChange={(val) => setSStudentId(val || "")}>
-                <SelectTrigger className="h-9">
+              <Label className={cn(singleErrors.studentId && "text-red-500")}>Selecciona Alumno</Label>
+              <Select value={singleForm.watch("studentId")} onValueChange={(val) => {
+                singleForm.setValue("studentId", val || "");
+                singleForm.clearErrors("studentId");
+              }}>
+                <SelectTrigger className={cn("h-9", singleErrors.studentId && "border-red-500 focus:ring-red-500")}>
                   <SelectValue placeholder="Buscar estudiante" />
                 </SelectTrigger>
                 <SelectContent>
@@ -508,11 +555,17 @@ export default function CollectionsPage() {
                   ))}
                 </SelectContent>
               </Select>
+              {singleErrors.studentId?.message && (
+                <p className="text-red-500 text-xs mt-1">{String(singleErrors.studentId.message)}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label>Concepto Tarifario</Label>
-              <Select value={sTariffId} onValueChange={(val) => setSTariffId(val || "")}>
-                <SelectTrigger className="h-9">
+              <Label className={cn(singleErrors.tariffId && "text-red-500")}>Concepto Tarifario</Label>
+              <Select value={singleForm.watch("tariffId")} onValueChange={(val) => {
+                singleForm.setValue("tariffId", val || "");
+                singleForm.clearErrors("tariffId");
+              }}>
+                <SelectTrigger className={cn("h-9", singleErrors.tariffId && "border-red-500 focus:ring-red-500")}>
                   <SelectValue placeholder="Concepto de cobro" />
                 </SelectTrigger>
                 <SelectContent>
@@ -523,17 +576,21 @@ export default function CollectionsPage() {
                   ))}
                 </SelectContent>
               </Select>
+              {singleErrors.tariffId?.message && (
+                <p className="text-red-500 text-xs mt-1">{String(singleErrors.tariffId.message)}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="single-due-date">Fecha de Vencimiento</Label>
+              <Label htmlFor="single-due-date" className={cn(singleErrors.dueDate && "text-red-500")}>Fecha de Vencimiento</Label>
               <Input
                 id="single-due-date"
                 type="date"
-                value={sDueDate}
-                onChange={(e) => setSDueDate(e.target.value)}
-                required
-                className="h-9"
+                {...singleForm.register("dueDate")}
+                className={cn("h-9", singleErrors.dueDate && "border-red-500 focus-visible:ring-red-500")}
               />
+              {singleErrors.dueDate?.message && (
+                <p className="text-red-500 text-xs mt-1">{String(singleErrors.dueDate.message)}</p>
+              )}
             </div>
             <DialogFooter className="pt-4 gap-2">
               <Button
@@ -563,7 +620,7 @@ export default function CollectionsPage() {
             <DialogTitle className="text-xl font-bold">Registrar Cobro de Caja</DialogTitle>
           </DialogHeader>
           {payCharge && (
-            <form onSubmit={handlePaymentSubmit} className="space-y-4 pt-2">
+            <form onSubmit={paymentForm.handleSubmit(handlePaymentSubmit)} className="space-y-4 pt-2">
               <div className="p-4 bg-muted rounded-xl space-y-2 text-sm border border-border">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Estudiante:</span>
@@ -580,23 +637,27 @@ export default function CollectionsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="pay-amount">Monto Recibido (S/)</Label>
+                <Label htmlFor="pay-amount" className={cn(paymentErrors.amount && "text-red-500")}>Monto Recibido (S/)</Label>
                 <Input
                   id="pay-amount"
                   type="number"
                   step="0.01"
                   max={payCharge.pendingAmount}
-                  value={payAmount}
-                  onChange={(e) => setPayAmount(e.target.value)}
-                  required
-                  className="h-9"
+                  {...paymentForm.register("amount")}
+                  className={cn("h-9", paymentErrors.amount && "border-red-500 focus-visible:ring-red-500")}
                 />
+                {paymentErrors.amount?.message && (
+                  <p className="text-red-500 text-xs mt-1">{String(paymentErrors.amount.message)}</p>
+                )}
               </div>
 
               <div className="space-y-2">
-                <Label>Método de Pago</Label>
-                <Select value={payMethod} onValueChange={(val: any) => setPayMethod(val || "CASH")}>
-                  <SelectTrigger className="h-9">
+                <Label className={cn(paymentErrors.method && "text-red-500")}>Método de Pago</Label>
+                <Select value={paymentForm.watch("method")} onValueChange={(val: any) => {
+                  paymentForm.setValue("method", val || "CASH");
+                  paymentForm.clearErrors("method");
+                }}>
+                  <SelectTrigger className={cn("h-9", paymentErrors.method && "border-red-500 focus:ring-red-500")}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -605,6 +666,9 @@ export default function CollectionsPage() {
                     <SelectItem value="TRANSFER">Transferencia Bancaria / Yape</SelectItem>
                   </SelectContent>
                 </Select>
+                {paymentErrors.method?.message && (
+                  <p className="text-red-500 text-xs mt-1">{String(paymentErrors.method.message)}</p>
+                )}
               </div>
 
               <DialogFooter className="pt-4 gap-2">

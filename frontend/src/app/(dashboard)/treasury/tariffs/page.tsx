@@ -34,26 +34,53 @@ import {
 } from "@/components/ui/table";
 import { backend } from "@/lib/api/types/backend";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
+
+const tariffSchema = z.object({
+  concept: z.string().min(3, "El concepto debe tener al menos 3 caracteres"),
+  amount: z.string().min(1, "Monto es requerido").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
+    message: "El monto debe ser un número válido mayor a 0",
+  }),
+  type: z.enum(["ONE_TIME", "MONTHLY", "EXTRA"]),
+  level: z.enum(["INITIAL", "PRIMARY", "SECONDARY"]),
+});
+
 export default function TariffsPage() {
   const queryClient = useQueryClient();
 
   // Search & Filter
   const [search, setSearch] = React.useState("");
 
-  // Create state
+  // Create & Edit Dialog Visibility / ID
   const [newOpen, setNewOpen] = React.useState(false);
-  const [nConcept, setNConcept] = React.useState("");
-  const [nAmount, setNAmount] = React.useState("");
-  const [nType, setNType] = React.useState<"ONE_TIME" | "MONTHLY" | "EXTRA">("MONTHLY");
-  const [nLevel, setNLevel] = React.useState<"INITIAL" | "PRIMARY" | "SECONDARY">("PRIMARY");
-
-  // Edit State
   const [editOpen, setEditOpen] = React.useState(false);
   const [editId, setEditId] = React.useState<string | null>(null);
-  const [eConcept, setEConcept] = React.useState("");
-  const [eAmount, setEAmount] = React.useState("");
-  const [eType, setEType] = React.useState<"ONE_TIME" | "MONTHLY" | "EXTRA">("MONTHLY");
-  const [eLevel, setELevel] = React.useState<"INITIAL" | "PRIMARY" | "SECONDARY">("PRIMARY");
+
+  // React Hook Form setups
+  const createForm = useForm({
+    resolver: zodResolver(tariffSchema),
+    defaultValues: {
+      concept: "",
+      amount: "",
+      type: "MONTHLY" as "ONE_TIME" | "MONTHLY" | "EXTRA",
+      level: "PRIMARY" as "INITIAL" | "PRIMARY" | "SECONDARY",
+    },
+  });
+  const { formState: { errors: createErrors } } = createForm;
+
+  const editForm = useForm({
+    resolver: zodResolver(tariffSchema),
+    defaultValues: {
+      concept: "",
+      amount: "",
+      type: "MONTHLY" as "ONE_TIME" | "MONTHLY" | "EXTRA",
+      level: "PRIMARY" as "INITIAL" | "PRIMARY" | "SECONDARY",
+    },
+  });
+  const { formState: { errors: editErrors } } = editForm;
 
   // Queries
   const { data: tariffs, isLoading } = backend.useQuery(
@@ -70,15 +97,12 @@ export default function TariffsPage() {
   const createMutation = backend.useMutation("post", "/api/treasury/tariffs", {
     onSuccess: () => {
       toast.success("Tarifa creada con éxito");
-      setNConcept("");
-      setNAmount("");
-      setNType("MONTHLY");
-      setNLevel("PRIMARY");
+      createForm.reset();
       setNewOpen(false);
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/tariffs"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al crear la tarifa");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -86,11 +110,12 @@ export default function TariffsPage() {
     onSuccess: () => {
       toast.success("Tarifa actualizada con éxito");
       setEditId(null);
+      editForm.reset();
       setEditOpen(false);
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/tariffs"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar la tarifa");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -100,29 +125,27 @@ export default function TariffsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/treasury/tariffs"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar la tarifa");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nConcept || !nAmount) {
+  const handleCreate = (data: { concept: string; amount: string; type: "ONE_TIME" | "MONTHLY" | "EXTRA"; level: "INITIAL" | "PRIMARY" | "SECONDARY" }) => {
+    if (!data.concept || !data.amount) {
       toast.error("Por favor completa todos los campos");
       return;
     }
     createMutation.mutate({
       body: {
-        concept: nConcept,
-        amount: parseFloat(nAmount),
-        type: nType,
-        level: nLevel,
+        concept: data.concept,
+        amount: parseFloat(data.amount),
+        type: data.type,
+        level: data.level,
       },
     });
   };
 
-  const handleUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editId || !eConcept || !eAmount) {
+  const handleUpdate = (data: { concept: string; amount: string; type: "ONE_TIME" | "MONTHLY" | "EXTRA"; level: "INITIAL" | "PRIMARY" | "SECONDARY" }) => {
+    if (!editId || !data.concept || !data.amount) {
       toast.error("Por favor completa todos los campos");
       return;
     }
@@ -131,20 +154,20 @@ export default function TariffsPage() {
         path: { id: editId },
       },
       body: {
-        concept: eConcept,
-        amount: parseFloat(eAmount),
-        type: eType,
-        level: eLevel,
+        concept: data.concept,
+        amount: parseFloat(data.amount),
+        type: data.type,
+        level: data.level,
       },
     });
   };
 
   const openEdit = (tariff: any) => {
     setEditId(tariff.id);
-    setEConcept(tariff.concept);
-    setEAmount(tariff.amount.toString());
-    setEType(tariff.type);
-    setELevel(tariff.level);
+    editForm.setValue("concept", tariff.concept);
+    editForm.setValue("amount", tariff.amount.toString());
+    editForm.setValue("type", tariff.type);
+    editForm.setValue("level", tariff.level);
     setEditOpen(true);
   };
 
@@ -343,35 +366,37 @@ export default function TariffsPage() {
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Nueva Tarifa Escolar</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleCreate} className="space-y-4 pt-2">
+          <form onSubmit={createForm.handleSubmit(handleCreate)} className="space-y-4 pt-2">
             <div className="space-y-2">
-              <Label htmlFor="concept">Concepto de Cobro</Label>
+              <Label htmlFor="concept" className={cn(createErrors.concept && "text-red-500")}>Concepto de Cobro</Label>
               <Input
                 id="concept"
                 placeholder="Ej. Pensión de Julio, Matrícula 2026..."
-                value={nConcept}
-                onChange={(e) => setNConcept(e.target.value)}
-                required
-                className="h-9"
+                {...createForm.register("concept")}
+                className={cn("h-9", createErrors.concept && "border-red-500 focus-visible:ring-red-500")}
               />
+              {createErrors.concept?.message && (
+                <p className="text-red-500 text-xs mt-1">{String(createErrors.concept.message)}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="amount">Monto (S/)</Label>
+              <Label htmlFor="amount" className={cn(createErrors.amount && "text-red-500")}>Monto (S/)</Label>
               <Input
                 id="amount"
                 type="number"
                 step="0.01"
                 placeholder="0.00"
-                value={nAmount}
-                onChange={(e) => setNAmount(e.target.value)}
-                required
-                className="h-9"
+                {...createForm.register("amount")}
+                className={cn("h-9", createErrors.amount && "border-red-500 focus-visible:ring-red-500")}
               />
+              {createErrors.amount?.message && (
+                <p className="text-red-500 text-xs mt-1">{String(createErrors.amount.message)}</p>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Tipo de Cobro</Label>
-                <Select value={nType} onValueChange={(val) => setNType(val as any)}>
+                <Select value={createForm.watch("type")} onValueChange={(val) => createForm.setValue("type", val as any)}>
                   <SelectTrigger className="h-9">
                     <SelectValue />
                   </SelectTrigger>
@@ -384,7 +409,7 @@ export default function TariffsPage() {
               </div>
               <div className="space-y-2">
                 <Label>Nivel Educativo</Label>
-                <Select value={nLevel} onValueChange={(val) => setNLevel(val as any)}>
+                <Select value={createForm.watch("level")} onValueChange={(val) => createForm.setValue("level", val as any)}>
                   <SelectTrigger className="h-9">
                     <SelectValue />
                   </SelectTrigger>
@@ -423,33 +448,35 @@ export default function TariffsPage() {
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Editar Tarifa</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdate} className="space-y-4 pt-2">
+          <form onSubmit={editForm.handleSubmit(handleUpdate)} className="space-y-4 pt-2">
             <div className="space-y-2">
-              <Label htmlFor="edit-concept">Concepto de Cobro</Label>
+              <Label htmlFor="edit-concept" className={cn(editErrors.concept && "text-red-500")}>Concepto de Cobro</Label>
               <Input
                 id="edit-concept"
-                value={eConcept}
-                onChange={(e) => setEConcept(e.target.value)}
-                required
-                className="h-9"
+                {...editForm.register("concept")}
+                className={cn("h-9", editErrors.concept && "border-red-500 focus-visible:ring-red-500")}
               />
+              {editErrors.concept?.message && (
+                <p className="text-red-500 text-xs mt-1">{String(editErrors.concept.message)}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-amount">Monto (S/)</Label>
+              <Label htmlFor="edit-amount" className={cn(editErrors.amount && "text-red-500")}>Monto (S/)</Label>
               <Input
                 id="edit-amount"
                 type="number"
                 step="0.01"
-                value={eAmount}
-                onChange={(e) => setEAmount(e.target.value)}
-                required
-                className="h-9"
+                {...editForm.register("amount")}
+                className={cn("h-9", editErrors.amount && "border-red-500 focus-visible:ring-red-500")}
               />
+              {editErrors.amount?.message && (
+                <p className="text-red-500 text-xs mt-1">{String(editErrors.amount.message)}</p>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Tipo de Cobro</Label>
-                <Select value={eType} onValueChange={(val) => setEType(val as any)}>
+                <Select value={editForm.watch("type")} onValueChange={(val) => editForm.setValue("type", val as any)}>
                   <SelectTrigger className="h-9">
                     <SelectValue />
                   </SelectTrigger>
@@ -462,7 +489,7 @@ export default function TariffsPage() {
               </div>
               <div className="space-y-2">
                 <Label>Nivel Educativo</Label>
-                <Select value={eLevel} onValueChange={(val) => setELevel(val as any)}>
+                <Select value={editForm.watch("level")} onValueChange={(val) => editForm.setValue("level", val as any)}>
                   <SelectTrigger className="h-9">
                     <SelectValue />
                   </SelectTrigger>

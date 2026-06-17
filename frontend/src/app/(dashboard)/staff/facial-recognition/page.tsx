@@ -47,7 +47,7 @@ export default function FacialRecognitionPage() {
     },
     onError: (err: any) => {
       setScanning(false);
-      toast.error(err?.message || "Error al procesar el reconocimiento facial");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 

@@ -52,6 +52,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
           break;
         case 'GUARDIAN_HAS_DEBT':
         case 'NO_VACANCIES_AVAILABLE':
+        case 'PROSPECT_ALREADY_APPROVED':
           status = HttpStatus.BAD_REQUEST;
           break;
         default:

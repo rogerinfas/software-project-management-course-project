@@ -2,6 +2,10 @@
 
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
 import { Plus, Pencil, Trash2, Home, Users, Check, X, Shield, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -27,27 +31,54 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Progress } from "@/components/ui/progress";
 import { backend } from "@/lib/api/types/backend";
 
+const sectionSchema = z.object({
+  name: z.string().min(1, "Nombre de la sección es obligatorio"),
+  grade: z.string().min(1, "Selecciona un grado"),
+  level: z.enum(["PRIMARY", "SECONDARY"]),
+  capacity: z.preprocess((val) => Number(val), z.number().int().min(1, "La capacidad debe ser de al menos 1 alumno")),
+  status: z.enum(["OPEN", "CLOSED"]).optional(),
+});
+
 export default function SectionsPage() {
   const queryClient = useQueryClient();
 
   // Filters & State
   const [levelFilter, setLevelFilter] = React.useState("ALL");
 
-  // Create state
+  // Dialog open state
   const [newOpen, setNewOpen] = React.useState(false);
-  const [nName, setNName] = React.useState("");
-  const [nGrade, setNGrade] = React.useState("");
-  const [nLevel, setNLevel] = React.useState("PRIMARY");
-  const [nCapacity, setNCapacity] = React.useState(30);
-
-  // Edit state
   const [editOpen, setEditOpen] = React.useState(false);
   const [editId, setEditId] = React.useState<string | null>(null);
-  const [eName, setEName] = React.useState("");
-  const [eGrade, setEGrade] = React.useState("");
-  const [eLevel, setELevel] = React.useState("PRIMARY");
-  const [eCapacity, setECapacity] = React.useState(30);
-  const [eStatus, setEStatus] = React.useState("OPEN");
+
+  // React Hook Form for creation
+  const createForm = useForm({
+    resolver: zodResolver(sectionSchema),
+    defaultValues: {
+      name: "",
+      grade: "",
+      level: "PRIMARY" as "PRIMARY" | "SECONDARY",
+      capacity: 30,
+    },
+  });
+  const { formState: { errors: createErrors } } = createForm;
+
+  const nLevel = createForm.watch("level");
+
+  // React Hook Form for edit
+  const editForm = useForm({
+    resolver: zodResolver(sectionSchema),
+    defaultValues: {
+      name: "",
+      grade: "",
+      level: "PRIMARY" as "PRIMARY" | "SECONDARY",
+      capacity: 30,
+      status: "OPEN" as "OPEN" | "CLOSED",
+    },
+  });
+  const { formState: { errors: editErrors } } = editForm;
+
+  const eLevel = editForm.watch("level");
+  const eStatus = editForm.watch("status");
 
   // Queries
   const { data: sections, isLoading } = backend.useQuery("get", "/api/academic/sections", {
@@ -62,14 +93,12 @@ export default function SectionsPage() {
   const createMutation = backend.useMutation("post", "/api/academic/sections", {
     onSuccess: () => {
       toast.success("Sección creada exitosamente");
-      setNName("");
-      setNGrade("");
-      setNCapacity(30);
+      createForm.reset();
       setNewOpen(false);
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/sections"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al crear la sección");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -81,7 +110,7 @@ export default function SectionsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/sections"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar la sección");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -91,41 +120,39 @@ export default function SectionsPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/sections"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar la sección");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nName.trim() || !nGrade.trim()) {
+  const handleCreate = (data: any) => {
+    if (!data.name.trim() || !data.grade.trim()) {
       toast.error("El nombre y grado son requeridos");
       return;
     }
     createMutation.mutate({
       body: {
-        name: nName,
-        grade: nGrade,
-        level: nLevel as any,
-        capacity: Number(nCapacity),
+        name: data.name,
+        grade: data.grade,
+        level: data.level as any,
+        capacity: Number(data.capacity),
         status: "OPEN",
       },
     });
   };
 
-  const handleUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editId || !eName.trim() || !eGrade.trim()) {
+  const handleUpdate = (data: any) => {
+    if (!editId || !data.name.trim() || !data.grade.trim()) {
       toast.error("El nombre y grado son requeridos");
       return;
     }
     updateMutation.mutate({
       params: { path: { id: editId } },
       body: {
-        name: eName,
-        grade: eGrade,
-        level: eLevel as any,
-        capacity: Number(eCapacity),
-        status: eStatus,
+        name: data.name,
+        grade: data.grade,
+        level: data.level as any,
+        capacity: Number(data.capacity),
+        status: data.status,
       },
     });
   };
@@ -142,11 +169,13 @@ export default function SectionsPage() {
 
   const startEdit = (s: any) => {
     setEditId(s.id);
-    setEName(s.name);
-    setEGrade(s.grade);
-    setELevel(s.level);
-    setECapacity(s.capacity);
-    setEStatus(s.status || "OPEN");
+    editForm.reset({
+      name: s.name,
+      grade: s.grade,
+      level: s.level,
+      capacity: s.capacity,
+      status: s.status || "OPEN",
+    });
     setEditOpen(true);
   };
 
@@ -301,35 +330,42 @@ export default function SectionsPage() {
           <DialogHeader>
             <DialogTitle>Registrar Nueva Sección</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleCreate} className="space-y-4">
+          <form onSubmit={createForm.handleSubmit(handleCreate)} className="space-y-4">
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="grade">Grado *</Label>
+                  <Label htmlFor="grade" className={cn(createErrors.grade && "text-red-500")}>Grado *</Label>
                   <Input
                     id="grade"
-                    value={nGrade}
-                    onChange={(e) => setNGrade(e.target.value)}
+                    {...createForm.register("grade")}
                     placeholder="ej. 1ro de Primaria"
-                    required
+                    className={cn(createErrors.grade && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {createErrors.grade?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.grade.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="name">Sección (ej. A, B) *</Label>
+                  <Label htmlFor="name" className={cn(createErrors.name && "text-red-500")}>Sección (ej. A, B) *</Label>
                   <Input
                     id="name"
-                    value={nName}
-                    onChange={(e) => setNName(e.target.value)}
+                    {...createForm.register("name")}
                     placeholder="ej. A"
-                    required
+                    className={cn(createErrors.name && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {createErrors.name?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.name.message)}</p>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="level">Nivel Educativo</Label>
-                  <Select value={nLevel} onValueChange={(val) => setNLevel(val ?? "PRIMARY")}>
-                    <SelectTrigger id="level">
+                  <Label htmlFor="level" className={cn(createErrors.level && "text-red-500")}>Nivel Educativo</Label>
+                  <Select value={nLevel} onValueChange={(val) => {
+                    createForm.setValue("level", val ?? "PRIMARY");
+                    createForm.clearErrors("level");
+                  }}>
+                    <SelectTrigger id="level" className={cn(createErrors.level && "border-red-500 focus:ring-red-500")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -337,18 +373,23 @@ export default function SectionsPage() {
                       <SelectItem value="SECONDARY">Secundaria</SelectItem>
                     </SelectContent>
                   </Select>
+                  {createErrors.level?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.level.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="capacity">Aforo Máximo *</Label>
+                  <Label htmlFor="capacity" className={cn(createErrors.capacity && "text-red-500")}>Aforo Máximo *</Label>
                   <Input
                     id="capacity"
                     type="number"
-                    value={nCapacity}
-                    onChange={(e) => setNCapacity(Number(e.target.value))}
+                    {...createForm.register("capacity")}
                     min={1}
                     max={100}
-                    required
+                    className={cn(createErrors.capacity && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {createErrors.capacity?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.capacity.message)}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -370,33 +411,40 @@ export default function SectionsPage() {
           <DialogHeader>
             <DialogTitle>Editar Sección / Aula</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdate} className="space-y-4">
+          <form onSubmit={editForm.handleSubmit(handleUpdate)} className="space-y-4">
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="edit-grade">Grado *</Label>
+                  <Label htmlFor="edit-grade" className={cn(editErrors.grade && "text-red-500")}>Grado *</Label>
                   <Input
                     id="edit-grade"
-                    value={eGrade}
-                    onChange={(e) => setEGrade(e.target.value)}
-                    required
+                    {...editForm.register("grade")}
+                    className={cn(editErrors.grade && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {editErrors.grade?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.grade.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="edit-name">Sección *</Label>
+                  <Label htmlFor="edit-name" className={cn(editErrors.name && "text-red-500")}>Sección *</Label>
                   <Input
                     id="edit-name"
-                    value={eName}
-                    onChange={(e) => setEName(e.target.value)}
-                    required
+                    {...editForm.register("name")}
+                    className={cn(editErrors.name && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {editErrors.name?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.name.message)}</p>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="flex flex-col gap-1.5 col-span-1">
-                  <Label htmlFor="edit-level">Nivel</Label>
-                  <Select value={eLevel} onValueChange={(val) => setELevel(val ?? "PRIMARY")}>
-                    <SelectTrigger id="edit-level">
+                  <Label htmlFor="edit-level" className={cn(editErrors.level && "text-red-500")}>Nivel</Label>
+                  <Select value={eLevel} onValueChange={(val) => {
+                    editForm.setValue("level", val ?? "PRIMARY");
+                    editForm.clearErrors("level");
+                  }}>
+                    <SelectTrigger id="edit-level" className={cn(editErrors.level && "border-red-500 focus:ring-red-500")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -404,23 +452,31 @@ export default function SectionsPage() {
                       <SelectItem value="SECONDARY">Secundaria</SelectItem>
                     </SelectContent>
                   </Select>
+                  {editErrors.level?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.level.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5 col-span-1">
-                  <Label htmlFor="edit-capacity">Aforo *</Label>
+                  <Label htmlFor="edit-capacity" className={cn(editErrors.capacity && "text-red-500")}>Aforo *</Label>
                   <Input
                     id="edit-capacity"
                     type="number"
-                    value={eCapacity}
-                    onChange={(e) => setECapacity(Number(e.target.value))}
+                    {...editForm.register("capacity")}
                     min={1}
                     max={100}
-                    required
+                    className={cn(editErrors.capacity && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {editErrors.capacity?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.capacity.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5 col-span-1">
-                  <Label htmlFor="edit-status">Estado</Label>
-                  <Select value={eStatus} onValueChange={(val) => setEStatus(val ?? "OPEN")}>
-                    <SelectTrigger id="edit-status">
+                  <Label htmlFor="edit-status" className={cn(editErrors.status && "text-red-500")}>Estado</Label>
+                  <Select value={eStatus} onValueChange={(val) => {
+                    editForm.setValue("status", val ?? "OPEN");
+                    editForm.clearErrors("status");
+                  }}>
+                    <SelectTrigger id="edit-status" className={cn(editErrors.status && "border-red-500 focus:ring-red-500")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -428,6 +484,9 @@ export default function SectionsPage() {
                       <SelectItem value="CLOSED">Cerrada</SelectItem>
                     </SelectContent>
                   </Select>
+                  {editErrors.status?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.status.message)}</p>
+                  )}
                 </div>
               </div>
             </div>

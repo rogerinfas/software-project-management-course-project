@@ -5,6 +5,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Pencil, Trash2, Clock, Calendar, Check, X, ShieldAlert, Loader2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +30,15 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { backend } from "@/lib/api/types/backend";
 
+const scheduleSchema = z.object({
+  section: z.string().min(1, "Selecciona una sección"),
+  course: z.string().min(1, "Selecciona un curso"),
+  teacher: z.string().min(1, "Selecciona un docente"),
+  day: z.string().min(1, "Selecciona un día"),
+  start: z.string().min(1, "Hora de inicio es requerida"),
+  end: z.string().min(1, "Hora de fin es requerida"),
+});
+
 const DAYS_OF_WEEK = [
   { value: 1, label: "Lunes" },
   { value: 2, label: "Martes" },
@@ -42,22 +55,48 @@ export default function SchedulesPage() {
 
   // Create Dialog
   const [newOpen, setNewOpen] = React.useState(false);
-  const [nSection, setNSection] = React.useState("");
-  const [nCourse, setNCourse] = React.useState("");
-  const [nTeacher, setNTeacher] = React.useState("");
-  const [nDay, setNDay] = React.useState("1");
-  const [nStart, setNStart] = React.useState("08:00");
-  const [nEnd, setNEnd] = React.useState("09:30");
 
   // Edit Dialog
   const [editOpen, setEditOpen] = React.useState(false);
   const [editId, setEditId] = React.useState<string | null>(null);
-  const [eSection, setESection] = React.useState("");
-  const [eCourse, setECourse] = React.useState("");
-  const [eTeacher, setETeacher] = React.useState("");
-  const [eDay, setEDay] = React.useState("1");
-  const [eStart, setEStart] = React.useState("08:00");
-  const [eEnd, setEEnd] = React.useState("09:30");
+
+  // React Hook Form for creation
+  const createForm = useForm({
+    resolver: zodResolver(scheduleSchema),
+    defaultValues: {
+      section: "",
+      course: "",
+      teacher: "",
+      day: "1",
+      start: "08:00",
+      end: "09:30",
+    },
+  });
+  const { formState: { errors: createErrors } } = createForm;
+
+  const nSection = createForm.watch("section");
+  const nCourse = createForm.watch("course");
+  const nTeacher = createForm.watch("teacher");
+  const nDay = createForm.watch("day");
+
+  // React Hook Form for edit
+  const editForm = useForm({
+    resolver: zodResolver(scheduleSchema),
+    defaultValues: {
+      section: "",
+      course: "",
+      teacher: "",
+      day: "1",
+      start: "08:00",
+      end: "09:30",
+    },
+  });
+  const { formState: { errors: editErrors } } = editForm;
+
+  const eSection = editForm.watch("section");
+  const eCourse = editForm.watch("course");
+  const eTeacher = editForm.watch("teacher");
+  const eDay = editForm.watch("day");
 
   // Queries
   const { data: sections, isLoading: loadingSections } = backend.useQuery("get", "/api/academic/sections", {} as any);
@@ -84,7 +123,7 @@ export default function SchedulesPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/schedules"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error de traslape: El aula o el docente tiene cruce de horario.");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -95,7 +134,7 @@ export default function SchedulesPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/schedules"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error de traslape: Conflicto con otra clase en esa hora.");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -105,43 +144,41 @@ export default function SchedulesPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/academic/schedules"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al eliminar la asignación");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nSection || !nCourse || !nTeacher) {
+  const handleCreate = (data: any) => {
+    if (!data.section || !data.course || !data.teacher) {
       toast.error("Por favor completa todos los campos.");
       return;
     }
     createMutation.mutate({
       body: {
-        sectionId: nSection,
-        courseId: nCourse,
-        staffId: nTeacher,
-        day: Number(nDay),
-        startTime: nStart,
-        endTime: nEnd,
+        sectionId: data.section,
+        courseId: data.course,
+        staffId: data.teacher,
+        day: Number(data.day),
+        startTime: data.start,
+        endTime: data.end,
       },
     });
   };
 
-  const handleUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editId || !eSection || !eCourse || !eTeacher) {
+  const handleUpdate = (data: any) => {
+    if (!editId || !data.section || !data.course || !data.teacher) {
       toast.error("Por favor completa todos los campos.");
       return;
     }
     updateMutation.mutate({
       params: { path: { id: editId } },
       body: {
-        sectionId: eSection,
-        courseId: eCourse,
-        staffId: eTeacher,
-        day: Number(eDay),
-        startTime: eStart,
-        endTime: eEnd,
+        sectionId: data.section,
+        courseId: data.course,
+        staffId: data.teacher,
+        day: Number(data.day),
+        startTime: data.start,
+        endTime: data.end,
       },
     });
   };
@@ -154,27 +191,35 @@ export default function SchedulesPage() {
 
   const startEdit = (s: any) => {
     setEditId(s.id);
-    setESection(s.sectionId);
-    setECourse(s.courseId);
-    setETeacher(s.staffId);
-    setEDay(String(s.day));
-    setEStart(s.startTime);
-    setEEnd(s.endTime);
+    editForm.reset({
+      section: s.sectionId,
+      course: s.courseId,
+      teacher: s.staffId,
+      day: String(s.day),
+      start: s.startTime,
+      end: s.endTime,
+    });
     setEditOpen(true);
   };
 
   // Populate first values
   React.useEffect(() => {
-    if (sections && sections.length > 0 && !nSection) {
-      setNSection(sections[0].id);
+    if (sections && sections.length > 0) {
+      if (!createForm.getValues("section")) {
+        createForm.setValue("section", sections[0].id);
+      }
     }
-    if (courses && courses.length > 0 && !nCourse) {
-      setNCourse(courses[0].id);
+    if (courses && courses.length > 0) {
+      if (!createForm.getValues("course")) {
+        createForm.setValue("course", courses[0].id);
+      }
     }
-    if (teachers && teachers.length > 0 && !nTeacher) {
-      setNTeacher(teachers[0].id);
+    if (teachers && teachers.length > 0) {
+      if (!createForm.getValues("teacher")) {
+        createForm.setValue("teacher", teachers[0].id);
+      }
     }
-  }, [sections, courses, teachers]);
+  }, [sections, courses, teachers, createForm]);
 
   const list = schedules ?? [];
   const secList = sections ?? [];
@@ -235,7 +280,7 @@ export default function SchedulesPage() {
               <p className="text-muted-foreground text-sm">No hay clases programadas para esta sección.</p>
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-5">
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-5">
               {DAYS_OF_WEEK.map((day) => {
                 const daySchedules = list.filter((s: any) => s.day === day.value);
                 daySchedules.sort((a, b) => a.startTime.localeCompare(b.startTime));
@@ -299,13 +344,16 @@ export default function SchedulesPage() {
           <DialogHeader>
             <DialogTitle>Asignar Horario Escolar</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleCreate} className="space-y-4">
+          <form onSubmit={createForm.handleSubmit(handleCreate)} className="space-y-4">
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="section">Sección / Aula *</Label>
-                  <Select value={nSection} onValueChange={(val) => setNSection(val ?? "")}>
-                    <SelectTrigger id="section">
+                  <Label htmlFor="section" className={cn(createErrors.section && "text-red-500")}>Sección / Aula *</Label>
+                  <Select value={nSection} onValueChange={(val) => {
+                    createForm.setValue("section", val ?? "");
+                    createForm.clearErrors("section");
+                  }}>
+                    <SelectTrigger id="section" className={cn(createErrors.section && "border-red-500 focus:ring-red-500")}>
                       <SelectValue placeholder="Selecciona Aula" />
                     </SelectTrigger>
                     <SelectContent>
@@ -316,11 +364,17 @@ export default function SchedulesPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {createErrors.section?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.section.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="course">Curso / Materia *</Label>
-                  <Select value={nCourse} onValueChange={(val) => setNCourse(val ?? "")}>
-                    <SelectTrigger id="course">
+                  <Label htmlFor="course" className={cn(createErrors.course && "text-red-500")}>Curso / Materia *</Label>
+                  <Select value={nCourse} onValueChange={(val) => {
+                    createForm.setValue("course", val ?? "");
+                    createForm.clearErrors("course");
+                  }}>
+                    <SelectTrigger id="course" className={cn(createErrors.course && "border-red-500 focus:ring-red-500")}>
                       <SelectValue placeholder="Selecciona Curso" />
                     </SelectTrigger>
                     <SelectContent>
@@ -331,13 +385,19 @@ export default function SchedulesPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {createErrors.course?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.course.message)}</p>
+                  )}
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="teacher">Docente Asignado *</Label>
-                <Select value={nTeacher} onValueChange={(val) => setNTeacher(val ?? "")}>
-                  <SelectTrigger id="teacher">
+                <Label htmlFor="teacher" className={cn(createErrors.teacher && "text-red-500")}>Docente Asignado *</Label>
+                <Select value={nTeacher} onValueChange={(val) => {
+                  createForm.setValue("teacher", val ?? "");
+                  createForm.clearErrors("teacher");
+                }}>
+                  <SelectTrigger id="teacher" className={cn(createErrors.teacher && "border-red-500 focus:ring-red-500")}>
                     <SelectValue placeholder="Selecciona Profesor" />
                   </SelectTrigger>
                   <SelectContent>
@@ -348,13 +408,19 @@ export default function SchedulesPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {createErrors.teacher?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(createErrors.teacher.message)}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="day">Día</Label>
-                  <Select value={nDay} onValueChange={(val) => setNDay(val ?? "1")}>
-                    <SelectTrigger id="day">
+                  <Label htmlFor="day" className={cn(createErrors.day && "text-red-500")}>Día</Label>
+                  <Select value={nDay} onValueChange={(val) => {
+                    createForm.setValue("day", val ?? "1");
+                    createForm.clearErrors("day");
+                  }}>
+                    <SelectTrigger id="day" className={cn(createErrors.day && "border-red-500 focus:ring-red-500")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -365,26 +431,33 @@ export default function SchedulesPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {createErrors.day?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.day.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="start">Inicio (HH:mm)</Label>
+                  <Label htmlFor="start" className={cn(createErrors.start && "text-red-500")}>Inicio (HH:mm)</Label>
                   <Input
                     id="start"
-                    value={nStart}
-                    onChange={(e) => setNStart(e.target.value)}
+                    {...createForm.register("start")}
                     placeholder="08:00"
-                    required
+                    className={cn(createErrors.start && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {createErrors.start?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.start.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="end">Fin (HH:mm)</Label>
+                  <Label htmlFor="end" className={cn(createErrors.end && "text-red-500")}>Fin (HH:mm)</Label>
                   <Input
                     id="end"
-                    value={nEnd}
-                    onChange={(e) => setNEnd(e.target.value)}
+                    {...createForm.register("end")}
                     placeholder="09:30"
-                    required
+                    className={cn(createErrors.end && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {createErrors.end?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(createErrors.end.message)}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -406,13 +479,16 @@ export default function SchedulesPage() {
           <DialogHeader>
             <DialogTitle>Editar Asignación de Horario</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleUpdate} className="space-y-4">
+          <form onSubmit={editForm.handleSubmit(handleUpdate)} className="space-y-4">
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="edit-sec">Sección / Aula *</Label>
-                  <Select value={eSection} onValueChange={(val) => setESection(val ?? "")}>
-                    <SelectTrigger id="edit-sec">
+                  <Label htmlFor="edit-sec" className={cn(editErrors.section && "text-red-500")}>Sección / Aula *</Label>
+                  <Select value={eSection} onValueChange={(val) => {
+                    editForm.setValue("section", val ?? "");
+                    editForm.clearErrors("section");
+                  }}>
+                    <SelectTrigger id="edit-sec" className={cn(editErrors.section && "border-red-500 focus:ring-red-500")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -423,11 +499,17 @@ export default function SchedulesPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {editErrors.section?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.section.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="edit-crs">Curso / Materia *</Label>
-                  <Select value={eCourse} onValueChange={(val) => setECourse(val ?? "")}>
-                    <SelectTrigger id="edit-crs">
+                  <Label htmlFor="edit-crs" className={cn(editErrors.course && "text-red-500")}>Curso / Materia *</Label>
+                  <Select value={eCourse} onValueChange={(val) => {
+                    editForm.setValue("course", val ?? "");
+                    editForm.clearErrors("course");
+                  }}>
+                    <SelectTrigger id="edit-crs" className={cn(editErrors.course && "border-red-500 focus:ring-red-500")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -438,13 +520,19 @@ export default function SchedulesPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {editErrors.course?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.course.message)}</p>
+                  )}
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="edit-tchr">Docente Asignado *</Label>
-                <Select value={eTeacher} onValueChange={(val) => setETeacher(val ?? "")}>
-                  <SelectTrigger id="edit-tchr">
+                <Label htmlFor="edit-tchr" className={cn(editErrors.teacher && "text-red-500")}>Docente Asignado *</Label>
+                <Select value={eTeacher} onValueChange={(val) => {
+                  editForm.setValue("teacher", val ?? "");
+                  editForm.clearErrors("teacher");
+                }}>
+                  <SelectTrigger id="edit-tchr" className={cn(editErrors.teacher && "border-red-500 focus:ring-red-500")}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -455,13 +543,19 @@ export default function SchedulesPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {editErrors.teacher?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(editErrors.teacher.message)}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="edit-dy">Día</Label>
-                  <Select value={eDay} onValueChange={(val) => setEDay(val ?? "1")}>
-                    <SelectTrigger id="edit-dy">
+                  <Label htmlFor="edit-dy" className={cn(editErrors.day && "text-red-500")}>Día</Label>
+                  <Select value={eDay} onValueChange={(val) => {
+                    editForm.setValue("day", val ?? "1");
+                    editForm.clearErrors("day");
+                  }}>
+                    <SelectTrigger id="edit-dy" className={cn(editErrors.day && "border-red-500 focus:ring-red-500")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -472,24 +566,31 @@ export default function SchedulesPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  {editErrors.day?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.day.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="edit-strt">Inicio (HH:mm)</Label>
+                  <Label htmlFor="edit-strt" className={cn(editErrors.start && "text-red-500")}>Inicio (HH:mm)</Label>
                   <Input
                     id="edit-strt"
-                    value={eStart}
-                    onChange={(e) => setEStart(e.target.value)}
-                    required
+                    {...editForm.register("start")}
+                    className={cn(editErrors.start && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {editErrors.start?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.start.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="edit-nd">Fin (HH:mm)</Label>
+                  <Label htmlFor="edit-nd" className={cn(editErrors.end && "text-red-500")}>Fin (HH:mm)</Label>
                   <Input
                     id="edit-nd"
-                    value={eEnd}
-                    onChange={(e) => setEEnd(e.target.value)}
-                    required
+                    {...editForm.register("end")}
+                    className={cn(editErrors.end && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {editErrors.end?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(editErrors.end.message)}</p>
+                  )}
                 </div>
               </div>
             </div>

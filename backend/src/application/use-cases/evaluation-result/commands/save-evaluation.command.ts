@@ -4,6 +4,7 @@ import { IEvaluationResultRepository } from '../../../../domain/repositories/eva
 import { IProspectRepository } from '../../../../domain/repositories/prospect.repository.interface';
 import { EvaluationResultEntity } from '../../../../domain/entities/evaluation-result.entity';
 import { EvaluationStatus } from '@prisma/client';
+import { ProspectAlreadyApprovedException } from '../../../../domain/exceptions/admission-domain.exceptions';
 
 export class SaveEvaluationCommand implements ICommand {
   constructor(
@@ -37,6 +38,11 @@ export class SaveEvaluationCommandHandler implements ICommandHandler<SaveEvaluat
     // En el CRM, un postulante puede tener solo una evaluación final (relación 1-a-1).
     const existing = await this.repository.findByProspectId(command.prospectId);
     if (existing) {
+      // Si el postulante ya tiene dictamen final de APTO (FIT), impedimos cualquier cambio
+      if (existing.aptitude === EvaluationStatus.FIT) {
+        throw new ProspectAlreadyApprovedException(command.prospectId);
+      }
+
       // 3. Caso de actualización (UPDATE):
       // Si la evaluación ya existe en la base de datos, actualizamos el dictamen 
       // (aptitude: FIT/UNFIT/PENDING) y los comentarios u observaciones.

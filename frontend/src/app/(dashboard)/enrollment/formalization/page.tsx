@@ -24,26 +24,53 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { backend } from "@/lib/api/types/backend";
+import { cn } from "@/lib/utils";
 
 type EducationalLevel = "PRIMARY" | "SECONDARY";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const formalizeSchema = z.object({
+  firstName: z.string().min(2, "El nombre debe tener al menos 2 caracteres"),
+  lastName: z.string().min(2, "El apellido debe tener al menos 2 caracteres"),
+  dni: z.string().length(8, "DNI debe tener exactamente 8 caracteres"),
+  level: z.enum(["PRIMARY", "SECONDARY"]),
+  grade: z.string().min(1, "El grado es requerido"),
+  sectionId: z.string().min(1, "La sección es requerida"),
+  guardianName: z.string().min(5, "El nombre completo del apoderado debe tener al menos 5 caracteres"),
+  guardianDni: z.string().length(8, "DNI del apoderado debe tener exactamente 8 caracteres"),
+  guardianPhone: z.string().min(6, "Teléfono inválido"),
+  guardianEmail: z.string().email("Correo electrónico inválido").or(z.literal("")),
+  guardianOccupation: z.string().optional(),
+});
 
 export default function FormalizacionPage() {
   const queryClient = useQueryClient();
 
-  // Form State
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [studentDni, setStudentDni] = React.useState("");
-  const [level, setLevel] = React.useState<EducationalLevel>("PRIMARY");
-  const [grade, setGrade] = React.useState("");
-  const [sectionId, setSectionId] = React.useState("");
+  // React Hook Form setup
+  const { register, handleSubmit, watch, setValue, reset, formState: { errors } } = useForm({
+    resolver: zodResolver(formalizeSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      dni: "",
+      level: "PRIMARY" as EducationalLevel,
+      grade: "",
+      sectionId: "",
+      guardianName: "",
+      guardianDni: "",
+      guardianPhone: "",
+      guardianEmail: "",
+      guardianOccupation: "",
+    },
+  });
 
-  // Guardian State
-  const [guardianName, setGuardianName] = React.useState("");
-  const [guardianDni, setGuardianDni] = React.useState("");
-  const [guardianPhone, setGuardianPhone] = React.useState("");
-  const [guardianEmail, setGuardianEmail] = React.useState("");
-  const [guardianOcup, setGuardianOcup] = React.useState("");
+  const sectionId = watch("sectionId");
+  const level = watch("level");
+  const grade = watch("grade");
+  const guardianDni = watch("guardianDni") || "";
 
   // Queries
   const { data: sections, isLoading: isLoadingSections } = backend.useQuery(
@@ -56,17 +83,7 @@ export default function FormalizacionPage() {
   const formalizeMutation = backend.useMutation("post", "/api/enrollment/formalize", {
     onSuccess: (data: any) => {
       toast.success(`Matrícula formalizada con éxito. Código Alumno: ${data.student?.code || "NUEVO"}`);
-      // Clear form
-      setFirstName("");
-      setLastName("");
-      setStudentDni("");
-      setGrade("");
-      setSectionId("");
-      setGuardianName("");
-      setGuardianDni("");
-      setGuardianPhone("");
-      setGuardianEmail("");
-      setGuardianOcup("");
+      reset();
       
       // Invalidate queries
       queryClient.invalidateQueries({ queryKey: ["get", "/api/enrollment/sections"] });
@@ -74,7 +91,7 @@ export default function FormalizacionPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/enrollment/documents"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al formalizar la matrícula");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -86,27 +103,37 @@ export default function FormalizacionPage() {
     ? ["1ro de Primaria", "2do de Primaria", "3ro de Primaria", "4to de Primaria", "5to de Primaria", "6to de Primaria"]
     : ["1ro de Secundaria", "2do de Secundaria", "3ro de Secundaria", "4to de Secundaria", "5to de Secundaria"];
 
-  const handleFormalize = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!sectionId) {
+  const handleFormalize = (data: {
+    firstName: string;
+    lastName: string;
+    dni: string;
+    level: EducationalLevel;
+    grade: string;
+    sectionId: string;
+    guardianDni: string;
+    guardianName: string;
+    guardianPhone: string;
+    guardianEmail: string;
+    guardianOccupation?: string;
+  }) => {
+    if (!data.sectionId) {
       toast.error("Por favor, selecciona una sección de destino.");
       return;
     }
 
     formalizeMutation.mutate({
       body: {
-        firstName,
-        lastName,
-        dni: studentDni,
-        level,
-        grade,
-        sectionId,
-        guardianDni,
-        guardianName,
-        guardianPhone,
-        guardianEmail: guardianEmail || undefined,
-        guardianOccupation: guardianOcup || undefined,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        dni: data.dni,
+        level: data.level,
+        grade: data.grade,
+        sectionId: data.sectionId,
+        guardianDni: data.guardianDni,
+        guardianName: data.guardianName,
+        guardianPhone: data.guardianPhone,
+        guardianEmail: data.guardianEmail || undefined,
+        guardianOccupation: data.guardianOccupation || undefined,
       },
     });
   };
@@ -153,11 +180,11 @@ export default function FormalizacionPage() {
                 return (
                   <div
                     key={s.id}
-                    onClick={() => {
+                  onClick={() => {
                       if (matriculados < capacity) {
-                        setSectionId(s.id);
-                        setLevel(s.level);
-                        setGrade(s.grade);
+                        setValue("sectionId", s.id);
+                        setValue("level", s.level);
+                        setValue("grade", s.grade);
                         toast.info(`Sección seleccionada: ${s.grade} - A`);
                       } else {
                         toast.error("Esta sección se encuentra llena.");
@@ -200,7 +227,7 @@ export default function FormalizacionPage() {
       </Card>
 
       {/* Formulario */}
-      <form onSubmit={handleFormalize} className="grid gap-6 lg:grid-cols-2">
+      <form onSubmit={handleSubmit(handleFormalize)} className="grid gap-6 lg:grid-cols-2">
         {/* Datos Alumno */}
         <Card className="bg-card border-border/80 flex flex-col justify-between">
           <CardHeader>
@@ -212,52 +239,57 @@ export default function FormalizacionPage() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="std-fname">Nombres *</Label>
+                <Label htmlFor="std-fname" className={errors.firstName && "text-red-500"}>Nombres *</Label>
                 <Input
                   id="std-fname"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
                   placeholder="Nombres"
-                  required
+                  className={errors.firstName && "border-red-500 focus-visible:ring-red-500"}
+                  {...register("firstName", { required: true })}
                 />
+                {errors.firstName && (
+                  <p className="text-red-500 text-[11px] mt-0.5">{errors.firstName.message}</p>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="std-lname">Apellidos *</Label>
+                <Label htmlFor="std-lname" className={errors.lastName && "text-red-500"}>Apellidos *</Label>
                 <Input
                   id="std-lname"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
                   placeholder="Apellidos"
-                  required
+                  className={errors.lastName && "border-red-500 focus-visible:ring-red-500"}
+                  {...register("lastName", { required: true })}
                 />
+                {errors.lastName && (
+                  <p className="text-red-500 text-[11px] mt-0.5">{errors.lastName.message}</p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="std-dni">DNI del Alumno *</Label>
+                <Label htmlFor="std-dni" className={errors.dni && "text-red-500"}>DNI del Alumno *</Label>
                 <Input
                   id="std-dni"
-                  value={studentDni}
-                  onChange={(e) => setStudentDni(e.target.value)}
                   maxLength={8}
                   placeholder="8 dígitos"
-                  className="font-mono"
-                  required
+                  className={cn("font-mono", errors.dni && "border-red-500 focus-visible:ring-red-500")}
+                  {...register("dni", { required: true })}
                 />
+                {errors.dni && (
+                  <p className="text-red-500 text-[11px] mt-0.5">{errors.dni.message}</p>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="std-level">Nivel Educativo *</Label>
+                <Label htmlFor="std-level" className={errors.level && "text-red-500"}>Nivel Educativo *</Label>
                 <Select
                   value={level}
                   onValueChange={(val) => {
                     if (val === "PRIMARY" || val === "SECONDARY") {
-                      setLevel(val);
-                      setGrade("");
-                      setSectionId("");
+                      setValue("level", val);
+                      setValue("grade", "");
+                      setValue("sectionId", "");
                     }
                   }}
                 >
-                  <SelectTrigger id="std-level">
+                  <SelectTrigger id="std-level" className={errors.level && "border-red-500"}>
                     <SelectValue placeholder="Nivel" />
                   </SelectTrigger>
                   <SelectContent>
@@ -265,19 +297,22 @@ export default function FormalizacionPage() {
                     <SelectItem value="SECONDARY">Secundaria</SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.level && (
+                  <p className="text-red-500 text-[11px] mt-0.5">{errors.level.message}</p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="std-grade">Grado de Postulación *</Label>
+                <Label htmlFor="std-grade" className={errors.grade && "text-red-500"}>Grado de Postulación *</Label>
                 <Select
                   value={grade}
                   onValueChange={(val) => {
-                    setGrade(val || "");
-                    setSectionId("");
+                    setValue("grade", val || "");
+                    setValue("sectionId", "");
                   }}
                 >
-                  <SelectTrigger id="std-grade">
+                  <SelectTrigger id="std-grade" className={errors.grade && "border-red-500"}>
                     <SelectValue placeholder="Grado" />
                   </SelectTrigger>
                   <SelectContent>
@@ -286,14 +321,17 @@ export default function FormalizacionPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {errors.grade && (
+                  <p className="text-red-500 text-[11px] mt-0.5">{errors.grade.message}</p>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="std-section">Sección Destino *</Label>
+                <Label htmlFor="std-section" className={errors.sectionId && "text-red-500"}>Sección Destino *</Label>
                 <Select
                   value={sectionId}
-                  onValueChange={(val) => setSectionId(val || "")}
+                  onValueChange={(val) => setValue("sectionId", val || "")}
                 >
-                  <SelectTrigger id="std-section">
+                  <SelectTrigger id="std-section" className={errors.sectionId && "border-red-500"}>
                     <SelectValue placeholder="Sección" />
                   </SelectTrigger>
                   <SelectContent>
@@ -306,6 +344,9 @@ export default function FormalizacionPage() {
                       ))}
                   </SelectContent>
                 </Select>
+                {errors.sectionId && (
+                  <p className="text-red-500 text-[11px] mt-0.5">{errors.sectionId.message}</p>
+                )}
               </div>
             </div>
           </CardContent>
@@ -322,58 +363,69 @@ export default function FormalizacionPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="g-name">Nombre Completo del Apoderado *</Label>
+                <Label htmlFor="g-name" className={errors.guardianName && "text-red-500"}>Nombre Completo del Apoderado *</Label>
                 <Input
                   id="g-name"
-                  value={guardianName}
-                  onChange={(e) => setGuardianName(e.target.value)}
                   placeholder="ej. Juan Pérez Delgado"
-                  required
+                  className={errors.guardianName && "border-red-500 focus-visible:ring-red-500"}
+                  {...register("guardianName", { required: true })}
                 />
+                {errors.guardianName && (
+                  <p className="text-red-500 text-[11px] mt-0.5">{errors.guardianName.message}</p>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="g-dni">DNI Apoderado *</Label>
+                  <Label htmlFor="g-dni" className={errors.guardianDni && "text-red-500"}>DNI Apoderado *</Label>
                   <Input
                     id="g-dni"
-                    value={guardianDni}
-                    onChange={(e) => setGuardianDni(e.target.value)}
                     maxLength={8}
                     placeholder="DNI"
-                    className="font-mono"
-                    required
+                    className={cn("font-mono", errors.guardianDni && "border-red-500 focus-visible:ring-red-500")}
+                    {...register("guardianDni", { required: true })}
                   />
+                  {errors.guardianDni && (
+                    <p className="text-red-500 text-[11px] mt-0.5">{errors.guardianDni.message}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="g-phone">Teléfono de Contacto *</Label>
+                  <Label htmlFor="g-phone" className={errors.guardianPhone && "text-red-500"}>Teléfono de Contacto *</Label>
                   <Input
                     id="g-phone"
-                    value={guardianPhone}
-                    onChange={(e) => setGuardianPhone(e.target.value)}
                     placeholder="ej. 987654321"
-                    required
+                    className={errors.guardianPhone && "border-red-500 focus-visible:ring-red-500"}
+                    {...register("guardianPhone", { required: true })}
                   />
+                  {errors.guardianPhone && (
+                    <p className="text-red-500 text-[11px] mt-0.5">{errors.guardianPhone.message}</p>
+                  )}
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="g-email">Correo Electrónico</Label>
+                  <Label htmlFor="g-email" className={errors.guardianEmail && "text-red-500"}>Correo Electrónico</Label>
                   <Input
                     id="g-email"
                     type="email"
-                    value={guardianEmail}
-                    onChange={(e) => setGuardianEmail(e.target.value)}
                     placeholder="correo@ejemplo.com"
+                    className={errors.guardianEmail && "border-red-500 focus-visible:ring-red-500"}
+                    {...register("guardianEmail")}
                   />
+                  {errors.guardianEmail && (
+                    <p className="text-red-500 text-[11px] mt-0.5">{errors.guardianEmail.message}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="g-ocup">Ocupación</Label>
+                  <Label htmlFor="g-ocup" className={errors.guardianOccupation && "text-red-500"}>Ocupación</Label>
                   <Input
                     id="g-ocup"
-                    value={guardianOcup}
-                    onChange={(e) => setGuardianOcup(e.target.value)}
                     placeholder="ej. Administrador"
+                    className={errors.guardianOccupation && "border-red-500 focus-visible:ring-red-500"}
+                    {...register("guardianOccupation")}
                   />
+                  {errors.guardianOccupation && (
+                    <p className="text-red-500 text-[11px] mt-0.5">{errors.guardianOccupation.message}</p>
+                  )}
                 </div>
               </div>
 

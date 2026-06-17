@@ -121,15 +121,9 @@ export default function LandingPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className={cn(buttonVariants({ size: "sm", variant: "ghost" }), "hidden sm:inline-flex cursor-pointer")}
-            >
-              Intranet
-            </Link>
-            <Link
-              href="/login"
               className={cn(buttonVariants({ size: "sm", variant: "default" }), "shadow-lg shadow-primary/20 cursor-pointer")}
             >
-              Iniciar Sesión
+              Intranet
             </Link>
             <ModeToggle />
           </div>
@@ -261,11 +255,7 @@ export default function LandingPage() {
                     <CardContent className="text-sm text-muted-foreground leading-relaxed line-clamp-4">
                       {b.cuerpo}
                     </CardContent>
-                    <div className="px-6 pb-6 pt-2">
-                      <button className="text-xs font-bold text-primary flex items-center gap-1 hover:gap-2 transition-all cursor-pointer">
-                        Leer más <ArrowRight className="size-3" />
-                      </button>
-                    </div>
+
                   </Card>
                 ))}
               </div>

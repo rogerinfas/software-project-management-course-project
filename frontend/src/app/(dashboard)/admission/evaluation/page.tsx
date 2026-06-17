@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import {
   Award,
   Search,
@@ -17,15 +18,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { backend } from "@/lib/api/types/backend";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
+
+const evaluationSchema = z.object({
+  aptitude: z.enum(["PENDING", "FIT", "UNFIT"]),
+  comments: z.string().min(5, "Los comentarios deben tener al menos 5 caracteres"),
+});
 
 export default function EvaluationPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = React.useState("");
   const [selectedProspectId, setSelectedProspectId] = React.useState<string | null>(null);
 
-  // Form states
-  const [aptitudeStatus, setAptitudeStatus] = React.useState<"FIT" | "UNFIT" | "PENDING">("PENDING");
-  const [comments, setComments] = React.useState("");
+  // React Hook Form
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
+    resolver: zodResolver(evaluationSchema),
+    defaultValues: {
+      aptitude: "PENDING" as "PENDING" | "FIT" | "UNFIT",
+      comments: "",
+    },
+  });
+
+  const aptitudeStatus = watch("aptitude");
+
   const [activeTab, setActiveTab] = React.useState<"verdict" | "process" | "profile">("verdict");
 
   // Queries
@@ -56,11 +73,13 @@ export default function EvaluationPage() {
   // Set default form values when prospect changes
   React.useEffect(() => {
     if (selectedProspect) {
-      setAptitudeStatus((selectedProspect.evaluation?.aptitude as any) || "PENDING");
-      setComments(selectedProspect.evaluation?.comments || "");
+      reset({
+        aptitude: (selectedProspect.evaluation?.aptitude as any) || "PENDING",
+        comments: selectedProspect.evaluation?.comments || "",
+      });
       setActiveTab("verdict");
     }
-  }, [selectedProspect]);
+  }, [selectedProspect, reset]);
 
   // Mutations
   const evaluateMutation = backend.useMutation("patch", "/api/admission/prospects/{id}/evaluation", {
@@ -69,19 +88,18 @@ export default function EvaluationPage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al registrar la evaluación");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmitForm = (data: any) => {
     if (!selectedProspectId) return;
 
     evaluateMutation.mutate({
       params: { path: { id: selectedProspectId } },
       body: {
-        aptitude: aptitudeStatus,
-        comments: comments,
+        aptitude: data.aptitude as any,
+        comments: data.comments,
       },
     });
   };
@@ -160,7 +178,7 @@ export default function EvaluationPage() {
         {/* Right Column: Evaluation Form & details */}
         <div className="bg-card border-border/80 flex flex-col justify-between rounded-xl border p-6 md:col-span-2">
           {selectedProspect ? (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            <form onSubmit={handleSubmit(onSubmitForm)} className="flex flex-col gap-6">
               {/* Profile Overview */}
               <div className="border-b border-border/60 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -214,6 +232,15 @@ export default function EvaluationPage() {
               {/* Tab 1: Dictamen Final */}
               {activeTab === "verdict" && (
                 <div className="flex flex-col gap-6 animate-in fade-in-50 duration-200">
+                  {selectedProspect.evaluation?.aptitude === "FIT" && (
+                    <div className="bg-green-500/10 border border-green-500/30 text-green-600 dark:text-green-400 p-3.5 rounded-lg text-xs leading-relaxed flex items-start gap-2.5">
+                      <CheckCircle className="size-4 shrink-0 mt-0.5 text-green-500" />
+                      <div>
+                        <span className="font-bold">Dictamen Consolidado:</span> Este postulante ya ha sido calificado como <strong className="font-bold">APTO</strong>. El proceso de admisión para este alumno se encuentra finalizado y habilitado para el módulo de Matrícula. No se admiten modificaciones adicionales.
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-2">
                       <Label className="text-sm font-semibold">Dictamen de Aptitud *</Label>
@@ -228,11 +255,33 @@ export default function EvaluationPage() {
                             <button
                               key={opt.value}
                               type="button"
-                              onClick={() => setAptitudeStatus(opt.value as any)}
+                              onClick={() => {
+                                if (selectedProspect.evaluation?.aptitude === "FIT") {
+                                  // Intentar cambiar a otro estado fuerza la mutación al backend
+                                  // que lanzará ProspectAlreadyApprovedException (400)
+                                  // y la respuesta del servidor aparecerá en el toast de onError
+                                  evaluateMutation.mutate(
+                                    {
+                                      params: { path: { id: selectedProspectId! } },
+                                      body: { aptitude: opt.value as any, comments: watch("comments") },
+                                    },
+                                    {
+                                      // Independientemente, siempre revertimos a FIT
+                                      onSettled: () => setValue("aptitude", "FIT"),
+                                    }
+                                  );
+                                  return;
+                                }
+                                setValue("aptitude", opt.value as any);
+                              }}
                               className={`cursor-pointer border rounded-lg p-3 text-center text-xs font-semibold transition-all ${
                                 isActive
                                   ? `${opt.color} ring-1 ring-primary border-primary`
                                   : "border-border/60 hover:bg-muted/40"
+                              } ${
+                                selectedProspect.evaluation?.aptitude === "FIT" && opt.value !== "FIT"
+                                  ? "opacity-60"
+                                  : ""
                               }`}
                             >
                               {opt.label}
@@ -243,19 +292,26 @@ export default function EvaluationPage() {
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="comments">Observaciones / Comentarios del Evaluador</Label>
+                      <Label htmlFor="comments" className={cn(errors.comments && "text-red-500")}>Observaciones / Comentarios del Evaluador</Label>
                       <Textarea
                         id="comments"
                         placeholder="Detalla los puntos fuertes o limitaciones encontradas en la entrevista/examen..."
-                        value={comments}
-                        onChange={(e) => setComments(e.target.value)}
-                        className="min-h-[120px]"
+                        {...register("comments")}
+                        disabled={selectedProspect.evaluation?.aptitude === "FIT"}
+                        className={cn("min-h-[120px]", errors.comments && "border-red-500 focus-visible:ring-red-500")}
                       />
+                      {errors.comments?.message && (
+                        <p className="text-red-500 text-xs mt-1">{String(errors.comments.message)}</p>
+                      )}
                     </div>
                   </div>
 
                   <div className="flex justify-end mt-2">
-                    <Button type="submit" disabled={evaluateMutation.isPending} className="cursor-pointer">
+                    <Button
+                      type="submit"
+                      disabled={evaluateMutation.isPending || selectedProspect.evaluation?.aptitude === "FIT"}
+                      className="cursor-pointer"
+                    >
                       {evaluateMutation.isPending ? "Guardando..." : "Guardar Calificación"}
                     </Button>
                   </div>

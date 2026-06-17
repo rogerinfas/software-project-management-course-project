@@ -77,7 +77,7 @@ export default function ExpedientePage() {
       queryClient.invalidateQueries({ queryKey: ["get", "/api/enrollment/students"] });
     },
     onError: (err: any) => {
-      toast.error(err?.message || "Error al actualizar apoderado");
+      toast.error(err?.message || "Error interno del servidor");
     },
   });
 
@@ -211,52 +211,52 @@ export default function ExpedientePage() {
                   <CardContent>
                     {activeStudent.guardian ? (
                       <div className="border border-border/60 rounded-xl overflow-hidden">
-                        <Table>
+                        <Table className="table-fixed">
                           <TableHeader className="bg-muted/30 font-sans">
                             <TableRow>
-                              <TableHead>Nombre Completo</TableHead>
-                              <TableHead>DNI</TableHead>
-                              <TableHead>Teléfono</TableHead>
-                              <TableHead>Correo Electrónico</TableHead>
-                              <TableHead>Ocupación</TableHead>
-                              <TableHead className="text-right">Acciones</TableHead>
+                              <TableHead className="w-[25%]">Nombre Completo</TableHead>
+                              <TableHead className="w-[12%]">DNI</TableHead>
+                              <TableHead className="w-[14%]">Teléfono</TableHead>
+                              <TableHead className="w-[22%]">Correo Electrónico</TableHead>
+                              <TableHead className="w-[17%]">Ocupación</TableHead>
+                              <TableHead className="w-[10%] text-right">Acciones</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody className="font-sans">
                             {editId === activeStudent.guardian.id ? (
                               <TableRow className="bg-muted/20">
-                                <TableCell>
+                                <TableCell className="overflow-hidden">
                                   <Input
-                                    className="h-8 text-xs font-semibold"
+                                    className="h-8 w-full text-xs font-semibold bg-background"
                                     value={editName}
                                     onChange={(e) => setEditName(e.target.value)}
                                   />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className="overflow-hidden">
                                   <Input
-                                    className="h-8 w-28 font-mono text-xs"
+                                    className="h-8 w-full font-mono text-xs bg-background"
                                     value={editDni}
                                     onChange={(e) => setEditDni(e.target.value)}
                                     maxLength={8}
                                   />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className="overflow-hidden">
                                   <Input
-                                    className="h-8 text-xs"
+                                    className="h-8 w-full text-xs bg-background"
                                     value={editTel}
                                     onChange={(e) => setEditTel(e.target.value)}
                                   />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className="overflow-hidden">
                                   <Input
-                                    className="h-8 text-xs"
+                                    className="h-8 w-full text-xs bg-background"
                                     value={editCorreo}
                                     onChange={(e) => setEditCorreo(e.target.value)}
                                   />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className="overflow-hidden">
                                   <Input
-                                    className="h-8 text-xs"
+                                    className="h-8 w-full text-xs bg-background"
                                     value={editOcup}
                                     onChange={(e) => setEditOcup(e.target.value)}
                                   />
