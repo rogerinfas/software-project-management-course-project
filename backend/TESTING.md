@@ -1,72 +1,118 @@
-# 🧪 Guía de Arquitectura y Estrategia de Pruebas del Backend
+# Guia de Arquitectura y Estrategia de Pruebas del Backend
 
-Esta guía describe la configuración de pruebas, las pruebas de integración migradas a Jest, el reporte de cobertura de código, los comandos de ejecución y los patrones de arquitectura recomendados para escalar la suite de pruebas del backend.
-
----
-
-## 🚀 1. Pruebas de Integración E2E Migradas
-
-Hemos migrado el ejecutor de pruebas nativo de Node (`node:test`) a **Jest** bajo el archivo [`test/auth-and-user.e2e-spec.ts`](file:///home/acide/Escritorio/universidad/software-project-management-course-project/backend/test/auth-and-user.e2e-spec.ts).
-
-### Funcionalidades Cubiertas
-1. **Autenticación (Better Auth):**
-   - Registro (`POST /api/auth/sign-up/email`)
-   - Autenticación y generación de cookies de sesión (`POST /api/auth/sign-in/email`)
-   - Obtención de sesión usando cookies (`GET /api/auth/get-session`)
-   - Destrucción de sesión (`POST /api/auth/sign-out`)
-2. **Administración de Usuarios (CRUD):**
-   - Rechazo de accesos no autorizados sin cookie de sesión (`401 Unauthorized`)
-   - Obtención paginada de la lista de usuarios (`GET /api/users`) con parámetros de tamaño y página
-   - Obtención de un usuario específico por ID (`GET /api/users/:id`)
-   - Actualización de datos de usuario (`PUT /api/users/:id`)
-   - Eliminación de usuarios (`DELETE /api/users/:id`)
+Esta guia describe la configuracion de pruebas, la suite de pruebas unitarias e integracion, el reporte de cobertura de codigo, los comandos de ejecucion y los patrones de arquitectura aplicados en el backend del proyecto.
 
 ---
 
-## 📊 2. Ejecución y Cobertura de Código
+## 1. Descripcion del Estado Actual de Pruebas
 
-Las pruebas se ejecutan en un entorno CommonJS utilizando un transpilador personalizado para permitir la compilación de dependencias ESM puras como `better-auth`.
+El sistema cuenta con un total de 294 pruebas automatizadas distribuidas en 82 suites de pruebas. La suite abarca tres niveles diferenciados de la arquitectura limpia:
 
-### Comandos
-
-* **Ejecutar Pruebas E2E:**
-  ```bash
-  pnpm run test:e2e
-  ```
-  *(Ejecuta Jest usando la configuración en `test/jest-e2e.json` y automáticamente aplica la bandera `--forceExit` para cerrar los pools de conexión a la base de datos).*
-
-* **Ejecutar Pruebas E2E con Cobertura:**
-  ```bash
-  pnpm run test:e2e --coverage
-  ```
-  *(Ejecuta las pruebas y genera un reporte detallado de cobertura en el directorio `coverage/`).*
+* Pruebas de Dominio (Entidades): Pruebas unitarias para las 19 entidades de dominio del backend que comprueban instanciacion de constructores, metodos de fabricacion, actualizaciones de estado y transformaciones de DTO.
+* Pruebas de Casos de Uso (Capa 1): Pruebas de comandos y consultas (CQRS) en todos los modulos (User, Academic, Admission, Enrollment, Staff, Treasury) que validan las reglas de negocio aisladas mediante el mockeo de repositorios.
+* Pruebas de Repositorios (Capa 2): Pruebas unitarias e integracion para los 19 repositorios de Prisma mediante la inyeccion de una instancia simulada de PrismaService para verificar llamadas correctas de insercion, actualizacion, busqueda y transacciones.
+* Pruebas de Controladores (Capa 3): Pruebas unitarias y de integracion HTTP de todos los controladores (UserController, AcademicController, AdmissionController, EnrollmentController, StaffController, TreasuryController) para verificar el mapeo correcto de endpoints, codigos de estado de retorno y llamadas a los buses de CQRS.
+* Pruebas E2E (End-to-End): Localizadas en la carpeta test para validar flujos de integracion de extremo a extremo (registro, login, persistencia y sesion de Better Auth junto con endpoints CRUD restringidos).
 
 ---
 
-## 🏛️ 3. Arquitectura Recomendada para Pruebas del Backend
+## 2. Instrucciones de Ejecucion
 
-Para expandir la cobertura y mantener un conjunto de pruebas limpio, recomendamos dividir las pruebas en tres capas bien diferenciadas, siguiendo el estilo de arquitectura limpia y hexagonal del proyecto:
+Para ejecutar las pruebas en el entorno de desarrollo local, se pueden utilizar los siguientes comandos desde la raiz del directorio del backend:
 
-```mermaid
-graph TD
-    A[Pruebas Unitarias] -->|Enfocado en| B[Entidades del Dominio y Casos de Uso]
-    C[Pruebas de Integración] -->|Enfocado en| D[Infraestructura y Repositorios de Base de Datos]
-    E[Pruebas E2E] -->|Enfocado en| F[Controladores HTTP y Endpoints]
+### Ejecutar todas las pruebas de la aplicacion
+```bash
+pnpm run test
+```
+Este comando ejecuta todos los archivos con extension spec.ts bajo el directorio src/ y los archivos de pruebas integracion. Utiliza Jest con un transpilador personalizado en CommonJS para permitir la ejecucion limpia de dependencias escritas en modulos ESM puro (como better-auth).
+
+### Ejecutar las pruebas con medicion de cobertura
+```bash
+pnpm run test:cov
+```
+Ejecuta la suite y genera un reporte en consola de la cobertura de sentencias, ramas, funciones y lineas, escribiendo un reporte HTML detallado en la carpeta coverage/.
+
+### Ejecutar las pruebas E2E integradas con base de datos
+```bash
+pnpm run test:e2e
+```
+Ejecuta el archivo de pruebas de integracion extrema utilizando Supertest para simular peticiones HTTP completas a los controladores levantados.
+
+---
+
+## 3. Ejemplo de Prueba Unitaria
+
+A continuacion se presenta la implementacion de la prueba unitaria para el caso de uso CreateUserCommandHandler, localizada en src/application/use-cases/user/commands/create-user.command.spec.ts:
+
+```typescript
+import { CreateUserCommand, CreateUserCommandHandler } from './create-user.command';
+import { UserEntity } from '../../../../domain/entities/user.entity';
+import { EmailAlreadyExistsException } from '../../../../domain/exceptions/user.exceptions';
+import { Role } from '@prisma/client';
+
+const mockSignUpEmail = jest.fn();
+
+jest.mock('../../../../infrastructure/config/better-auth/better-auth.config', () => ({
+  auth: {
+    api: {
+      signUpEmail: (...args: any[]) => mockSignUpEmail(...args),
+    },
+  },
+}));
+
+describe('CreateUserCommandHandler', () => {
+  let handler: CreateUserCommandHandler;
+  let userRepository: any;
+
+  beforeEach(() => {
+    mockSignUpEmail.mockReset();
+    userRepository = {
+      findByEmail: jest.fn(),
+      create: jest.fn(),
+    };
+    handler = new CreateUserCommandHandler(userRepository);
+  });
+
+  it('should throw EmailAlreadyExistsException if email already exists', async () => {
+    const user = new UserEntity({ email: 'test@example.com', name: 'Test User', role: Role.ADMIN });
+    userRepository.findByEmail.mockResolvedValue(user);
+
+    const command = new CreateUserCommand(user, 'password123');
+
+    await expect(handler.execute(command)).rejects.toThrow(EmailAlreadyExistsException);
+    expect(userRepository.findByEmail).toHaveBeenCalledWith('test@example.com');
+  });
+
+  it('should successfully create user and return user entity', async () => {
+    const user = new UserEntity({ email: 'test@example.com', name: 'Test User', role: Role.ADMIN });
+    userRepository.findByEmail.mockResolvedValue(null);
+    mockSignUpEmail.mockResolvedValue({
+      user: {
+        id: 'new-id',
+        email: 'test@example.com',
+        name: 'Test User',
+        role: Role.ADMIN,
+      },
+    });
+
+    const command = new CreateUserCommand(user, 'password123');
+    const result = await handler.execute(command);
+
+    expect(result).toBeInstanceOf(UserEntity);
+    expect(result.id).toBe('new-id');
+  });
+});
 ```
 
-### Capa 1: Pruebas Unitarias (Alta Velocidad, Alta Cobertura)
-- **Objetivo:** Entidades de Dominio (`src/domain/entities`) y Casos de Uso (`src/application/use-cases`).
-- **Estrategia:** Mockear todos los servicios externos e infraestructura (por ejemplo, repositorios, proveedores de correo) utilizando las capacidades de simulación de Jest (`jest.fn()`).
-- **Meta:** Cubrir reglas de negocio, validaciones, casos límite y excepciones personalizadas sin abrir conexiones a la base de datos.
+### Explicacion detallada del ejemplo:
 
-### Capa 2: Pruebas de Integración (Velocidad Media, Alta Confiabilidad)
-- **Objetivo:** Repositorios de base de datos de Prisma (`src/infrastructure/persistence/prisma/repositories`).
-- **Estrategia:** Verificar la lógica de consultas, restricciones de base de datos y relaciones.
-- **Herramientas:** Usar una instancia de base de datos local de prueba (o contenedores ligeros mediante Testcontainers-postgres).
+1. Mockeo de Dependencias Externas: Better Auth es un modulo de terceros que realiza llamadas de red y firma criptografica. Para que la prueba sea puramente unitaria, rapida y reproducible, se intercepta la exportacion de la configuracion de auth usando jest.mock, sustituyendo auth.api.signUpEmail con una funcion espia mockSignUpEmail.
+2. Setup de Hooks (beforeEach): En cada prueba, se limpia el espia de Better Auth y se instancia un repositorio simulado (userRepository) provisto de espias para las funciones basicas, pasandolo al constructor de CreateUserCommandHandler.
+3. Test de Excepcion de Negocio: En la primera prueba, configuramos el espia userRepository.findByEmail para que retorne un usuario existente. Al ejecutar el comando, se comprueba que el handler lanza correctamente la excepcion de dominio EmailAlreadyExistsException y detiene la ejecucion.
+4. Test de Flujo Exitoso: En la segunda prueba, indicamos al repositorio que no existe usuario previo (retornando null) y a Better Auth que retorne un usuario creado. El handler ejecuta la creacion exitosamente y devuelve una instancia valida de UserEntity.
 
-### Capa 3: Pruebas End-to-End (E2E) (Velocidad Baja, Máxima Confianza)
-- **Objetivo:** Capa de controladores y HTTP (`src/presentation/controllers`).
-- **Estrategia:** Levantar el contenedor completo de la aplicación (`AppModule`) mediante `@nestjs/testing` y realizar peticiones HTTP reales usando `supertest`.
-- **Control de Estado de BD:** Limpiar y resetear el estado de la base de datos para cada suite de prueba. Recomendamos:
-  - Envolver las pruebas en transacciones con rollback automático.
-  - O realizar limpieza explícita de registros en hooks `beforeEach`/`afterEach` (como se implementó en `auth-and-user.e2e-spec.ts`).
+### Ejecutar especificamente este archivo de prueba
+Para ejecutar unicamente este archivo de prueba de manera directa en la consola:
+```bash
+pnpm run test src/application/use-cases/user/commands/create-user.command.spec.ts
+```
