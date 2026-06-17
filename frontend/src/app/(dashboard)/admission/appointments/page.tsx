@@ -2,6 +2,10 @@
 
 import * as React from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { cn } from "@/lib/utils";
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -24,17 +28,35 @@ import { backend } from "@/lib/api/types/backend";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
+const appointmentSchema = z.object({
+  prospectId: z.string().min(1, "Debe seleccionar un postulante"),
+  date: z.string().min(1, "La fecha es requerida"),
+  time: z.string().min(1, "La hora es requerida"),
+  type: z.enum(["ENTREVISTA", "EXAMEN"]),
+  notes: z.string().optional(),
+});
+
 export default function AppointmentsPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = React.useState("");
   const [isCreateOpen, setIsCreateOpen] = React.useState(false);
 
-  // Form states
-  const [selectedProspectId, setSelectedProspectId] = React.useState("");
-  const [appointmentDate, setAppointmentDate] = React.useState("");
-  const [appointmentTime, setAppointmentTime] = React.useState("09:00");
-  const [appointmentType, setAppointmentType] = React.useState("ENTREVISTA");
-  const [appointmentNotes, setAppointmentNotes] = React.useState("");
+  // React Hook Form
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
+    resolver: zodResolver(appointmentSchema),
+    defaultValues: {
+      prospectId: "",
+      date: "",
+      time: "09:00",
+      type: "ENTREVISTA" as "ENTREVISTA" | "EXAMEN",
+      notes: "",
+    },
+  });
+
+  const selectedProspectId = watch("prospectId");
+  const appointmentDate = watch("date");
+  const appointmentTime = watch("time");
+  const appointmentType = watch("type");
 
   // Search state for prospects
   const [prospectSearch, setProspectSearch] = React.useState("");
@@ -61,9 +83,7 @@ export default function AppointmentsPage() {
     onSuccess: () => {
       toast.success("Cita agendada con éxito");
       setIsCreateOpen(false);
-      setSelectedProspectId("");
-      setAppointmentDate("");
-      setAppointmentNotes("");
+      reset();
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/appointments"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/prospects"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
@@ -82,21 +102,20 @@ export default function AppointmentsPage() {
     );
   }, [appointments, search]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedProspectId || !appointmentDate || !appointmentTime) {
+  const onSubmitForm = (data: any) => {
+    if (!data.prospectId || !data.date || !data.time) {
       toast.error("Por favor completa los campos obligatorios");
       return;
     }
 
-    const fullDateTime = new Date(`${appointmentDate}T${appointmentTime}:00`);
+    const fullDateTime = new Date(`${data.date}T${data.time}:00`);
 
     scheduleMutation.mutate({
       body: {
-        prospectId: selectedProspectId,
+        prospectId: data.prospectId,
         date: fullDateTime.toISOString(),
-        type: appointmentType,
-        notes: appointmentNotes,
+        type: data.type,
+        notes: data.notes,
       },
     });
   };
@@ -182,14 +201,14 @@ export default function AppointmentsPage() {
         {/* Info or Add Form Column */}
         <div className="bg-card border-border/80 flex flex-col justify-between rounded-xl border p-6 md:col-span-1">
           {isCreateOpen ? (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit(onSubmitForm)} className="flex flex-col gap-4">
               <h3 className="text-foreground text-lg font-semibold">Programar Cita</h3>
               <p className="text-muted-foreground text-xs leading-relaxed">
                 Selecciona un postulante de la base de admisiones para fijar una entrevista.
               </p>
 
               <div className="flex flex-col gap-1.5 mt-2">
-                <Label htmlFor="prospect">Postulante *</Label>
+                <Label htmlFor="prospect" className={cn(errors.prospectId && "text-red-500")}>Postulante *</Label>
                 <div className="relative">
                   <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
                   <Input
@@ -201,7 +220,7 @@ export default function AppointmentsPage() {
                 </div>
                 
                 {/* Scrollable list of Candidates */}
-                <div className="flex flex-col gap-1 overflow-y-auto max-h-[160px] border border-border/50 rounded-lg p-2 bg-muted/10">
+                <div className={cn("flex flex-col gap-1 overflow-y-auto max-h-[160px] border border-border/50 rounded-lg p-2 bg-muted/10", errors.prospectId && "border-red-500")}>
                   {filteredProspectsList.length === 0 ? (
                     <div className="text-muted-foreground py-6 text-center text-xs">
                       No se encontraron postulantes
@@ -211,7 +230,10 @@ export default function AppointmentsPage() {
                       <button
                         key={p.id}
                         type="button"
-                        onClick={() => setSelectedProspectId(p.id)}
+                        onClick={() => {
+                          setValue("prospectId", p.id);
+                          setValue("prospectId", p.id, { shouldValidate: true });
+                        }}
                         className={`w-full flex items-center justify-between rounded p-2 text-left text-xs transition-all cursor-pointer ${
                           selectedProspectId === p.id
                             ? "bg-primary/10 border-primary/40 border text-primary font-semibold"
@@ -224,34 +246,41 @@ export default function AppointmentsPage() {
                     ))
                   )}
                 </div>
+                {errors.prospectId?.message && (
+                  <p className="text-red-500 text-xs mt-0.5">{String(errors.prospectId.message)}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="date">Fecha *</Label>
+                  <Label htmlFor="date" className={cn(errors.date && "text-red-500")}>Fecha *</Label>
                   <Input
                     id="date"
                     type="date"
-                    value={appointmentDate}
-                    onChange={(e) => setAppointmentDate(e.target.value)}
-                    required
+                    {...register("date")}
+                    className={cn(errors.date && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {errors.date?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(errors.date.message)}</p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="time">Hora *</Label>
+                  <Label htmlFor="time" className={cn(errors.time && "text-red-500")}>Hora *</Label>
                   <Input
                     id="time"
                     type="time"
-                    value={appointmentTime}
-                    onChange={(e) => setAppointmentTime(e.target.value)}
-                    required
+                    {...register("time")}
+                    className={cn(errors.time && "border-red-500 focus-visible:ring-red-500")}
                   />
+                  {errors.time?.message && (
+                    <p className="text-red-500 text-xs mt-0.5">{String(errors.time.message)}</p>
+                  )}
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <Label>Tipo de Cita *</Label>
-                <Select value={appointmentType} onValueChange={(v) => setAppointmentType(v ?? "ENTREVISTA")}>
+                <Select value={appointmentType} onValueChange={(v) => setValue("type", v ?? "ENTREVISTA")}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccionar tipo" />
                   </SelectTrigger>
@@ -269,8 +298,7 @@ export default function AppointmentsPage() {
                 <Textarea
                   id="notes"
                   placeholder="ej. Traer libreta original..."
-                  value={appointmentNotes}
-                  onChange={(e) => setAppointmentNotes(e.target.value)}
+                  {...register("notes")}
                   className="min-h-[80px]"
                 />
               </div>
