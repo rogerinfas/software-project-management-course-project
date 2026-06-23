@@ -1,3 +1,4 @@
+import { TARIFF_REPOSITORY, CHARGE_REPOSITORY, PAYMENT_REPOSITORY } from './config/constants/tokens';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PrismaService } from './infrastructure/persistence/prisma/prisma.service';
@@ -20,15 +21,15 @@ import { TreasuryQueryHandlers } from './application/use-cases/treasury/queries'
   providers: [
     PrismaService,
     {
-      provide: 'ITariffRepository',
+      provide: TARIFF_REPOSITORY,
       useClass: PrismaTariffRepository,
     },
     {
-      provide: 'IChargeRepository',
+      provide: CHARGE_REPOSITORY,
       useClass: PrismaChargeRepository,
     },
     {
-      provide: 'IPaymentRepository',
+      provide: PAYMENT_REPOSITORY,
       useClass: PrismaPaymentRepository,
     },
     ...TreasuryCommandHandlers,

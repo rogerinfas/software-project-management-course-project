@@ -10,7 +10,9 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log('🌱 Iniciando la inicialización de datos de personal y asistencia (M5)...');
+  console.log(
+    '🌱 Iniciando la inicialización de datos de personal y asistencia (M5)...',
+  );
 
   // 1. Crear Regla Global de Asistencia
   let rule = await prisma.attendanceRule.findFirst();
@@ -86,7 +88,9 @@ async function main() {
     include: { user: true },
   });
 
-  console.log(`📊 Generando registros de asistencia para ${allProfiles.length} empleados...`);
+  console.log(
+    `📊 Generando registros de asistencia para ${allProfiles.length} empleados...`,
+  );
 
   // Días laborables pasados para simular asistencia (Lunes 18 de Mayo a Viernes 22 de Mayo de 2026)
   const weekdays = [
@@ -102,13 +106,17 @@ async function main() {
   console.log('🧹 Limpieza de registros de asistencia anteriores completada.');
 
   for (const profile of allProfiles) {
-    const [targetEntryHour, targetEntryMin] = profile.entryTime.split(':').map(Number);
-    const [targetExitHour, targetExitMin] = profile.exitTime.split(':').map(Number);
+    const [targetEntryHour, targetEntryMin] = profile.entryTime
+      .split(':')
+      .map(Number);
+    const [targetExitHour, targetExitMin] = profile.exitTime
+      .split(':')
+      .map(Number);
 
     for (const dayDate of weekdays) {
       // Determinar si llega tarde o a tiempo aleatoriamente para simular variabilidad
       const isLate = Math.random() > 0.4; // 60% puntual, 40% tarde
-      let entryHour = targetEntryHour;
+      const entryHour = targetEntryHour;
       let entryMin = Math.floor(Math.random() * (profile.gracePeriod + 1)); // Arriba entre 0 y 5 mins de gracia
 
       let delayMinutes = 0;
@@ -139,7 +147,12 @@ async function main() {
       // Crear salida (siempre a tiempo o unos minutos después)
       const exitTimestamp = new Date(dayDate);
       const exitMinOffset = Math.floor(Math.random() * 10); // Sale 0-10 min tarde
-      exitTimestamp.setHours(targetExitHour, targetExitMin + exitMinOffset, 0, 0);
+      exitTimestamp.setHours(
+        targetExitHour,
+        targetExitMin + exitMinOffset,
+        0,
+        0,
+      );
 
       await prisma.attendanceRecord.create({
         data: {
@@ -152,10 +165,14 @@ async function main() {
         },
       });
     }
-    console.log(`✅ Registros de asistencia (entrada/salida) de Lunes a Viernes creados para: ${profile.user.name}`);
+    console.log(
+      `✅ Registros de asistencia (entrada/salida) de Lunes a Viernes creados para: ${profile.user.name}`,
+    );
   }
 
-  console.log('🎉 Inicialización de personal y asistencia completada exitosamente!');
+  console.log(
+    '🎉 Inicialización de personal y asistencia completada exitosamente!',
+  );
 }
 
 main()

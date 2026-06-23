@@ -14,18 +14,73 @@ async function main() {
 
   const sectionsToCreate = [
     // primaria
-    { name: 'A', grade: '1ro de Primaria', level: EducationalLevel.PRIMARY, capacity: 25 },
-    { name: 'A', grade: '2do de Primaria', level: EducationalLevel.PRIMARY, capacity: 25 },
-    { name: 'A', grade: '3ro de Primaria', level: EducationalLevel.PRIMARY, capacity: 25 },
-    { name: 'A', grade: '4to de Primaria', level: EducationalLevel.PRIMARY, capacity: 25 },
-    { name: 'A', grade: '5to de Primaria', level: EducationalLevel.PRIMARY, capacity: 25 },
-    { name: 'A', grade: '6to de Primaria', level: EducationalLevel.PRIMARY, capacity: 25 },
+    {
+      name: 'A',
+      grade: '1ro de Primaria',
+      level: EducationalLevel.PRIMARY,
+      capacity: 25,
+    },
+    {
+      name: 'A',
+      grade: '2do de Primaria',
+      level: EducationalLevel.PRIMARY,
+      capacity: 25,
+    },
+    {
+      name: 'A',
+      grade: '3ro de Primaria',
+      level: EducationalLevel.PRIMARY,
+      capacity: 25,
+    },
+    {
+      name: 'A',
+      grade: '4to de Primaria',
+      level: EducationalLevel.PRIMARY,
+      capacity: 25,
+    },
+    {
+      name: 'A',
+      grade: '5to de Primaria',
+      level: EducationalLevel.PRIMARY,
+      capacity: 25,
+    },
+    {
+      name: 'A',
+      grade: '6to de Primaria',
+      level: EducationalLevel.PRIMARY,
+      capacity: 25,
+    },
     // secundaria
-    { name: 'A', grade: '1ro de Secundaria', level: EducationalLevel.SECONDARY, capacity: 30 },
-    { name: 'A', grade: '2do de Secundaria', level: EducationalLevel.SECONDARY, capacity: 30 },
-    { name: 'A', grade: '3ro de Secundaria', level: EducationalLevel.SECONDARY, capacity: 30 },
-    { name: 'A', grade: '4to de Secundaria', level: EducationalLevel.SECONDARY, capacity: 30 },
-    { name: 'A', grade: '5to de Secundaria', level: EducationalLevel.SECONDARY, capacity: 30 },
+    {
+      name: 'A',
+      grade: '1ro de Secundaria',
+      level: EducationalLevel.SECONDARY,
+      capacity: 30,
+    },
+    {
+      name: 'A',
+      grade: '2do de Secundaria',
+      level: EducationalLevel.SECONDARY,
+      capacity: 30,
+    },
+    {
+      name: 'A',
+      grade: '3ro de Secundaria',
+      level: EducationalLevel.SECONDARY,
+      capacity: 30,
+    },
+    {
+      name: 'A',
+      grade: '4to de Secundaria',
+      level: EducationalLevel.SECONDARY,
+      capacity: 30,
+    },
+    {
+      name: 'A',
+      grade: '5to de Secundaria',
+      level: EducationalLevel.SECONDARY,
+      capacity: 30,
+    },
   ];
 
   for (const item of sectionsToCreate) {
