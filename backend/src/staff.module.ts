@@ -1,4 +1,8 @@
-import { STAFF_PROFILE_REPOSITORY, ATTENDANCE_RECORD_REPOSITORY, ATTENDANCE_RULE_REPOSITORY } from './config/constants/tokens';
+import {
+  STAFF_PROFILE_REPOSITORY,
+  ATTENDANCE_RECORD_REPOSITORY,
+  ATTENDANCE_RULE_REPOSITORY,
+} from './config/constants/tokens';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { StaffController } from './presentation/controllers/staff/staff.controller';

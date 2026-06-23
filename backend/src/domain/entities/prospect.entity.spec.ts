@@ -1,5 +1,9 @@
 import { ProspectEntity } from './prospect.entity';
-import { EducationalLevel, ProspectPriority } from '@prisma/client';
+import {
+  EducationalLevel,
+  ProspectPriority,
+  ProspectStage,
+} from '@prisma/client';
 
 describe('ProspectEntity', () => {
   it('should create a ProspectEntity instance and populate fields', () => {
@@ -8,9 +12,9 @@ describe('ProspectEntity', () => {
       name: 'Pepito Pérez',
       phone: '999888777',
       targetGrade: '1',
-      level: EducationalLevel.PRIMARIA,
-      priority: ProspectPriority.ALTA,
-      currentStageId: 'stage-1',
+      level: EducationalLevel.PRIMARY,
+      priority: ProspectPriority.HIGH,
+      stage: ProspectStage.ENTREVISTA,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -24,6 +28,6 @@ describe('ProspectEntity', () => {
     expect(entity.targetGrade).toBe(data.targetGrade);
     expect(entity.level).toBe(data.level);
     expect(entity.priority).toBe(data.priority);
-    expect(entity.currentStageId).toBe(data.currentStageId);
+    expect(entity.stage).toBe(data.stage);
   });
 });

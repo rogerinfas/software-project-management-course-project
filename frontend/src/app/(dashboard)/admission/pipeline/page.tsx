@@ -214,17 +214,19 @@ export default function PipelinePage() {
   const [resumen, setResumen] = React.useState("");
 
   // Queries
-  const { data: stagesData, isLoading } = backend.useQuery("get", "/api/admission/stages", {});
+  const { data: prospectsData, isLoading } = backend.useQuery("get", "/api/admission/prospects", {
+    params: { query: { page: 1, size: 1000 } }
+  });
 
-  const stages = React.useMemo(() => {
-    if (!stagesData) return [];
-    return [...stagesData].sort((a, b) => a.order - b.order) as Stage[];
-  }, [stagesData]);
+  const stages = [
+    { id: "ENTREVISTA", name: "Entrevista", order: 1 },
+    { id: "EVALUACION_PSICOLOGICA", name: "Evaluación Psicológica", order: 2 },
+    { id: "EVALUACION_ACADEMICA", name: "Evaluación Académica", order: 3 },
+  ];
 
   const prospects = React.useMemo(() => {
-    if (!stages) return [];
-    return stages.flatMap((s) => s.prospects || []) as Prospect[];
-  }, [stages]);
+    return prospectsData?.data || [];
+  }, [prospectsData]);
 
   // Mutations
   const createProspectMutation = backend.useMutation("post", "/api/admission/prospects", {
@@ -236,7 +238,7 @@ export default function PipelinePage() {
       setGrado("1° primaria");
       setNivel("PRIMARY");
       setPrioridad("MEDIUM");
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
+      queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/prospects"] });
     },
     onError: (err: any) => {
       toast.error(err?.message || "Error interno del servidor");
@@ -246,7 +248,7 @@ export default function PipelinePage() {
   const moveProspectMutation = backend.useMutation("patch", "/api/admission/prospects/{id}/stage", {
     onSuccess: () => {
       toast.success("Postulante movido con éxito");
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
+      queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/prospects"] });
     },
     onError: (err: any) => {
       toast.error(err?.message || "Error interno del servidor");
@@ -325,7 +327,7 @@ export default function PipelinePage() {
       return;
     }
     const targetProspect = prospects.find((p: any) => p.id === overId);
-    if (targetProspect) setOverColumnId(targetProspect.currentStageId);
+    if (targetProspect) setOverColumnId(targetProspect.stage);
     else setOverColumnId(null);
   }
 
@@ -345,19 +347,24 @@ export default function PipelinePage() {
       targetStageId = overId;
     } else {
       const targetProspect = prospects.find((p: any) => p.id === overId);
-      if (targetProspect) targetStageId = targetProspect.currentStageId;
+      if (targetProspect) targetStageId = targetProspect.stage;
     }
 
     if (!targetStageId) return;
 
     const draggedProspect = prospects.find((p: any) => p.id === draggedId);
     if (!draggedProspect) return;
-    if (draggedProspect.currentStageId === targetStageId) return;
+    if (draggedProspect.stage === targetStageId) return;
+
+    if (draggedProspect.stage === "EVALUACION_ACADEMICA") {
+      toast.error("El prospecto ya se encuentra en Evaluación Académica y no puede cambiar de etapa.");
+      return;
+    }
 
     // Optimistic UI updates
     moveProspectMutation.mutate({
       params: { path: { id: draggedId } },
-      body: { currentStageId: targetStageId },
+      body: { stage: targetStageId as any },
     });
   }
 
@@ -380,7 +387,6 @@ export default function PipelinePage() {
         targetGrade: grado,
         level: nivel,
         priority: prioridad,
-        currentStageId: firstStageId,
       },
     });
   }
@@ -531,7 +537,7 @@ export default function PipelinePage() {
         >
           {stages.map((stage: any) => {
             const stageProspects = prospects.filter(
-              (p: any) => p.currentStageId === stage.id,
+              (p: any) => p.stage === stage.id,
             );
             const ids = stageProspects.map((p: any) => p.id);
             return (

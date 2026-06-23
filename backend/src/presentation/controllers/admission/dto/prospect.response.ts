@@ -1,6 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { EducationalLevel, ProspectPriority } from '@prisma/client';
+import {
+  EducationalLevel,
+  ProspectPriority,
+  ProspectStage,
+} from '@prisma/client';
 import { AppointmentResponse } from './appointment.response';
 import { EvaluationResultResponse } from './evaluation.response';
 
@@ -50,11 +54,12 @@ export class ProspectResponse {
   priority: ProspectPriority;
 
   @ApiProperty({
-    description: 'Current admission stage ID',
-    example: 'stage-123',
+    description: 'Current admission stage',
+    enum: ProspectStage,
+    example: ProspectStage.ENTREVISTA,
   })
   @Expose()
-  currentStageId: string;
+  stage: ProspectStage;
 
   @ApiProperty({
     description: 'List of scheduled appointments',

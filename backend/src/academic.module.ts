@@ -1,4 +1,9 @@
-import { COURSE_REPOSITORY, SCHEDULE_REPOSITORY, COMMUNICATION_REPOSITORY, SECTION_REPOSITORY } from './config/constants/tokens';
+import {
+  COURSE_REPOSITORY,
+  SCHEDULE_REPOSITORY,
+  COMMUNICATION_REPOSITORY,
+  SECTION_REPOSITORY,
+} from './config/constants/tokens';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AcademicController } from './presentation/controllers/academic/academic.controller';

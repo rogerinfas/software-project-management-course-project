@@ -1,9 +1,7 @@
 import { StaffProfileEntity } from '../entities/staff-profile.entity';
 
 export interface IStaffProfileRepository {
-  create(
-    staff: Partial<StaffProfileEntity>,
-  ): Promise<StaffProfileEntity>;
+  create(staff: Partial<StaffProfileEntity>): Promise<StaffProfileEntity>;
   findById(id: string): Promise<StaffProfileEntity | null>;
   findByUserId(userId: string): Promise<StaffProfileEntity | null>;
   update(

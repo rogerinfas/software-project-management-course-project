@@ -12,7 +12,5 @@ export interface IProspectInteractionRepository {
     interaction: Partial<ProspectInteractionEntity>,
   ): Promise<ProspectInteractionEntity>;
 
-  findByProspectId(
-    prospectId: string,
-  ): Promise<ProspectInteractionEntity[]>;
+  findByProspectId(prospectId: string): Promise<ProspectInteractionEntity[]>;
 }

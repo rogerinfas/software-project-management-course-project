@@ -1,5 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EducationalLevel, ProspectPriority } from '@prisma/client';
+import {
+  EducationalLevel,
+  ProspectPriority,
+  ProspectStage,
+} from '@prisma/client';
 import { Transform } from 'class-transformer';
 import {
   IsEnum,
@@ -52,24 +56,17 @@ export class CreateProspectRequest {
   @IsEnum(ProspectPriority)
   @IsNotEmpty()
   priority: ProspectPriority;
-
-  @ApiProperty({
-    description: 'Initial admission stage ID',
-    example: 'stage-123',
-  })
-  @IsString()
-  @IsNotEmpty()
-  currentStageId: string;
 }
 
 export class UpdateProspectStageRequest {
   @ApiProperty({
-    description: 'Target admission stage ID',
-    example: 'stage-456',
+    description: 'Target admission stage',
+    enum: ProspectStage,
+    example: ProspectStage.EVALUACION_ACADEMICA,
   })
-  @IsString()
+  @IsEnum(ProspectStage)
   @IsNotEmpty()
-  currentStageId: string;
+  stage: ProspectStage;
 }
 
 export class GetProspectsPaginatedRequest {

@@ -1,4 +1,9 @@
-import { PrismaClient, EducationalLevel, TariffType, PaymentMethod } from '@prisma/client';
+import {
+  PrismaClient,
+  EducationalLevel,
+  TariffType,
+  PaymentMethod,
+} from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import 'dotenv/config';
@@ -14,17 +19,72 @@ async function main() {
 
   // 1. Crear Tarifas
   const tariffsToCreate = [
-    { concept: 'Matrícula Anual - Inicial', amount: 300.0, type: TariffType.ONE_TIME, level: EducationalLevel.INITIAL },
-    { concept: 'Matrícula Anual - Primaria', amount: 400.0, type: TariffType.ONE_TIME, level: EducationalLevel.PRIMARY },
-    { concept: 'Matrícula Anual - Secundaria', amount: 500.0, type: TariffType.ONE_TIME, level: EducationalLevel.SECONDARY },
-    { concept: 'Pensión Mensual Mayo - Inicial', amount: 350.0, type: TariffType.MONTHLY, level: EducationalLevel.INITIAL },
-    { concept: 'Pensión Mensual Mayo - Primaria', amount: 450.0, type: TariffType.MONTHLY, level: EducationalLevel.PRIMARY },
-    { concept: 'Pensión Mensual Mayo - Secundaria', amount: 550.0, type: TariffType.MONTHLY, level: EducationalLevel.SECONDARY },
-    { concept: 'Pensión Mensual Junio - Inicial', amount: 350.0, type: TariffType.MONTHLY, level: EducationalLevel.INITIAL },
-    { concept: 'Pensión Mensual Junio - Primaria', amount: 450.0, type: TariffType.MONTHLY, level: EducationalLevel.PRIMARY },
-    { concept: 'Pensión Mensual Junio - Secundaria', amount: 550.0, type: TariffType.MONTHLY, level: EducationalLevel.SECONDARY },
-    { concept: 'Constancia de Estudios', amount: 35.0, type: TariffType.EXTRA, level: EducationalLevel.PRIMARY },
-    { concept: 'Constancia de Estudios', amount: 35.0, type: TariffType.EXTRA, level: EducationalLevel.SECONDARY },
+    {
+      concept: 'Matrícula Anual - Inicial',
+      amount: 300.0,
+      type: TariffType.ONE_TIME,
+      level: EducationalLevel.INITIAL,
+    },
+    {
+      concept: 'Matrícula Anual - Primaria',
+      amount: 400.0,
+      type: TariffType.ONE_TIME,
+      level: EducationalLevel.PRIMARY,
+    },
+    {
+      concept: 'Matrícula Anual - Secundaria',
+      amount: 500.0,
+      type: TariffType.ONE_TIME,
+      level: EducationalLevel.SECONDARY,
+    },
+    {
+      concept: 'Pensión Mensual Mayo - Inicial',
+      amount: 350.0,
+      type: TariffType.MONTHLY,
+      level: EducationalLevel.INITIAL,
+    },
+    {
+      concept: 'Pensión Mensual Mayo - Primaria',
+      amount: 450.0,
+      type: TariffType.MONTHLY,
+      level: EducationalLevel.PRIMARY,
+    },
+    {
+      concept: 'Pensión Mensual Mayo - Secundaria',
+      amount: 550.0,
+      type: TariffType.MONTHLY,
+      level: EducationalLevel.SECONDARY,
+    },
+    {
+      concept: 'Pensión Mensual Junio - Inicial',
+      amount: 350.0,
+      type: TariffType.MONTHLY,
+      level: EducationalLevel.INITIAL,
+    },
+    {
+      concept: 'Pensión Mensual Junio - Primaria',
+      amount: 450.0,
+      type: TariffType.MONTHLY,
+      level: EducationalLevel.PRIMARY,
+    },
+    {
+      concept: 'Pensión Mensual Junio - Secundaria',
+      amount: 550.0,
+      type: TariffType.MONTHLY,
+      level: EducationalLevel.SECONDARY,
+    },
+    {
+      concept: 'Constancia de Estudios',
+      amount: 35.0,
+      type: TariffType.EXTRA,
+      level: EducationalLevel.PRIMARY,
+    },
+    {
+      concept: 'Constancia de Estudios',
+      amount: 35.0,
+      type: TariffType.EXTRA,
+      level: EducationalLevel.SECONDARY,
+    },
   ];
 
   const tariffIds: Record<string, string> = {};
@@ -49,11 +109,15 @@ async function main() {
   // 2. Obtener estudiantes existentes
   const students = await prisma.student.findMany();
   if (students.length === 0) {
-    console.log('⚠️ No hay estudiantes creados. Por favor ejecuta el seed de matrícula primero.');
+    console.log(
+      '⚠️ No hay estudiantes creados. Por favor ejecuta el seed de matrícula primero.',
+    );
     return;
   }
 
-  console.log(`🌱 Generando cargos y pagos para ${students.length} estudiantes...`);
+  console.log(
+    `🌱 Generando cargos y pagos para ${students.length} estudiantes...`,
+  );
 
   // 3. Crear cargos y pagos para los estudiantes
   for (const student of students) {
@@ -83,7 +147,9 @@ async function main() {
     if (!matriculaTariffId || !pensionTariffId) continue;
 
     // A. Cargo de Matrícula (Simular que ya lo pagó por completo en Marzo)
-    const matriculaTariff = await prisma.tariff.findUnique({ where: { id: matriculaTariffId } });
+    const matriculaTariff = await prisma.tariff.findUnique({
+      where: { id: matriculaTariffId },
+    });
     if (matriculaTariff) {
       const chargeMatricula = await prisma.charge.findFirst({
         where: { studentId: student.id, tariffId: matriculaTariffId },
@@ -108,12 +174,16 @@ async function main() {
             timestamp: new Date(2026, 2, 4),
           },
         });
-        console.log(`✅ Cargo & Pago de Matrícula creado para el estudiante: ${student.firstName}`);
+        console.log(
+          `✅ Cargo & Pago de Matrícula creado para el estudiante: ${student.firstName}`,
+        );
       }
     }
 
     // B. Cargo de Pensión de Mayo (Simular pagos parciales o pendientes)
-    const pensionTariff = await prisma.tariff.findUnique({ where: { id: pensionTariffId } });
+    const pensionTariff = await prisma.tariff.findUnique({
+      where: { id: pensionTariffId },
+    });
     if (pensionTariff) {
       const chargePension = await prisma.charge.findFirst({
         where: { studentId: student.id, tariffId: pensionTariffId },
@@ -124,7 +194,11 @@ async function main() {
         const isPaid = student.firstName.length % 2 === 0;
         const isPartial = student.firstName.length % 3 === 0 && !isPaid;
 
-        const pendingAmount = isPaid ? 0.0 : isPartial ? pensionTariff.amount - 200.0 : pensionTariff.amount;
+        const pendingAmount = isPaid
+          ? 0.0
+          : isPartial
+            ? pensionTariff.amount - 200.0
+            : pensionTariff.amount;
         const status = isPaid ? 'PAID' : isPartial ? 'PARTIAL' : 'PENDING';
 
         const createdCharge = await prisma.charge.create({
@@ -157,12 +231,16 @@ async function main() {
             },
           });
         }
-        console.log(`✅ Cargo de Pensión Mayo (${status}) creado para el estudiante: ${student.firstName}`);
+        console.log(
+          `✅ Cargo de Pensión Mayo (${status}) creado para el estudiante: ${student.firstName}`,
+        );
       }
     }
 
     // C. Cargo de Pensión de Junio (100% Pendiente)
-    const pensionJunioTariff = await prisma.tariff.findUnique({ where: { id: pensionJunioTariffId } });
+    const pensionJunioTariff = await prisma.tariff.findUnique({
+      where: { id: pensionJunioTariffId },
+    });
     if (pensionJunioTariff) {
       const chargeJunio = await prisma.charge.findFirst({
         where: { studentId: student.id, tariffId: pensionJunioTariffId },
@@ -179,7 +257,9 @@ async function main() {
             status: 'PENDING',
           },
         });
-        console.log(`✅ Cargo de Pensión Junio (PENDING) creado para el estudiante: ${student.firstName}`);
+        console.log(
+          `✅ Cargo de Pensión Junio (PENDING) creado para el estudiante: ${student.firstName}`,
+        );
       }
     }
   }

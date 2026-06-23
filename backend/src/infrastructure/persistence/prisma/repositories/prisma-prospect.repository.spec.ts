@@ -2,7 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaProspectRepository } from './prisma-prospect.repository';
 import { PrismaService } from '../prisma.service';
 import { ProspectEntity } from '../../../../domain/entities/prospect.entity';
-import { EducationalLevel, ProspectPriority } from '@prisma/client';
+import {
+  EducationalLevel,
+  ProspectPriority,
+  ProspectStage,
+} from '@prisma/client';
 
 describe('PrismaProspectRepository', () => {
   let repository: PrismaProspectRepository;
@@ -43,7 +47,7 @@ describe('PrismaProspectRepository', () => {
       targetGrade: '1',
       level: EducationalLevel.PRIMARY,
       priority: ProspectPriority.HIGH,
-      currentStageId: 's-1',
+      stage: ProspectStage.ENTREVISTA,
     };
     mockPrisma.prospect.create.mockResolvedValue({
       id: 'p-1',
@@ -66,7 +70,7 @@ describe('PrismaProspectRepository', () => {
       targetGrade: '1',
       level: EducationalLevel.PRIMARY,
       priority: ProspectPriority.HIGH,
-      currentStageId: 's-1',
+      stage: ProspectStage.ENTREVISTA,
       appointments: [],
       evaluation: null,
     });
@@ -84,7 +88,7 @@ describe('PrismaProspectRepository', () => {
       targetGrade: '1',
       level: EducationalLevel.PRIMARY,
       priority: ProspectPriority.HIGH,
-      currentStageId: 's-1',
+      stage: ProspectStage.ENTREVISTA,
       appointments: [],
       evaluation: null,
     });
@@ -105,7 +109,7 @@ describe('PrismaProspectRepository', () => {
           targetGrade: '1',
           level: EducationalLevel.PRIMARY,
           priority: ProspectPriority.HIGH,
-          currentStageId: 's-1',
+          stage: ProspectStage.ENTREVISTA,
           appointments: [],
           evaluation: null,
         },

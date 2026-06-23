@@ -1,4 +1,9 @@
-import { GUARDIAN_REPOSITORY, STUDENT_REPOSITORY, ENROLLMENT_REPOSITORY, SECTION_REPOSITORY } from './config/constants/tokens';
+import {
+  GUARDIAN_REPOSITORY,
+  STUDENT_REPOSITORY,
+  ENROLLMENT_REPOSITORY,
+  SECTION_REPOSITORY,
+} from './config/constants/tokens';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { EnrollmentController } from './presentation/controllers/enrollment/enrollment.controller';

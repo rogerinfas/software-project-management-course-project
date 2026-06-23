@@ -1,19 +1,21 @@
-import { ADMISSION_STAGE_REPOSITORY, PROSPECT_REPOSITORY, APPOINTMENT_REPOSITORY, EVALUATION_RESULT_REPOSITORY, PROSPECT_INTERACTION_REPOSITORY } from './config/constants/tokens';
+import {
+  PROSPECT_REPOSITORY,
+  APPOINTMENT_REPOSITORY,
+  EVALUATION_RESULT_REPOSITORY,
+  PROSPECT_INTERACTION_REPOSITORY,
+} from './config/constants/tokens';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AdmissionController } from './presentation/controllers/admission/admission.controller';
 import { PrismaService } from './infrastructure/persistence/prisma/prisma.service';
 
 // Repositories
-import { PrismaAdmissionStageRepository } from './infrastructure/persistence/prisma/repositories/prisma-admission-stage.repository';
 import { PrismaProspectRepository } from './infrastructure/persistence/prisma/repositories/prisma-prospect.repository';
 import { PrismaAppointmentRepository } from './infrastructure/persistence/prisma/repositories/prisma-appointment.repository';
 import { PrismaEvaluationResultRepository } from './infrastructure/persistence/prisma/repositories/prisma-evaluation-result.repository';
 import { PrismaProspectInteractionRepository } from './infrastructure/persistence/prisma/repositories/prisma-interaction.repository';
 
 // Handlers
-import { StageCommandHandlers } from './application/use-cases/admission-stage/commands';
-import { StageQueryHandlers } from './application/use-cases/admission-stage/queries';
 import { ProspectCommandHandlers } from './application/use-cases/prospect/commands';
 import { ProspectQueryHandlers } from './application/use-cases/prospect/queries/get-prospects-paginated.query';
 import { AppointmentCommandHandlers } from './application/use-cases/appointment/commands';
@@ -30,10 +32,6 @@ import {
   providers: [
     PrismaService,
     {
-      provide: ADMISSION_STAGE_REPOSITORY,
-      useClass: PrismaAdmissionStageRepository,
-    },
-    {
       provide: PROSPECT_REPOSITORY,
       useClass: PrismaProspectRepository,
     },
@@ -49,8 +47,6 @@ import {
       provide: PROSPECT_INTERACTION_REPOSITORY,
       useClass: PrismaProspectInteractionRepository,
     },
-    ...StageCommandHandlers,
-    ...StageQueryHandlers,
     ...ProspectCommandHandlers,
     ...ProspectQueryHandlers,
     ...AppointmentCommandHandlers,

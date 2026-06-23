@@ -55,7 +55,7 @@ const nav = [
   {
     label: "Admisión (M1)",
     items: [
-      { href: "/admission/config", title: "Config. proceso", icon: Settings2 },
+
       { href: "/admission/pipeline", title: "CRM / Pipeline", icon: UserPlus },
       { href: "/admission/appointments", title: "Agenda de Citas", icon: CalendarCheck },
       { href: "/admission/documents", title: "Documentos", icon: FolderOpen },
