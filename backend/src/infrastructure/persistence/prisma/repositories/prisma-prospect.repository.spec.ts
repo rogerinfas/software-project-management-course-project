@@ -37,8 +37,20 @@ describe('PrismaProspectRepository', () => {
   });
 
   it('should create a prospect', async () => {
-    const data = { name: 'John Doe', phone: '123456789', targetGrade: '1', level: EducationalLevel.PRIMARY, priority: ProspectPriority.HIGH, currentStageId: 's-1' };
-    mockPrisma.prospect.create.mockResolvedValue({ id: 'p-1', ...data, appointments: [], evaluation: null });
+    const data = {
+      name: 'John Doe',
+      phone: '123456789',
+      targetGrade: '1',
+      level: EducationalLevel.PRIMARY,
+      priority: ProspectPriority.HIGH,
+      currentStageId: 's-1',
+    };
+    mockPrisma.prospect.create.mockResolvedValue({
+      id: 'p-1',
+      ...data,
+      appointments: [],
+      evaluation: null,
+    });
 
     const result = await repository.create(data);
 
@@ -47,7 +59,17 @@ describe('PrismaProspectRepository', () => {
   });
 
   it('should find prospect by id', async () => {
-    mockPrisma.prospect.findUnique.mockResolvedValue({ id: 'p-1', name: 'John Doe', phone: '123456789', targetGrade: '1', level: EducationalLevel.PRIMARY, priority: ProspectPriority.HIGH, currentStageId: 's-1', appointments: [], evaluation: null });
+    mockPrisma.prospect.findUnique.mockResolvedValue({
+      id: 'p-1',
+      name: 'John Doe',
+      phone: '123456789',
+      targetGrade: '1',
+      level: EducationalLevel.PRIMARY,
+      priority: ProspectPriority.HIGH,
+      currentStageId: 's-1',
+      appointments: [],
+      evaluation: null,
+    });
 
     const result = await repository.findById('p-1');
 
@@ -55,7 +77,17 @@ describe('PrismaProspectRepository', () => {
   });
 
   it('should update prospect', async () => {
-    mockPrisma.prospect.update.mockResolvedValue({ id: 'p-1', name: 'John Doe II', phone: '123456789', targetGrade: '1', level: EducationalLevel.PRIMARY, priority: ProspectPriority.HIGH, currentStageId: 's-1', appointments: [], evaluation: null });
+    mockPrisma.prospect.update.mockResolvedValue({
+      id: 'p-1',
+      name: 'John Doe II',
+      phone: '123456789',
+      targetGrade: '1',
+      level: EducationalLevel.PRIMARY,
+      priority: ProspectPriority.HIGH,
+      currentStageId: 's-1',
+      appointments: [],
+      evaluation: null,
+    });
 
     const result = await repository.update('p-1', { name: 'John Doe II' });
 
@@ -65,7 +97,19 @@ describe('PrismaProspectRepository', () => {
   it('should find prospects paginated', async () => {
     mockPrisma.$transaction.mockResolvedValue([
       1,
-      [{ id: 'p-1', name: 'John Doe', phone: '123456789', targetGrade: '1', level: EducationalLevel.PRIMARY, priority: ProspectPriority.HIGH, currentStageId: 's-1', appointments: [], evaluation: null }],
+      [
+        {
+          id: 'p-1',
+          name: 'John Doe',
+          phone: '123456789',
+          targetGrade: '1',
+          level: EducationalLevel.PRIMARY,
+          priority: ProspectPriority.HIGH,
+          currentStageId: 's-1',
+          appointments: [],
+          evaluation: null,
+        },
+      ],
     ]);
 
     const result = await repository.findManyPaginated(1, 10);

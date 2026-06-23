@@ -35,7 +35,14 @@ describe('PrismaScheduleRepository', () => {
   });
 
   it('should create schedule', async () => {
-    const data = { sectionId: 's-1', courseId: 'c-1', staffId: 'st-1', day: 1, startTime: '08:00', endTime: '10:00' };
+    const data = {
+      sectionId: 's-1',
+      courseId: 'c-1',
+      staffId: 'st-1',
+      day: 1,
+      startTime: '08:00',
+      endTime: '10:00',
+    };
     mockPrisma.schedule.create.mockResolvedValue({ id: 'sch-1', ...data });
 
     const result = await repository.create(data);
@@ -45,7 +52,9 @@ describe('PrismaScheduleRepository', () => {
   });
 
   it('should find by section', async () => {
-    mockPrisma.schedule.findMany.mockResolvedValue([{ id: 'sch-1', sectionId: 's-1' }]);
+    mockPrisma.schedule.findMany.mockResolvedValue([
+      { id: 'sch-1', sectionId: 's-1' },
+    ]);
 
     const result = await repository.findBySection('s-1');
 
@@ -54,7 +63,9 @@ describe('PrismaScheduleRepository', () => {
   });
 
   it('should find by teacher', async () => {
-    mockPrisma.schedule.findMany.mockResolvedValue([{ id: 'sch-1', staffId: 'st-1' }]);
+    mockPrisma.schedule.findMany.mockResolvedValue([
+      { id: 'sch-1', staffId: 'st-1' },
+    ]);
 
     const result = await repository.findByTeacher('st-1');
 
@@ -65,7 +76,13 @@ describe('PrismaScheduleRepository', () => {
   it('should check conflicts', async () => {
     mockPrisma.schedule.findMany.mockResolvedValue([{ id: 'sch-1', day: 1 }]);
 
-    const result = await repository.checkConflicts(1, '08:00', '10:00', 's-1', 'st-1');
+    const result = await repository.checkConflicts(
+      1,
+      '08:00',
+      '10:00',
+      's-1',
+      'st-1',
+    );
 
     expect(result).toHaveLength(1);
   });

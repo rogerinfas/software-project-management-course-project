@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { IScheduleRepository } from '../../../../domain/repositories/schedule.repository.interface';
+import type { IScheduleRepository } from '../../../../domain/repositories/schedule.repository.interface';
 import { ScheduleEntity } from '../../../../domain/entities/schedule.entity';
 
 @Injectable()
@@ -37,7 +37,10 @@ export class PrismaScheduleRepository implements IScheduleRepository {
     return this.mapToEntity(record);
   }
 
-  async update(id: string, schedule: Partial<ScheduleEntity>): Promise<ScheduleEntity> {
+  async update(
+    id: string,
+    schedule: Partial<ScheduleEntity>,
+  ): Promise<ScheduleEntity> {
     const record = await this.prisma.schedule.update({
       where: { id },
       data: {
@@ -65,10 +68,7 @@ export class PrismaScheduleRepository implements IScheduleRepository {
         section: true,
         course: true,
       },
-      orderBy: [
-        { day: 'asc' },
-        { startTime: 'asc' },
-      ],
+      orderBy: [{ day: 'asc' }, { startTime: 'asc' }],
     });
     return records.map((r) => this.mapToEntity(r)!);
   }
@@ -80,10 +80,7 @@ export class PrismaScheduleRepository implements IScheduleRepository {
         section: true,
         course: true,
       },
-      orderBy: [
-        { day: 'asc' },
-        { startTime: 'asc' },
-      ],
+      orderBy: [{ day: 'asc' }, { startTime: 'asc' }],
     });
     return records.map((r) => this.mapToEntity(r)!);
   }
@@ -100,10 +97,7 @@ export class PrismaScheduleRepository implements IScheduleRepository {
       where: {
         day,
         id: excludeId ? { not: excludeId } : undefined,
-        OR: [
-          { sectionId },
-          { staffId },
-        ],
+        OR: [{ sectionId }, { staffId }],
         startTime: { lt: endTime },
         endTime: { gt: startTime },
       },
@@ -121,10 +115,7 @@ export class PrismaScheduleRepository implements IScheduleRepository {
         section: true,
         course: true,
       },
-      orderBy: [
-        { day: 'asc' },
-        { startTime: 'asc' },
-      ],
+      orderBy: [{ day: 'asc' }, { startTime: 'asc' }],
     });
     return records.map((r) => this.mapToEntity(r)!);
   }
