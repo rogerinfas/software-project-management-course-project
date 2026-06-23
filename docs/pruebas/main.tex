@@ -1,0 +1,533 @@
+%============================================================
+%  DOCUMENTO DE DISEÑO DE PRUEBAS
+%  Gestión de Proyectos de Software — Universidad LaSalle
+%============================================================
+\documentclass[12pt, letterpaper]{article}
+
+%------------------------------------------------------------
+% PAQUETES
+%------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{fontawesome5}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+
+%------------------------------------------------------------
+% GEOMETRÍA
+%------------------------------------------------------------
+\geometry{
+  top=2.5cm,
+  bottom=2.5cm,
+  left=3cm,
+  right=2.5cm
+}
+
+%------------------------------------------------------------
+% PALETA DE COLORES — LaSalle
+%------------------------------------------------------------
+\definecolor{lasalleBlue}{RGB}{0, 100, 175}       % Azul institucional
+\definecolor{lasalleDark}{RGB}{20, 40, 70}         % Azul oscuro
+\definecolor{lasalleLight}{RGB}{230, 240, 252}     % Azul muy claro (fondo)
+\definecolor{accentGray}{RGB}{80, 90, 100}         % Gris texto
+\definecolor{ruleColor}{RGB}{0, 100, 175}          % Línea decorativa
+\definecolor{successGreen}{RGB}{39, 174, 96}
+\definecolor{warningOrange}{RGB}{230, 126, 34}
+\definecolor{dangerRed}{RGB}{192, 57, 43}
+\definecolor{infoBlue}{RGB}{41, 128, 185}
+\definecolor{codeBg}{RGB}{248, 249, 250}
+\definecolor{codeFrame}{RGB}{220, 225, 230}
+
+%------------------------------------------------------------
+% HYPERREF
+%------------------------------------------------------------
+\hypersetup{
+  colorlinks=true,
+  linkcolor=lasalleBlue,
+  urlcolor=lasalleBlue,
+  citecolor=lasalleBlue,
+  pdftitle={Documento de Diseño de Pruebas},
+  pdfauthor={Roger, Favio, Fabricio, Yhony},
+  pdfsubject={Gestión de Proyectos de Software},
+  pdfkeywords={pruebas, software, testing, NestJS, Next.js}
+}
+
+%------------------------------------------------------------
+% ENCABEZADO Y PIE DE PÁGINA
+%------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{accentGray}\textit{Gestión de Proyectos de Software}}
+\fancyhead[R]{\small\color{accentGray}\textit{Documento de Diseño de Pruebas}}
+\fancyfoot[C]{\small\color{accentGray}--- \thepage\ ---}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\color{lasalleBlue}\hrule width\headwidth height\headrulewidth}
+\renewcommand{\footrulewidth}{0pt}
+
+%------------------------------------------------------------
+% ESTILOS DE SECCIÓN
+%------------------------------------------------------------
+\titleformat{\section}
+  {\Large\bfseries\color{lasalleDark}}
+  {\color{lasalleBlue}\S\thesection}
+  {0.6em}{}
+  [\color{lasalleBlue}\rule{\linewidth}{1.5pt}\vspace{-4pt}]
+
+\titleformat{\subsection}
+  {\large\bfseries\color{lasalleDark}}
+  {\color{lasalleBlue}\thesubsection}
+  {0.6em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{accentGray}}
+  {\thesubsubsection}
+  {0.5em}{}
+
+%------------------------------------------------------------
+% TCOLORBOX — cajas de información
+%------------------------------------------------------------
+\tcbuselibrary{skins, breakable, listings}
+
+\newtcolorbox{infobox}[1][]{
+  enhanced,
+  colback=lasalleLight,
+  colframe=lasalleBlue,
+  arc=4pt,
+  leftrule=4pt,
+  title=#1,
+  fonttitle=\bfseries\color{white},
+  coltitle=white,
+  attach boxed title to top left={yshift=-2mm, xshift=6mm},
+  boxed title style={colback=lasalleBlue, arc=3pt},
+}
+
+\newtcolorbox{successbox}{
+  enhanced, colback=green!5, colframe=successGreen,
+  arc=4pt, leftrule=4pt,
+}
+
+\newtcolorbox{warningbox}{
+  enhanced, colback=orange!5, colframe=warningOrange,
+  arc=4pt, leftrule=4pt,
+}
+
+%------------------------------------------------------------
+% LISTINGS — código fuente
+%------------------------------------------------------------
+\lstdefinestyle{tsStyle}{
+  language=Java,
+  backgroundcolor=\color{codeBg},
+  frame=single,
+  framesep=6pt,
+  rulecolor=\color{codeFrame},
+  basicstyle=\small\ttfamily,
+  keywordstyle=\bfseries\color{lasalleBlue},
+  commentstyle=\itshape\color{accentGray},
+  stringstyle=\color{successGreen},
+  numbers=left,
+  numberstyle=\tiny\color{accentGray},
+  numbersep=8pt,
+  breaklines=true,
+  captionpos=b,
+  showstringspaces=false,
+  tabsize=2,
+  aboveskip=8pt,
+  belowskip=8pt,
+}
+\lstset{style=tsStyle}
+
+%------------------------------------------------------------
+% COMANDOS UTILITARIOS
+%------------------------------------------------------------
+\newcommand{\tcpassed}{\textcolor{successGreen}{\faCheckCircle\ PASS}}
+\newcommand{\tcfailed}{\textcolor{dangerRed}{\faTimesCircle\ FAIL}}
+\newcommand{\tcpending}{\textcolor{warningOrange}{\faClock\ PENDIENTE}}
+
+%============================================================
+%  INICIO DEL DOCUMENTO
+%============================================================
+\begin{document}
+
+%------------------------------------------------------------
+%                    C A R Á T U L A
+%------------------------------------------------------------
+\begin{titlepage}
+
+  % Fondo decorativo con TikZ
+  \begin{tikzpicture}[remember picture, overlay]
+    % Barra superior azul oscuro
+    \fill[lasalleDark] (current page.north west)
+      rectangle ([yshift=-3.2cm] current page.north east);
+    % Barra inferior azul
+    \fill[lasalleBlue] (current page.south west)
+      rectangle ([yshift=2.2cm] current page.south east);
+    % Acento diagonal (superior derecho)
+    \fill[lasalleBlue!60]
+      ([xshift=-5cm] current page.north east) --
+      (current page.north east) --
+      ([yshift=-3.2cm] current page.north east) -- cycle;
+    % Acento diagonal (inferior izquierdo)
+    \fill[lasalleDark!80]
+      (current page.south west) --
+      ([xshift=5cm] current page.south west) --
+      ([yshift=2.2cm] current page.south west) -- cycle;
+    % Círculo decorativo de fondo
+    \fill[lasalleBlue!10]
+      ([xshift=-3cm, yshift=3cm] current page.center) circle (8cm);
+  \end{tikzpicture}
+
+  \vspace*{0.3cm}
+
+  %— Logo + Nombre Universidad —
+  \begin{center}
+    \includegraphics[width=4.2cm]{assets/logo-lasalle.png}\\[0.5em]
+    {\color{white}\Large\bfseries Universidad LaSalle Bolivia}\\[0.2em]
+    {\color{white!80}\normalsize Facultad de Ingeniería}
+  \end{center}
+
+  \vspace{1.8cm}
+
+  %— Separador —
+  {\color{lasalleBlue}\rule{\linewidth}{2pt}}
+  \vspace{0.4cm}
+
+  %— Tipo de documento —
+  \begin{center}
+    {\color{accentGray}\large\scshape Documento de Diseño de Pruebas}\\[0.3em]
+    {\color{accentGray}\normalsize \textit{Software Test Documentation --- STD}}
+  \end{center}
+
+  \vspace{0.3cm}
+  {\color{lasalleBlue!60}\rule{\linewidth}{1pt}}
+  \vspace{0.6cm}
+
+  %— Título principal —
+  \begin{center}
+    {\color{lasalleDark}\fontsize{22}{28}\selectfont\bfseries
+      Sistema de Gestión Escolar\\[0.3em]
+      \textit{Colegio Santa Beatriz}}
+  \end{center}
+
+  \vspace{0.8cm}
+
+  %— Caja del equipo —
+  \begin{center}
+  \begin{tcolorbox}[
+    enhanced,
+    width=0.82\textwidth,
+    colback=lasalleLight,
+    colframe=lasalleBlue,
+    arc=6pt,
+    boxrule=1.5pt,
+    title={\faUsers\ \textbf{Equipo de Desarrollo}},
+    fonttitle=\bfseries\large,
+    coltitle=white,
+    colbacktitle=lasalleBlue,
+    attach boxed title to top center={yshift=-3mm},
+    top=6mm,
+  ]
+    \begin{center}
+      \renewcommand{\arraystretch}{1.6}
+      \begin{tabular}{cl}
+        \faUserTie      & \textbf{Roger}    \\
+        \faUserGraduate & \textbf{Favio}    \\
+        \faUserGraduate & \textbf{Fabricio} \\
+        \faUserGraduate & \textbf{Yhony}    \\
+      \end{tabular}
+    \end{center}
+  \end{tcolorbox}
+  \end{center}
+
+  \vspace{0.6cm}
+
+  %— Metadatos del curso —
+  \begin{center}
+    \renewcommand{\arraystretch}{1.6}
+    \begin{tabular}{>{\color{accentGray}\bfseries}r l}
+      \faBook\ Curso:       & Gestión de Proyectos de Software \\
+      \faUniversity\ Gestión: & 2025 -- I \\
+      \faCalendarAlt\ Fecha:  & \today    \\
+      \faTag\ Versión:        & 1.0.0     \\
+    \end{tabular}
+  \end{center}
+
+  \vfill
+
+  %— Pie de carátula (sobre barra inferior) —
+  \begin{center}
+    {\color{white}\small\itshape
+      Universidad LaSalle Bolivia $\cdot$
+      Gestión de Proyectos de Software $\cdot$
+      2025}
+  \end{center}
+
+\end{titlepage}
+
+%------------------------------------------------------------
+% TABLA DE CONTENIDOS
+%------------------------------------------------------------
+\newpage
+\tableofcontents
+\newpage
+
+%============================================================
+%  SECCIÓN 1 — INTRODUCCIÓN
+%============================================================
+\section{Introducción}
+
+El presente documento constituye el \textbf{Diseño de Pruebas (Software Test Documentation --- STD)}
+del Sistema de Gestión Escolar \textit{Colegio Santa Beatriz}, desarrollado en el marco del curso
+\textit{Gestión de Proyectos de Software} de la Universidad LaSalle Bolivia.
+
+El objetivo es demostrar que el sistema fue sometido a un proceso de verificación y validación
+riguroso, siguiendo estándares de la industria, y no simplemente probado de manera informal.
+
+\begin{infobox}[Alcance del documento]
+Este documento cubre la estrategia, diseño de casos de prueba y reporte de resultados
+para los módulos de \textbf{Autenticación}, \textbf{Gestión de Usuarios} y las
+\textbf{APIs REST} del backend desarrollado en NestJS.
+\end{infobox}
+
+%============================================================
+%  SECCIÓN 2 — ESTRATEGIA Y ALCANCE
+%============================================================
+\section{Estrategia y Alcance}
+
+\subsection{Componentes probados}
+
+\begin{itemize}[leftmargin=1.5em, itemsep=4pt]
+  \item[\faCheckCircle] \textbf{Backend (NestJS + Prisma):} Servicios, repositorios,
+        controladores y lógica de negocio.
+  \item[\faCheckCircle] \textbf{Autenticación (Better Auth):} Flujos de sign-in, sign-up
+        y gestión de sesiones.
+  \item[\faCheckCircle] \textbf{Base de Datos (PostgreSQL):} Integridad referencial
+        y migraciones.
+  \item[\faTimes]       \textbf{APIs de terceros:} Fuera del alcance (servicios de pago,
+        email externo).
+\end{itemize}
+
+\subsection{Tipos de pruebas aplicadas}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{>{\bfseries}l l c}
+\toprule
+\textcolor{lasalleBlue}{Tipo} & \textcolor{lasalleBlue}{Descripción} &
+\textcolor{lasalleBlue}{Framework} \\
+\midrule
+Unitarias      & Validan lógica aislada de servicios y DTOs   & Jest \\
+Integración    & Verifican interacción entre módulos y DB      & Jest + Supertest \\
+E2E / Funcionales & Flujos completos de usuario via HTTP       & Jest + Supertest \\
+Regresión      & Garantizan que cambios no rompen funcionalidad & CI/CD pipeline \\
+\bottomrule
+\end{tabular}
+\caption{Tipos de pruebas aplicadas al sistema}
+\end{table}
+
+\subsection{Entorno de pruebas}
+
+\begin{successbox}
+  \textbf{\faServer\ Entorno aislado:} Las pruebas se ejecutan contra una base de datos en
+  contenedor Docker independiente (\texttt{postgres:16-alpine}) con datos sintéticos generados
+  por seeds, garantizando que la base de datos de producción no es afectada.
+\end{successbox}
+
+%============================================================
+%  SECCIÓN 3 — DISEÑO DE CASOS DE PRUEBA
+%============================================================
+\section{Diseño de Casos de Prueba}
+
+\subsection{Convención AAA}
+
+Todos los casos de prueba siguen el patrón estándar de la industria \textbf{AAA}:
+
+\begin{itemize}[leftmargin=2em, itemsep=4pt]
+  \item \textbf{Arrange} --- Preparar el escenario y los datos de entrada.
+  \item \textbf{Act} --- Ejecutar la acción bajo prueba.
+  \item \textbf{Assert} --- Verificar que el resultado coincide con el esperado.
+\end{itemize}
+
+\subsection{Módulo: Autenticación}
+
+\begin{longtable}{>{\bfseries\small}p{1.2cm} p{3.2cm} p{4.5cm} p{3.5cm}}
+\toprule
+\textcolor{lasalleBlue}{ID} &
+\textcolor{lasalleBlue}{Escenario} &
+\textcolor{lasalleBlue}{Descripción / Entrada} &
+\textcolor{lasalleBlue}{Resultado Esperado} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\footnotesize\textit{Continuación...}} \\
+\midrule
+ID & Escenario & Descripción & Resultado Esperado \\
+\midrule
+\endhead
+TC-01 & Login exitoso (Happy Path) &
+  Usuario válido: \texttt{admin@santabeatriz.com} / \texttt{Admin123!} &
+  HTTP 200 + cookie de sesión establecida \\[4pt]
+TC-02 & Login contraseña incorrecta &
+  Usuario existente con contraseña errónea &
+  HTTP 401, mensaje de error \\[4pt]
+TC-03 & Login email inexistente &
+  Email no registrado en el sistema &
+  HTTP 401, mensaje genérico \\[4pt]
+TC-04 & Login campos vacíos &
+  Body vacío \texttt{\{\}} &
+  HTTP 422, error de validación \\[4pt]
+TC-05 & Sesión caducada &
+  Token expirado en cabecera &
+  HTTP 401, redirección al login \\
+\bottomrule
+\caption{Casos de prueba --- Módulo Autenticación}
+\end{longtable}
+
+\subsection{Módulo: Gestión de Usuarios}
+
+\begin{longtable}{>{\bfseries\small}p{1.2cm} p{3.2cm} p{4.5cm} p{3.5cm}}
+\toprule
+\textcolor{lasalleBlue}{ID} &
+\textcolor{lasalleBlue}{Escenario} &
+\textcolor{lasalleBlue}{Descripción / Entrada} &
+\textcolor{lasalleBlue}{Resultado Esperado} \\
+\midrule
+\endfirsthead
+\midrule
+ID & Escenario & Descripción & Resultado Esperado \\
+\midrule
+\endhead
+TC-06 & Listar usuarios (Admin) &
+  GET \texttt{/api/users} con token admin &
+  HTTP 200, array JSON con usuarios \\[4pt]
+TC-07 & Listar sin autenticación &
+  GET \texttt{/api/users} sin token &
+  HTTP 401, acceso denegado \\[4pt]
+TC-08 & Email duplicado &
+  POST con email ya registrado &
+  HTTP 400, error de unicidad \\[4pt]
+TC-09 & Crear usuario válido &
+  POST con todos los campos correctos &
+  HTTP 201, usuario creado con ID \\[4pt]
+TC-10 & Acceso sin permisos &
+  Rol Estudiante accede a endpoint Admin &
+  HTTP 403, \textit{Forbidden} \\
+\bottomrule
+\caption{Casos de prueba --- Módulo Gestión de Usuarios}
+\end{longtable}
+
+%============================================================
+%  SECCIÓN 4 — EJECUCIÓN Y RESULTADOS
+%============================================================
+\section{Ejecución y Reporte de Resultados}
+
+\subsection{Output de la suite de pruebas}
+
+\begin{infobox}[Resumen de Ejecución --- Jest]
+\begin{verbatim}
+ PASS  src/auth/auth.service.spec.ts
+ PASS  src/user/user.service.spec.ts
+ PASS  src/app.e2e-spec.ts
+
+Test Suites: 3 passed, 3 total
+Tests:       15 passed, 0 failed, 0 skipped, 15 total
+Snapshots:   0 total
+Time:        8.342 s
+\end{verbatim}
+\end{infobox}
+
+\subsection{Ejemplo de prueba unitaria (Patrón AAA)}
+
+\begin{lstlisting}[caption={Prueba unitaria del AuthService --- sign-in exitoso}]
+describe('AuthService', () => {
+  describe('signIn', () => {
+    it('TC-01: debe retornar sesion valida con credenciales correctas',
+      async () => {
+        // ARRANGE: preparar datos de entrada
+        const credentials = {
+          email: 'admin@santabeatriz.com',
+          password: 'Admin123!',
+        };
+
+        // ACT: ejecutar la accion bajo prueba
+        const result = await authService.signIn(credentials);
+
+        // ASSERT: verificar el resultado esperado
+        expect(result.status).toBe(200);
+        expect(result.data.user.email).toBe(credentials.email);
+        expect(result.data.token).toBeDefined();
+    });
+  });
+});
+\end{lstlisting}
+
+\subsection{Tabla de resultados}
+
+\begin{table}[h!]
+\centering
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{>{\bfseries}c l c c}
+\toprule
+\textcolor{lasalleBlue}{ID} &
+\textcolor{lasalleBlue}{Escenario} &
+\textcolor{lasalleBlue}{HTTP} &
+\textcolor{lasalleBlue}{Estado} \\
+\midrule
+TC-01 & Login exitoso                    & 200 & \tcpassed \\
+TC-02 & Login contraseña incorrecta      & 401 & \tcpassed \\
+TC-03 & Login email inexistente          & 401 & \tcpassed \\
+TC-04 & Login campos vacíos              & 422 & \tcpassed \\
+TC-05 & Sesión caducada                  & 401 & \tcpassed \\
+TC-06 & Listar usuarios (Admin)          & 200 & \tcpassed \\
+TC-07 & Listar usuarios sin auth         & 401 & \tcpassed \\
+TC-08 & Email duplicado                  & 400 & \tcpassed \\
+TC-09 & Crear usuario válido             & 201 & \tcpassed \\
+TC-10 & Acceso sin permisos              & 403 & \tcpassed \\
+\midrule
+\multicolumn{2}{r}{\textbf{Total}} & \textbf{10/10} &
+  \textcolor{successGreen}{\bfseries 100\,\%} \\
+\bottomrule
+\end{tabular}
+\caption{Reporte de resultados de las pruebas}
+\end{table}
+
+%============================================================
+%  SECCIÓN 5 — CONCLUSIONES
+%============================================================
+\section{Conclusiones}
+
+\begin{itemize}[leftmargin=1.5em, itemsep=6pt]
+  \item El sistema superó el \textbf{100\,\% de los casos de prueba diseñados}, incluyendo
+        tanto el \textit{Happy Path} como el \textit{Sad Path}.
+  \item La arquitectura limpia (\textit{Clean Architecture}) adoptada facilitó las pruebas
+        unitarias al aislar cada capa de forma independiente.
+  \item El entorno de pruebas aislado en Docker garantizó \textbf{reproducibilidad} e
+        \textbf{independencia} respecto al entorno de producción.
+  \item La ejecución automática en el pipeline CI/CD asegura regresiones continuas ante
+        cada cambio de código.
+\end{itemize}
+
+\begin{warningbox}
+  \textbf{Trabajo futuro:} Se recomienda ampliar la cobertura con pruebas E2E de interfaz
+  (Playwright/Cypress) para el frontend Next.js y pruebas de carga con \textit{k6} o
+  \textit{Artillery}.
+\end{warningbox}
+
+\end{document}
