@@ -144,7 +144,10 @@ describe('AcademicController (Unit)', () => {
 
     it('should list communications', async () => {
       queryBus.execute.mockResolvedValue([mockComm]);
-      const result = await controller.getCommunications('ANNOUNCEMENT', 'Feriado');
+      const result = await controller.getCommunications(
+        'ANNOUNCEMENT',
+        'Feriado',
+      );
       expect(result[0]).toEqual(new CommunicationEntity(mockComm).toDto());
     });
 
