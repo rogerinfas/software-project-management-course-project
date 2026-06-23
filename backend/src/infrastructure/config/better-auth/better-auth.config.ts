@@ -49,6 +49,6 @@ export const auth = betterAuth({
       domain: process.env.WEB_URL && process.env.WEB_URL.includes('celebrali.com') 
         ? '.celebrali.com' 
         : undefined,
-    }
+    } as any
   }
 });
