@@ -6,7 +6,7 @@ ENV HUSKY=0
 # ── Backend dependencies ─────────────────────────────────────────────────────
 FROM base AS backend-deps
 WORKDIR /app/backend
-COPY backend/package.json backend/pnpm-lock.yaml ./
+COPY backend/package.json backend/pnpm-lock.yaml backend/.npmrc ./
 RUN pnpm install --frozen-lockfile
 
 # ── Backend builder ───────────────────────────────────────────────────────────
