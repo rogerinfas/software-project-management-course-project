@@ -5,10 +5,7 @@ export interface IStudentRepository {
   create(student: Partial<StudentEntity>): Promise<StudentEntity>;
   findById(id: string): Promise<StudentEntity | null>;
   findByDni(dni: string): Promise<StudentEntity | null>;
-  update(
-    id: string,
-    student: Partial<StudentEntity>,
-  ): Promise<StudentEntity>;
+  update(id: string, student: Partial<StudentEntity>): Promise<StudentEntity>;
   findManyPaginated(
     page: number,
     size: number,

@@ -1,5 +1,9 @@
 import { ProspectEntity } from './prospect.entity';
-import { EducationalLevel, ProspectPriority, ProspectStage } from '@prisma/client';
+import {
+  EducationalLevel,
+  ProspectPriority,
+  ProspectStage,
+} from '@prisma/client';
 
 describe('ProspectEntity', () => {
   it('should create a ProspectEntity instance and populate fields', () => {

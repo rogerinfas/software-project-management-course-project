@@ -5,10 +5,7 @@ export interface ICourseRepository {
   create(course: Partial<CourseEntity>): Promise<CourseEntity>;
   findById(id: string): Promise<CourseEntity | null>;
   findByName(name: string): Promise<CourseEntity | null>;
-  update(
-    id: string,
-    course: Partial<CourseEntity>,
-  ): Promise<CourseEntity>;
+  update(id: string, course: Partial<CourseEntity>): Promise<CourseEntity>;
   delete(id: string): Promise<void>;
   findManyPaginated(
     page: number,

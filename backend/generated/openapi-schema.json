@@ -241,124 +241,6 @@
         ]
       }
     },
-    "/api/admission/stages": {
-      "get": {
-        "operationId": "AdmissionController_getStages",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Return all stages.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/AdmissionStageResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "summary": "Get all admission stages with prospects",
-        "tags": [
-          "Admission"
-        ]
-      },
-      "post": {
-        "operationId": "AdmissionController_createStage",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateStageRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Stage created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AdmissionStageResponse"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Create a new admission stage",
-        "tags": [
-          "Admission"
-        ]
-      }
-    },
-    "/api/admission/stages/{id}": {
-      "put": {
-        "operationId": "AdmissionController_updateStage",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateStageRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Stage updated successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AdmissionStageResponse"
-                }
-              }
-            }
-          }
-        },
-        "summary": "Update an admission stage",
-        "tags": [
-          "Admission"
-        ]
-      },
-      "delete": {
-        "operationId": "AdmissionController_deleteStage",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Stage deleted successfully."
-          }
-        },
-        "summary": "Delete an admission stage",
-        "tags": [
-          "Admission"
-        ]
-      }
-    },
     "/api/admission/prospects": {
       "get": {
         "operationId": "AdmissionController_getProspects",
@@ -7294,7 +7176,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-06-23T15:16:47.843Z"
+            "example": "2026-06-23T17:44:11.121Z"
           },
           "path": {
             "type": "string",
@@ -7399,13 +7281,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-06-23T15:16:47.987Z"
+            "example": "2026-06-23T17:44:11.261Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-06-23T15:16:47.987Z"
+            "example": "2026-06-23T17:44:11.261Z"
           }
         },
         "required": [
@@ -7515,7 +7397,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Appointment date and time",
-            "example": "2026-06-23T15:16:48.575Z"
+            "example": "2026-06-23T17:44:11.709Z"
           },
           "type": {
             "type": "string",
@@ -7539,7 +7421,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-06-23T15:16:48.576Z"
+            "example": "2026-06-23T17:44:11.709Z"
           }
         },
         "required": [
@@ -7582,7 +7464,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Evaluation process date",
-            "example": "2026-06-23T15:16:48.579Z"
+            "example": "2026-06-23T17:44:11.710Z"
           },
           "evaluatorId": {
             "type": "object",
@@ -7640,10 +7522,15 @@
             ],
             "example": "MEDIUM"
           },
-          "currentStageId": {
+          "stage": {
             "type": "string",
-            "description": "Current admission stage ID",
-            "example": "stage-123"
+            "description": "Current admission stage",
+            "enum": [
+              "ENTREVISTA",
+              "EVALUACION_PSICOLOGICA",
+              "EVALUACION_ACADEMICA"
+            ],
+            "example": "ENTREVISTA"
           },
           "appointments": {
             "description": "List of scheduled appointments",
@@ -7664,7 +7551,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-06-23T15:16:48.579Z"
+            "example": "2026-06-23T17:44:11.710Z"
           }
         },
         "required": [
@@ -7674,89 +7561,9 @@
           "targetGrade",
           "level",
           "priority",
-          "currentStageId",
+          "stage",
           "createdAt"
         ]
-      },
-      "AdmissionStageResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Unique stage identifier",
-            "example": "stage-123"
-          },
-          "name": {
-            "type": "string",
-            "description": "Stage name",
-            "example": "Entrevista"
-          },
-          "order": {
-            "type": "number",
-            "description": "Display order",
-            "example": 1
-          },
-          "prospects": {
-            "description": "List of prospects currently in this stage",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ProspectResponse"
-            }
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Creation date",
-            "example": "2026-06-23T15:16:48.579Z"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Last update date",
-            "example": "2026-06-23T15:16:48.579Z"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "order",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "CreateStageRequest": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Stage name",
-            "example": "Entrevista"
-          },
-          "order": {
-            "type": "number",
-            "description": "Stage display order",
-            "example": 1
-          }
-        },
-        "required": [
-          "name",
-          "order"
-        ]
-      },
-      "UpdateStageRequest": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Stage name",
-            "example": "Entrevista Modificada"
-          },
-          "order": {
-            "type": "number",
-            "description": "Stage display order",
-            "example": 2
-          }
-        }
       },
       "PaginationMeta": {
         "type": "object",
@@ -7845,11 +7652,6 @@
               "LOW"
             ],
             "example": "MEDIUM"
-          },
-          "currentStageId": {
-            "type": "string",
-            "description": "Initial admission stage ID",
-            "example": "stage-123"
           }
         },
         "required": [
@@ -7857,21 +7659,25 @@
           "phone",
           "targetGrade",
           "level",
-          "priority",
-          "currentStageId"
+          "priority"
         ]
       },
       "UpdateProspectStageRequest": {
         "type": "object",
         "properties": {
-          "currentStageId": {
+          "stage": {
             "type": "string",
-            "description": "Target admission stage ID",
-            "example": "stage-456"
+            "description": "Target admission stage",
+            "enum": [
+              "ENTREVISTA",
+              "EVALUACION_PSICOLOGICA",
+              "EVALUACION_ACADEMICA"
+            ],
+            "example": "EVALUACION_ACADEMICA"
           }
         },
         "required": [
-          "currentStageId"
+          "stage"
         ]
       },
       "CreateAppointmentRequest": {
@@ -7885,7 +7691,7 @@
           "date": {
             "type": "string",
             "description": "Appointment date and time in ISO format",
-            "example": "2026-06-23T15:16:48.591Z"
+            "example": "2026-06-23T17:44:11.711Z"
           },
           "type": {
             "type": "string",
@@ -7959,7 +7765,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Date and time of the interaction",
-            "example": "2026-06-23T15:16:48.598Z"
+            "example": "2026-06-23T17:44:11.713Z"
           }
         },
         "required": [
@@ -8412,7 +8218,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Fecha de la matrícula",
-            "example": "2026-06-23T15:16:48.794Z"
+            "example": "2026-06-23T17:44:11.729Z"
           },
           "status": {
             "type": "string",
@@ -9234,13 +9040,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-06-23T15:16:48.044Z"
+            "example": "2026-06-23T17:44:11.266Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-06-23T15:16:48.044Z"
+            "example": "2026-06-23T17:44:11.266Z"
           },
           "deletedAt": {
             "type": "object",
@@ -9306,13 +9112,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-06-23T15:16:48.044Z"
+            "example": "2026-06-23T17:44:11.266Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-06-23T15:16:48.044Z"
+            "example": "2026-06-23T17:44:11.266Z"
           },
           "deletedAt": {
             "type": "object",
@@ -9439,13 +9245,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-06-23T15:16:48.044Z"
+            "example": "2026-06-23T17:44:11.266Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-06-23T15:16:48.044Z"
+            "example": "2026-06-23T17:44:11.266Z"
           },
           "deletedAt": {
             "type": "object",
@@ -9520,13 +9326,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-06-23T15:16:48.044Z"
+            "example": "2026-06-23T17:44:11.266Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-06-23T15:16:48.044Z"
+            "example": "2026-06-23T17:44:11.266Z"
           },
           "deletedAt": {
             "type": "object",

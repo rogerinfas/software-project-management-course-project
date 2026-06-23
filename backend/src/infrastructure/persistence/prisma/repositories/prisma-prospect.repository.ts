@@ -14,14 +14,20 @@ export class PrismaProspectRepository implements IProspectRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   /** Mapea el registro de Prisma (con include) a la entidad de dominio. */
-  private toEntity(raw: any): ProspectEntity {
+  private toEntity(raw: {
+    appointments: unknown[];
+    evaluation: unknown;
+    [key: string]: unknown;
+  }): ProspectEntity {
     const { appointments, evaluation, ...prospectData } = raw;
-    const entity = new ProspectEntity(prospectData);
+    const entity = new ProspectEntity(prospectData as Partial<ProspectEntity>);
     entity.appointments = appointments.map(
-      (app: any) => new AppointmentEntity(app),
+      (app) => new AppointmentEntity(app as Partial<AppointmentEntity>),
     );
     entity.evaluation = evaluation
-      ? new EvaluationResultEntity(evaluation)
+      ? new EvaluationResultEntity(
+          evaluation as Partial<EvaluationResultEntity>,
+        )
       : null;
     return entity;
   }
@@ -34,7 +40,7 @@ export class PrismaProspectRepository implements IProspectRepository {
         targetGrade: prospect.targetGrade!,
         level: prospect.level!,
         priority: prospect.priority!,
-        currentStageId: prospect.currentStageId!,
+        stage: prospect.stage!,
       },
       include: { appointments: true, evaluation: true },
     });
@@ -62,7 +68,7 @@ export class PrismaProspectRepository implements IProspectRepository {
         targetGrade: prospect.targetGrade,
         level: prospect.level,
         priority: prospect.priority,
-        currentStageId: prospect.currentStageId,
+        stage: prospect.stage,
       },
       include: { appointments: true, evaluation: true },
     });

@@ -2,7 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { BaseAggregateRootEntity } from '../../config/entities/base-entities/blacklist-strategy/base.entity';
 import { BaseEntityType } from '../../config/entities/base-entities/base-entity.types';
-import { EducationalLevel, ProspectPriority, ProspectStage } from '@prisma/client';
+import {
+  EducationalLevel,
+  ProspectPriority,
+  ProspectStage,
+} from '@prisma/client';
 import { AppointmentEntity } from './appointment.entity';
 import { EvaluationResultEntity } from './evaluation-result.entity';
 

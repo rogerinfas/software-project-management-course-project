@@ -3,22 +3,13 @@ import {
   Get,
   Post,
   Put,
-  Delete,
   Patch,
   Body,
   Param,
   Query,
-  HttpCode,
-  HttpStatus,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-
-// Use Cases
-import { CreateStageCommand } from '../../../application/use-cases/admission-stage/commands/create-stage.command';
-import { UpdateStageCommand } from '../../../application/use-cases/admission-stage/commands/update-stage.command';
-import { DeleteStageCommand } from '../../../application/use-cases/admission-stage/commands/delete-stage.command';
-import { GetStagesQuery } from '../../../application/use-cases/admission-stage/queries/get-stages.query';
 
 import { CreateProspectCommand } from '../../../application/use-cases/prospect/commands/create-prospect.command';
 import { UpdateProspectStageCommand } from '../../../application/use-cases/prospect/commands/update-prospect-stage.command';
@@ -36,9 +27,6 @@ import {
 
 // DTOs
 import {
-  CreateStageRequest,
-  UpdateStageRequest,
-  AdmissionStageResponse,
   CreateProspectRequest,
   UpdateProspectStageRequest,
   GetProspectsPaginatedRequest,
@@ -54,7 +42,6 @@ import {
 } from './dto';
 
 // Domain Entities
-import { AdmissionStageEntity } from '../../../domain/entities/admission-stage.entity';
 import { ProspectEntity } from '../../../domain/entities/prospect.entity';
 import { AppointmentEntity } from '../../../domain/entities/appointment.entity';
 import { EvaluationResultEntity } from '../../../domain/entities/evaluation-result.entity';
@@ -68,64 +55,6 @@ export class AdmissionController {
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
   ) {}
-
-  @Get('stages')
-  @ApiOperation({ summary: 'Get all admission stages with prospects' })
-  @ApiResponse({
-    status: 200,
-    description: 'Return all stages.',
-    type: [AdmissionStageResponse],
-  })
-  async getStages(): Promise<AdmissionStageResponse[]> {
-    const results = await this.queryBus.execute<
-      GetStagesQuery,
-      AdmissionStageEntity[]
-    >(new GetStagesQuery());
-    return results.map((r) => r.toDto());
-  }
-
-  @Post('stages')
-  @ApiOperation({ summary: 'Create a new admission stage' })
-  @ApiResponse({
-    status: 201,
-    description: 'Stage created successfully.',
-    type: AdmissionStageResponse,
-  })
-  async createStage(
-    @Body() dto: CreateStageRequest,
-  ): Promise<AdmissionStageResponse> {
-    const result = await this.commandBus.execute<
-      CreateStageCommand,
-      AdmissionStageEntity
-    >(new CreateStageCommand(dto.name, dto.order));
-    return result.toDto();
-  }
-
-  @Put('stages/:id')
-  @ApiOperation({ summary: 'Update an admission stage' })
-  @ApiResponse({
-    status: 200,
-    description: 'Stage updated successfully.',
-    type: AdmissionStageResponse,
-  })
-  async updateStage(
-    @Param('id') id: string,
-    @Body() dto: UpdateStageRequest,
-  ): Promise<AdmissionStageResponse> {
-    const result = await this.commandBus.execute<
-      UpdateStageCommand,
-      AdmissionStageEntity
-    >(new UpdateStageCommand(id, dto.name, dto.order));
-    return result.toDto();
-  }
-
-  @Delete('stages/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Delete an admission stage' })
-  @ApiResponse({ status: 204, description: 'Stage deleted successfully.' })
-  async deleteStage(@Param('id') id: string): Promise<void> {
-    await this.commandBus.execute(new DeleteStageCommand(id));
-  }
 
   @Get('prospects')
   @ApiOperation({ summary: 'Get prospects with pagination and search' })
@@ -167,7 +96,6 @@ export class AdmissionController {
         dto.targetGrade,
         dto.level,
         dto.priority,
-        dto.currentStageId,
       ),
     );
     return result.toDto();
@@ -187,7 +115,7 @@ export class AdmissionController {
     const result = await this.commandBus.execute<
       UpdateProspectStageCommand,
       ProspectEntity
-    >(new UpdateProspectStageCommand(id, dto.currentStageId));
+    >(new UpdateProspectStageCommand(id, dto.stage));
     return result.toDto();
   }
 
