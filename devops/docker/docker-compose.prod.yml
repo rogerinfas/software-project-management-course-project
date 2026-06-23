@@ -1,0 +1,74 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+
+  backend:
+    image: ${BACKEND_IMAGE:-rderoger/school-backend:${IMAGE_TAG:-latest}}
+    restart: unless-stopped
+    env_file:
+      - ../../.env.backend
+    environment:
+      PORT: 5000
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      BETTER_AUTH_URL: https://apicolegio.celebrali.com
+      WEB_URL: https://appcolegio.celebrali.com
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    networks:
+      - internal
+      - proxy_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy_net"
+      - "traefik.http.routers.school-api.rule=Host(`apicolegio.celebrali.com`)"
+      - "traefik.http.routers.school-api.entrypoints=websecure"
+      - "traefik.http.routers.school-api.tls=true"
+      - "traefik.http.routers.school-api.tls.certresolver=cloudflare"
+      - "traefik.http.services.school-api.loadbalancer.server.port=5000"
+
+  frontend:
+    image: ${FRONTEND_IMAGE:-rderoger/school-frontend:${IMAGE_TAG:-latest}}
+    restart: unless-stopped
+    environment:
+      PORT: 2000
+      HOSTNAME: 0.0.0.0
+      NEXT_PUBLIC_BACKEND_URL: https://apicolegio.celebrali.com
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-2000}:2000"
+    networks:
+      - proxy_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy_net"
+      - "traefik.http.routers.school-frontend.rule=Host(`appcolegio.celebrali.com`)"
+      - "traefik.http.routers.school-frontend.entrypoints=websecure"
+      - "traefik.http.routers.school-frontend.tls=true"
+      - "traefik.http.routers.school-frontend.tls.certresolver=cloudflare"
+      - "traefik.http.services.school-frontend.loadbalancer.server.port=2000"
+
+networks:
+  internal:
+  proxy_net:
+    external: true
+
+volumes:
+  postgres_data:

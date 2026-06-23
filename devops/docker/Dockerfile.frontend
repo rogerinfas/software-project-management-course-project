@@ -1,0 +1,40 @@
+FROM node:20-alpine AS base
+WORKDIR /app
+RUN corepack enable
+ENV HUSKY=0
+
+# ── Frontend dependencies ─────────────────────────────────────────────────────
+FROM base AS frontend-deps
+WORKDIR /app/frontend
+COPY frontend/package.json frontend/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+# ── Frontend builder ──────────────────────────────────────────────────────────
+FROM base AS frontend-builder
+WORKDIR /app/frontend
+ENV NODE_ENV=production
+# NEXT_PUBLIC vars must be available at build time
+ARG NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
+
+COPY --from=frontend-deps /app/frontend/node_modules ./node_modules
+COPY frontend/ .
+# Copy root (for turbopack root resolution)
+COPY backend/ ../backend/
+RUN pnpm build
+
+# ── Frontend runner ────────────────────────────────────────────────────────────
+FROM base AS frontend-runner
+ENV NODE_ENV=production
+WORKDIR /app
+
+COPY --from=frontend-builder /app/frontend/.next/standalone ./
+COPY --from=frontend-builder /app/frontend/.next/static ./.next/static
+COPY --from=frontend-builder /app/frontend/public ./public
+
+EXPOSE 2000
+
+ENV PORT=2000
+ENV HOSTNAME=0.0.0.0
+
+CMD ["node", "server.js"]
