@@ -41,42 +41,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admission/stages": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get all admission stages with prospects */
-        get: operations["AdmissionController_getStages"];
-        put?: never;
-        /** Create a new admission stage */
-        post: operations["AdmissionController_createStage"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/admission/stages/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Update an admission stage */
-        put: operations["AdmissionController_updateStage"];
-        post?: never;
-        /** Delete an admission stage */
-        delete: operations["AdmissionController_deleteStage"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/admission/prospects": {
         parameters: {
             query?: never;
@@ -2346,7 +2310,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-06-23T15:16:47.843Z
+             * @example 2026-06-23T16:03:45.817Z
              */
             timestamp: string;
             /**
@@ -2417,13 +2381,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-06-23T15:16:47.987Z
+             * @example 2026-06-23T16:03:45.920Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-06-23T15:16:47.987Z
+             * @example 2026-06-23T16:03:45.920Z
              */
             updatedAt: string;
         };
@@ -2475,7 +2439,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Appointment date and time
-             * @example 2026-06-23T15:16:48.575Z
+             * @example 2026-06-23T16:03:46.417Z
              */
             date: string;
             /**
@@ -2493,7 +2457,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-06-23T15:16:48.576Z
+             * @example 2026-06-23T16:03:46.417Z
              */
             createdAt: string;
         };
@@ -2522,7 +2486,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Evaluation process date
-             * @example 2026-06-23T15:16:48.579Z
+             * @example 2026-06-23T16:03:46.421Z
              */
             date: string;
             /**
@@ -2565,10 +2529,11 @@ export interface components {
              */
             priority: "HIGH" | "MEDIUM" | "LOW";
             /**
-             * @description Current admission stage ID
-             * @example stage-123
+             * @description Current admission stage
+             * @example ENTREVISTA
+             * @enum {string}
              */
-            currentStageId: string;
+            stage: "ENTREVISTA" | "EVALUACION_PSICOLOGICA" | "EVALUACION_ACADEMICA";
             /** @description List of scheduled appointments */
             appointments?: components["schemas"]["AppointmentResponse"][];
             /** @description Evaluation result if processed */
@@ -2576,64 +2541,9 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-06-23T15:16:48.579Z
+             * @example 2026-06-23T16:03:46.421Z
              */
             createdAt: string;
-        };
-        AdmissionStageResponse: {
-            /**
-             * @description Unique stage identifier
-             * @example stage-123
-             */
-            id: string;
-            /**
-             * @description Stage name
-             * @example Entrevista
-             */
-            name: string;
-            /**
-             * @description Display order
-             * @example 1
-             */
-            order: number;
-            /** @description List of prospects currently in this stage */
-            prospects?: components["schemas"]["ProspectResponse"][];
-            /**
-             * Format: date-time
-             * @description Creation date
-             * @example 2026-06-23T15:16:48.579Z
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Last update date
-             * @example 2026-06-23T15:16:48.579Z
-             */
-            updatedAt: string;
-        };
-        CreateStageRequest: {
-            /**
-             * @description Stage name
-             * @example Entrevista
-             */
-            name: string;
-            /**
-             * @description Stage display order
-             * @example 1
-             */
-            order: number;
-        };
-        UpdateStageRequest: {
-            /**
-             * @description Stage name
-             * @example Entrevista Modificada
-             */
-            name?: string;
-            /**
-             * @description Stage display order
-             * @example 2
-             */
-            order?: number;
         };
         PaginationMeta: {
             /** @example 50 */
@@ -2679,18 +2589,14 @@ export interface components {
              * @enum {string}
              */
             priority: "HIGH" | "MEDIUM" | "LOW";
-            /**
-             * @description Initial admission stage ID
-             * @example stage-123
-             */
-            currentStageId: string;
         };
         UpdateProspectStageRequest: {
             /**
-             * @description Target admission stage ID
-             * @example stage-456
+             * @description Target admission stage
+             * @example EVALUACION_ACADEMICA
+             * @enum {string}
              */
-            currentStageId: string;
+            stage: "ENTREVISTA" | "EVALUACION_PSICOLOGICA" | "EVALUACION_ACADEMICA";
         };
         CreateAppointmentRequest: {
             /**
@@ -2700,7 +2606,7 @@ export interface components {
             prospectId: string;
             /**
              * @description Appointment date and time in ISO format
-             * @example 2026-06-23T15:16:48.591Z
+             * @example 2026-06-23T16:03:46.428Z
              */
             date: string;
             /**
@@ -2756,7 +2662,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Date and time of the interaction
-             * @example 2026-06-23T15:16:48.598Z
+             * @example 2026-06-23T16:03:46.438Z
              */
             date: string;
         };
@@ -3057,7 +2963,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Fecha de la matrícula
-             * @example 2026-06-23T15:16:48.794Z
+             * @example 2026-06-23T16:03:46.618Z
              */
             date: string;
             /**
@@ -3603,13 +3509,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-06-23T15:16:48.044Z
+             * @example 2026-06-23T16:03:45.979Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-06-23T15:16:48.044Z
+             * @example 2026-06-23T16:03:45.979Z
              */
             updatedAt: string;
             /**
@@ -3655,13 +3561,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-06-23T15:16:48.044Z
+             * @example 2026-06-23T16:03:45.979Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-06-23T15:16:48.044Z
+             * @example 2026-06-23T16:03:45.979Z
              */
             updatedAt: string;
             /**
@@ -3731,13 +3637,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-06-23T15:16:48.044Z
+             * @example 2026-06-23T16:03:45.979Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-06-23T15:16:48.044Z
+             * @example 2026-06-23T16:03:45.979Z
              */
             updatedAt: string;
             /**
@@ -3785,13 +3691,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-06-23T15:16:48.044Z
+             * @example 2026-06-23T16:03:45.979Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-06-23T15:16:48.044Z
+             * @example 2026-06-23T16:03:45.979Z
              */
             updatedAt: string;
             /**
@@ -4082,96 +3988,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["BaseErrorResponse"];
                 };
-            };
-        };
-    };
-    AdmissionController_getStages: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Return all stages. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdmissionStageResponse"][];
-                };
-            };
-        };
-    };
-    AdmissionController_createStage: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateStageRequest"];
-            };
-        };
-        responses: {
-            /** @description Stage created successfully. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdmissionStageResponse"];
-                };
-            };
-        };
-    };
-    AdmissionController_updateStage: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateStageRequest"];
-            };
-        };
-        responses: {
-            /** @description Stage updated successfully. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdmissionStageResponse"];
-                };
-            };
-        };
-    };
-    AdmissionController_deleteStage: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Stage deleted successfully. */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
