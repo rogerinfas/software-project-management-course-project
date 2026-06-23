@@ -40,8 +40,17 @@ describe('PrismaUserRepository', () => {
   });
 
   it('should create a user', async () => {
-    const userData = { email: 'test@example.com', name: 'Test', role: Role.ADMIN };
-    mockPrisma.user.create.mockResolvedValue({ id: 'u-1', ...userData, emailVerified: false, image: null });
+    const userData = {
+      email: 'test@example.com',
+      name: 'Test',
+      role: Role.ADMIN,
+    };
+    mockPrisma.user.create.mockResolvedValue({
+      id: 'u-1',
+      ...userData,
+      emailVerified: false,
+      image: null,
+    });
 
     const result = await repository.create(userData as any);
 
@@ -51,7 +60,9 @@ describe('PrismaUserRepository', () => {
   });
 
   it('should find all users', async () => {
-    mockPrisma.user.findMany.mockResolvedValue([{ id: 'u-1', email: 'test@example.com' }]);
+    mockPrisma.user.findMany.mockResolvedValue([
+      { id: 'u-1', email: 'test@example.com' },
+    ]);
 
     const result = await repository.findAll();
 
@@ -60,7 +71,10 @@ describe('PrismaUserRepository', () => {
   });
 
   it('should find user by id', async () => {
-    mockPrisma.user.findUnique.mockResolvedValue({ id: 'u-1', email: 'test@example.com' });
+    mockPrisma.user.findUnique.mockResolvedValue({
+      id: 'u-1',
+      email: 'test@example.com',
+    });
 
     const result = await repository.findById('u-1');
 
@@ -68,7 +82,10 @@ describe('PrismaUserRepository', () => {
   });
 
   it('should find user by email', async () => {
-    mockPrisma.user.findUnique.mockResolvedValue({ id: 'u-1', email: 'test@example.com' });
+    mockPrisma.user.findUnique.mockResolvedValue({
+      id: 'u-1',
+      email: 'test@example.com',
+    });
 
     const result = await repository.findByEmail('test@example.com');
 
@@ -76,7 +93,11 @@ describe('PrismaUserRepository', () => {
   });
 
   it('should update user', async () => {
-    mockPrisma.user.update.mockResolvedValue({ id: 'u-1', email: 'test@example.com', name: 'New Name' });
+    mockPrisma.user.update.mockResolvedValue({
+      id: 'u-1',
+      email: 'test@example.com',
+      name: 'New Name',
+    });
 
     const result = await repository.update('u-1', { name: 'New Name' });
 
@@ -88,7 +109,9 @@ describe('PrismaUserRepository', () => {
 
     await repository.delete('u-1');
 
-    expect(mockPrisma.user.delete).toHaveBeenCalledWith({ where: { id: 'u-1' } });
+    expect(mockPrisma.user.delete).toHaveBeenCalledWith({
+      where: { id: 'u-1' },
+    });
   });
 
   it('should find users paginated', async () => {

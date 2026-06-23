@@ -36,7 +36,12 @@ describe('PrismaTariffRepository', () => {
   });
 
   it('should create a tariff', async () => {
-    const data = { concept: 'C', amount: 100.0, type: TariffType.EXTRA, level: EducationalLevel.PRIMARY };
+    const data = {
+      concept: 'C',
+      amount: 100.0,
+      type: TariffType.EXTRA,
+      level: EducationalLevel.PRIMARY,
+    };
     mockPrisma.tariff.create.mockResolvedValue({ id: 't-1', ...data });
 
     const result = await repository.create(data);
@@ -46,7 +51,13 @@ describe('PrismaTariffRepository', () => {
   });
 
   it('should find tariff by id', async () => {
-    mockPrisma.tariff.findUnique.mockResolvedValue({ id: 't-1', concept: 'C', amount: 100.0, type: TariffType.EXTRA, level: EducationalLevel.PRIMARY });
+    mockPrisma.tariff.findUnique.mockResolvedValue({
+      id: 't-1',
+      concept: 'C',
+      amount: 100.0,
+      type: TariffType.EXTRA,
+      level: EducationalLevel.PRIMARY,
+    });
 
     const result = await repository.findById('t-1');
 
@@ -54,7 +65,13 @@ describe('PrismaTariffRepository', () => {
   });
 
   it('should update tariff', async () => {
-    mockPrisma.tariff.update.mockResolvedValue({ id: 't-1', concept: 'New C', amount: 100.0, type: TariffType.EXTRA, level: EducationalLevel.PRIMARY });
+    mockPrisma.tariff.update.mockResolvedValue({
+      id: 't-1',
+      concept: 'New C',
+      amount: 100.0,
+      type: TariffType.EXTRA,
+      level: EducationalLevel.PRIMARY,
+    });
 
     const result = await repository.update('t-1', { concept: 'New C' });
 
@@ -66,7 +83,9 @@ describe('PrismaTariffRepository', () => {
 
     await repository.delete('t-1');
 
-    expect(mockPrisma.tariff.delete).toHaveBeenCalledWith({ where: { id: 't-1' } });
+    expect(mockPrisma.tariff.delete).toHaveBeenCalledWith({
+      where: { id: 't-1' },
+    });
   });
 
   it('should find all tariffs', async () => {
