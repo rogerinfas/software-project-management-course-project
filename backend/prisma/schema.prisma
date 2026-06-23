@@ -93,11 +93,10 @@ model Verification {
 
 // ── M1: ADMISIÓN (Admission) ─────────────────────────────────────────────────
 
-model AdmissionStage {
-  id        String     @id @default(cuid())
-  name      String // Nombre de la etapa (ej. Entrevista)
-  order     Int // Orden de visualización en el Kanban
-  prospects Prospect[]
+enum ProspectStage {
+  ENTREVISTA
+  EVALUACION_PSICOLOGICA
+  EVALUACION_ACADEMICA
 }
 
 model Prospect {
@@ -107,8 +106,7 @@ model Prospect {
   targetGrade    String // Grado al que postula
   level          EducationalLevel
   priority       ProspectPriority      @default(MEDIUM)
-  currentStageId String
-  currentStage   AdmissionStage        @relation(fields: [currentStageId], references: [id])
+  stage          ProspectStage         @default(ENTREVISTA)
   appointments   Appointment[]
   evaluation     EvaluationResult?
   interactions   ProspectInteraction[]
