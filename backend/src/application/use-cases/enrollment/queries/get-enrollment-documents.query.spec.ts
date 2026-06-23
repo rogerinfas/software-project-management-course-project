@@ -1,4 +1,7 @@
-import { GetEnrollmentDocumentsQuery, GetEnrollmentDocumentsQueryHandler } from './get-enrollment-documents.query';
+import {
+  GetEnrollmentDocumentsQuery,
+  GetEnrollmentDocumentsQueryHandler,
+} from './get-enrollment-documents.query';
 
 describe('GetEnrollmentDocumentsQueryHandler', () => {
   let handler: GetEnrollmentDocumentsQueryHandler;
@@ -12,7 +15,17 @@ describe('GetEnrollmentDocumentsQueryHandler', () => {
   });
 
   it('should return paginated enrollment documents', async () => {
-    const paginatedResult = { data: [], meta: { total: 0, page: 1, pageSize: 10, totalPages: 0, hasNext: false, hasPrevious: false } };
+    const paginatedResult = {
+      data: [],
+      meta: {
+        total: 0,
+        page: 1,
+        pageSize: 10,
+        totalPages: 0,
+        hasNext: false,
+        hasPrevious: false,
+      },
+    };
     repository.findManyPaginated.mockResolvedValue(paginatedResult);
 
     const query = new GetEnrollmentDocumentsQuery(1, 10, 'search');
