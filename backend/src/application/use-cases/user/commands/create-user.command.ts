@@ -39,7 +39,7 @@ export class CreateUserCommandHandler implements ICommandHandler<CreateUserComma
         name: user.name || '',
         role: user.role,
         image: user.image || '',
-      },
+      } as any,
     });
 
     // 4. Si la respuesta de Better Auth no es válida, se lanza un error de ejecución
