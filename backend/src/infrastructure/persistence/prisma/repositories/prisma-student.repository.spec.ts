@@ -37,8 +37,23 @@ describe('PrismaStudentRepository', () => {
   });
 
   it('should create a student', async () => {
-    const data = { code: 'c-1', firstName: 'John', lastName: 'Doe', dni: '12345678', level: EducationalLevel.PRIMARY, grade: '1', sectionId: 's-1', guardianId: 'g-1' };
-    mockPrisma.student.create.mockResolvedValue({ id: 'stud-1', ...data, guardian: null, section: null, enrollments: [] });
+    const data = {
+      code: 'c-1',
+      firstName: 'John',
+      lastName: 'Doe',
+      dni: '12345678',
+      level: EducationalLevel.PRIMARY,
+      grade: '1',
+      sectionId: 's-1',
+      guardianId: 'g-1',
+    };
+    mockPrisma.student.create.mockResolvedValue({
+      id: 'stud-1',
+      ...data,
+      guardian: null,
+      section: null,
+      enrollments: [],
+    });
 
     const result = await repository.create(data);
 
@@ -47,7 +62,20 @@ describe('PrismaStudentRepository', () => {
   });
 
   it('should find student by id', async () => {
-    mockPrisma.student.findUnique.mockResolvedValue({ id: 'stud-1', code: 'c-1', firstName: 'John', lastName: 'Doe', dni: '12345678', level: EducationalLevel.PRIMARY, grade: '1', sectionId: 's-1', guardianId: 'g-1', guardian: null, section: null, enrollments: [] });
+    mockPrisma.student.findUnique.mockResolvedValue({
+      id: 'stud-1',
+      code: 'c-1',
+      firstName: 'John',
+      lastName: 'Doe',
+      dni: '12345678',
+      level: EducationalLevel.PRIMARY,
+      grade: '1',
+      sectionId: 's-1',
+      guardianId: 'g-1',
+      guardian: null,
+      section: null,
+      enrollments: [],
+    });
 
     const result = await repository.findById('stud-1');
 
@@ -55,7 +83,20 @@ describe('PrismaStudentRepository', () => {
   });
 
   it('should find student by dni', async () => {
-    mockPrisma.student.findUnique.mockResolvedValue({ id: 'stud-1', code: 'c-1', firstName: 'John', lastName: 'Doe', dni: '12345678', level: EducationalLevel.PRIMARY, grade: '1', sectionId: 's-1', guardianId: 'g-1', guardian: null, section: null, enrollments: [] });
+    mockPrisma.student.findUnique.mockResolvedValue({
+      id: 'stud-1',
+      code: 'c-1',
+      firstName: 'John',
+      lastName: 'Doe',
+      dni: '12345678',
+      level: EducationalLevel.PRIMARY,
+      grade: '1',
+      sectionId: 's-1',
+      guardianId: 'g-1',
+      guardian: null,
+      section: null,
+      enrollments: [],
+    });
 
     const result = await repository.findByDni('12345678');
 
@@ -63,7 +104,20 @@ describe('PrismaStudentRepository', () => {
   });
 
   it('should update student', async () => {
-    mockPrisma.student.update.mockResolvedValue({ id: 'stud-1', code: 'c-1', firstName: 'John II', lastName: 'Doe', dni: '12345678', level: EducationalLevel.PRIMARY, grade: '1', sectionId: 's-1', guardianId: 'g-1', guardian: null, section: null, enrollments: [] });
+    mockPrisma.student.update.mockResolvedValue({
+      id: 'stud-1',
+      code: 'c-1',
+      firstName: 'John II',
+      lastName: 'Doe',
+      dni: '12345678',
+      level: EducationalLevel.PRIMARY,
+      grade: '1',
+      sectionId: 's-1',
+      guardianId: 'g-1',
+      guardian: null,
+      section: null,
+      enrollments: [],
+    });
 
     const result = await repository.update('stud-1', { firstName: 'John II' });
 
@@ -73,7 +127,22 @@ describe('PrismaStudentRepository', () => {
   it('should find students paginated', async () => {
     mockPrisma.$transaction.mockResolvedValue([
       1,
-      [{ id: 'stud-1', code: 'c-1', firstName: 'John', lastName: 'Doe', dni: '12345678', level: EducationalLevel.PRIMARY, grade: '1', sectionId: 's-1', guardianId: 'g-1', guardian: null, section: null, enrollments: [] }],
+      [
+        {
+          id: 'stud-1',
+          code: 'c-1',
+          firstName: 'John',
+          lastName: 'Doe',
+          dni: '12345678',
+          level: EducationalLevel.PRIMARY,
+          grade: '1',
+          sectionId: 's-1',
+          guardianId: 'g-1',
+          guardian: null,
+          section: null,
+          enrollments: [],
+        },
+      ],
     ]);
 
     const result = await repository.findManyPaginated(1, 10);

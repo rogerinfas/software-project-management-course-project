@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-import { IStudentRepository } from '../../../../domain/repositories/student.repository.interface';
+import type { IStudentRepository } from '../../../../domain/repositories/student.repository.interface';
 import { StudentEntity } from '../../../../domain/entities/student.entity';
 import { GuardianEntity } from '../../../../domain/entities/guardian.entity';
 import { SectionEntity } from '../../../../domain/entities/section.entity';

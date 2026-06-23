@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-import { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
+import type { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
 import { SectionEntity } from '../../../../domain/entities/section.entity';
 import { StudentEntity } from '../../../../domain/entities/student.entity';
+import { SectionStatus } from '@prisma/client';
 
 @Injectable()
 export class PrismaSectionRepository implements ISectionRepository {
@@ -46,7 +47,7 @@ export class PrismaSectionRepository implements ISectionRepository {
         grade: section.grade!,
         level: section.level!,
         capacity: section.capacity!,
-        status: section.status ?? 'OPEN',
+        status: section.status ?? SectionStatus.OPEN,
       },
       include: {
         students: true,
@@ -81,4 +82,3 @@ export class PrismaSectionRepository implements ISectionRepository {
     });
   }
 }
-
