@@ -49,7 +49,7 @@ services:
     environment:
       PORT: 2000
       HOSTNAME: 0.0.0.0
-      NEXT_PUBLIC_BACKEND_URL: http://77.42.83.15:5000
+      NEXT_PUBLIC_BACKEND_URL: https://apicolegio.celebrali.com
     depends_on:
       - backend
     ports:
