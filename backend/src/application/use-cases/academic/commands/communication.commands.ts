@@ -1,6 +1,20 @@
+import { COMMUNICATION_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { GUARDIAN_REPOSITORY } from '../../../../config/constants/tokens';
+import { EVALUATION_RESULT_REPOSITORY } from '../../../../config/constants/tokens';
+import { ENROLLMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { COURSE_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { ICommunicationRepository } from '../../../../domain/repositories/communication.repository.interface';
+import type { ICommunicationRepository } from '../../../../domain/repositories/communication.repository.interface';
 import { CommunicationEntity } from '../../../../domain/entities/communication.entity';
 import { CommunicationNotFoundException } from '../../../../domain/exceptions/academic-domain.exceptions';
 
@@ -18,11 +32,13 @@ export class CreateCommunicationCommand implements ICommand {
 @CommandHandler(CreateCommunicationCommand)
 export class CreateCommunicationCommandHandler implements ICommandHandler<CreateCommunicationCommand> {
   constructor(
-    @Inject('ICommunicationRepository')
+    @Inject(COMMUNICATION_REPOSITORY)
     private readonly communicationRepository: ICommunicationRepository,
   ) {}
 
-  async execute(command: CreateCommunicationCommand): Promise<CommunicationEntity> {
+  async execute(
+    command: CreateCommunicationCommand,
+  ): Promise<CommunicationEntity> {
     return this.communicationRepository.create({
       title: command.title,
       content: command.content,
@@ -48,12 +64,16 @@ export class UpdateCommunicationCommand implements ICommand {
 @CommandHandler(UpdateCommunicationCommand)
 export class UpdateCommunicationCommandHandler implements ICommandHandler<UpdateCommunicationCommand> {
   constructor(
-    @Inject('ICommunicationRepository')
+    @Inject(COMMUNICATION_REPOSITORY)
     private readonly communicationRepository: ICommunicationRepository,
   ) {}
 
-  async execute(command: UpdateCommunicationCommand): Promise<CommunicationEntity> {
-    const communication = await this.communicationRepository.findById(command.id);
+  async execute(
+    command: UpdateCommunicationCommand,
+  ): Promise<CommunicationEntity> {
+    const communication = await this.communicationRepository.findById(
+      command.id,
+    );
     if (!communication) {
       throw new CommunicationNotFoundException(command.id);
     }
@@ -76,12 +96,14 @@ export class DeleteCommunicationCommand implements ICommand {
 @CommandHandler(DeleteCommunicationCommand)
 export class DeleteCommunicationCommandHandler implements ICommandHandler<DeleteCommunicationCommand> {
   constructor(
-    @Inject('ICommunicationRepository')
+    @Inject(COMMUNICATION_REPOSITORY)
     private readonly communicationRepository: ICommunicationRepository,
   ) {}
 
   async execute(command: DeleteCommunicationCommand): Promise<void> {
-    const communication = await this.communicationRepository.findById(command.id);
+    const communication = await this.communicationRepository.findById(
+      command.id,
+    );
     if (!communication) {
       throw new CommunicationNotFoundException(command.id);
     }

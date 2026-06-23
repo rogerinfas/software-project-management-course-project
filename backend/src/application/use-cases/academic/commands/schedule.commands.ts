@@ -1,8 +1,21 @@
+import { COURSE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { GUARDIAN_REPOSITORY } from '../../../../config/constants/tokens';
+import { EVALUATION_RESULT_REPOSITORY } from '../../../../config/constants/tokens';
+import { ENROLLMENT_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IScheduleRepository } from '../../../../domain/repositories/schedule.repository.interface';
-import { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
-import { ICourseRepository } from '../../../../domain/repositories/course.repository.interface';
+import type { IScheduleRepository } from '../../../../domain/repositories/schedule.repository.interface';
+import type { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
+import type { ICourseRepository } from '../../../../domain/repositories/course.repository.interface';
 import { ScheduleEntity } from '../../../../domain/entities/schedule.entity';
 import {
   ScheduleNotFoundException,
@@ -26,11 +39,11 @@ export class CreateScheduleCommand implements ICommand {
 @CommandHandler(CreateScheduleCommand)
 export class CreateScheduleCommandHandler implements ICommandHandler<CreateScheduleCommand> {
   constructor(
-    @Inject('IScheduleRepository')
+    @Inject(SCHEDULE_REPOSITORY)
     private readonly scheduleRepository: IScheduleRepository,
-    @Inject('ISectionRepository')
+    @Inject(SECTION_REPOSITORY)
     private readonly sectionRepository: ISectionRepository,
-    @Inject('ICourseRepository')
+    @Inject(COURSE_REPOSITORY)
     private readonly courseRepository: ICourseRepository,
   ) {}
 
@@ -57,13 +70,17 @@ export class CreateScheduleCommandHandler implements ICommandHandler<CreateSched
     );
 
     if (conflicts.length > 0) {
-      const sectionConflict = conflicts.find((c) => c.sectionId === command.sectionId);
+      const sectionConflict = conflicts.find(
+        (c) => c.sectionId === command.sectionId,
+      );
       if (sectionConflict) {
         throw new ScheduleConflictException(
           `Conflicto: La sección ya tiene asignada una clase en este día (${command.day}) de ${command.startTime} a ${command.endTime}`,
         );
       }
-      const teacherConflict = conflicts.find((c) => c.staffId === command.staffId);
+      const teacherConflict = conflicts.find(
+        (c) => c.staffId === command.staffId,
+      );
       if (teacherConflict) {
         throw new ScheduleConflictException(
           `Conflicto: El docente ya está programado en otra sección para este día (${command.day}) de ${command.startTime} a ${command.endTime}`,
@@ -98,11 +115,11 @@ export class UpdateScheduleCommand implements ICommand {
 @CommandHandler(UpdateScheduleCommand)
 export class UpdateScheduleCommandHandler implements ICommandHandler<UpdateScheduleCommand> {
   constructor(
-    @Inject('IScheduleRepository')
+    @Inject(SCHEDULE_REPOSITORY)
     private readonly scheduleRepository: IScheduleRepository,
-    @Inject('ISectionRepository')
+    @Inject(SECTION_REPOSITORY)
     private readonly sectionRepository: ISectionRepository,
-    @Inject('ICourseRepository')
+    @Inject(COURSE_REPOSITORY)
     private readonly courseRepository: ICourseRepository,
   ) {}
 
@@ -177,7 +194,7 @@ export class DeleteScheduleCommand implements ICommand {
 @CommandHandler(DeleteScheduleCommand)
 export class DeleteScheduleCommandHandler implements ICommandHandler<DeleteScheduleCommand> {
   constructor(
-    @Inject('IScheduleRepository')
+    @Inject(SCHEDULE_REPOSITORY)
     private readonly scheduleRepository: IScheduleRepository,
   ) {}
 
