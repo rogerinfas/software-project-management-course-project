@@ -1,6 +1,7 @@
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
+import type { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
 import { UserEntity } from '../../../../domain/entities/user.entity';
 import { auth } from '../../../../infrastructure/config/better-auth/better-auth.config';
 import { EmailAlreadyExistsException } from '../../../../domain/exceptions/user.exceptions';
@@ -15,7 +16,7 @@ export class CreateUserCommand implements ICommand {
 @CommandHandler(CreateUserCommand)
 export class CreateUserCommandHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
-    @Inject('IUserRepository')
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
   ) {}
 
