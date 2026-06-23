@@ -5,11 +5,19 @@ import { GuardianResponse, PaginationMeta } from './guardian.dto';
 import { SectionResponse } from './section.dto';
 
 export class StudentResponse {
-  @ApiProperty({ description: 'ID único del estudiante', example: 'student-123' })
+  @ApiProperty({
+    description: 'ID único del estudiante',
+    example: 'student-123',
+  })
   @Expose()
   id: string;
 
-  @ApiPropertyOptional({ description: 'Código de estudiante', example: 'ALU-2026-1234', type: String, nullable: true })
+  @ApiPropertyOptional({
+    description: 'Código de estudiante',
+    example: 'ALU-2026-1234',
+    type: String,
+    nullable: true,
+  })
   @Expose()
   code?: string | null;
 
@@ -33,7 +41,12 @@ export class StudentResponse {
   @Expose()
   grade: string;
 
-  @ApiPropertyOptional({ description: 'ID de la sección', example: 'section-123', type: String, nullable: true })
+  @ApiPropertyOptional({
+    description: 'ID de la sección',
+    example: 'section-123',
+    type: String,
+    nullable: true,
+  })
   @Expose()
   sectionId?: string | null;
 

@@ -27,7 +27,10 @@ export class SectionResponse {
   @Expose()
   status: string;
 
-  @ApiProperty({ description: 'Cantidad actual de alumnos matriculados', example: 12 })
+  @ApiProperty({
+    description: 'Cantidad actual de alumnos matriculados',
+    example: 12,
+  })
   @Expose()
   matriculados?: number;
 }
