@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { ICourseRepository } from '../../../../domain/repositories/course.repository.interface';
+import type { ICourseRepository } from '../../../../domain/repositories/course.repository.interface';
 import { CourseEntity } from '../../../../domain/entities/course.entity';
 import { PaginatedResult } from '../../../../domain/repositories/prospect.repository.interface';
 
@@ -37,7 +37,10 @@ export class PrismaCourseRepository implements ICourseRepository {
     return this.mapToEntity(record);
   }
 
-  async update(id: string, course: Partial<CourseEntity>): Promise<CourseEntity> {
+  async update(
+    id: string,
+    course: Partial<CourseEntity>,
+  ): Promise<CourseEntity> {
     const record = await this.prisma.course.update({
       where: { id },
       data: {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { ICommunicationRepository } from '../../../../domain/repositories/communication.repository.interface';
+import type { ICommunicationRepository } from '../../../../domain/repositories/communication.repository.interface';
 import { CommunicationEntity } from '../../../../domain/entities/communication.entity';
 import { PaginatedResult } from '../../../../domain/repositories/prospect.repository.interface';
 
@@ -13,7 +13,9 @@ export class PrismaCommunicationRepository implements ICommunicationRepository {
     return new CommunicationEntity(dbRecord);
   }
 
-  async create(communication: Partial<CommunicationEntity>): Promise<CommunicationEntity> {
+  async create(
+    communication: Partial<CommunicationEntity>,
+  ): Promise<CommunicationEntity> {
     const record = await this.prisma.communication.create({
       data: {
         title: communication.title!,
@@ -104,10 +106,7 @@ export class PrismaCommunicationRepository implements ICommunicationRepository {
     const records = await this.prisma.communication.findMany({
       where: {
         isVisible: true,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: now } },
-        ],
+        OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
       },
       orderBy: { createdAt: 'desc' },
     });
