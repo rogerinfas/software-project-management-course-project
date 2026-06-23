@@ -63,13 +63,15 @@ export default function AppointmentsPage() {
 
   // Queries
   const { data: appointments, isLoading: appointmentsLoading } = backend.useQuery("get", "/api/admission/appointments", {});
-  const { data: stagesData } = backend.useQuery("get", "/api/admission/stages", {});
+  const { data: prospectsResponse } = backend.useQuery("get", "/api/admission/prospects", {
+    query: { page: 1, size: 100 }
+  });
 
   // Extract flat list of prospects
   const prospects = React.useMemo(() => {
-    if (!stagesData) return [];
-    return (stagesData as any).flatMap((s: any) => s.prospects || []);
-  }, [stagesData]);
+    if (!prospectsResponse?.data) return [];
+    return prospectsResponse.data as any[];
+  }, [prospectsResponse]);
 
   // Filtered prospects based on search input
   const filteredProspectsList = React.useMemo(() => {
@@ -86,7 +88,6 @@ export default function AppointmentsPage() {
       reset();
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/appointments"] });
       queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/prospects"] });
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
     },
     onError: (err: any) => {
       toast.error(err?.message || "Error interno del servidor");

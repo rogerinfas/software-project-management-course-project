@@ -51,7 +51,7 @@ import {
 import { backend } from "@/lib/api/types/backend";
 import type { components } from "@/lib/api/types/api";
 
-type Stage = components["schemas"]["AdmissionStageResponse"];
+
 type Prospect = components["schemas"]["ProspectResponse"];
 type Interaction = components["schemas"]["ProspectInteractionResponse"];
 

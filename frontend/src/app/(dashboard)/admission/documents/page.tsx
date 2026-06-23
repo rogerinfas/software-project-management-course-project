@@ -20,13 +20,15 @@ export default function DocumentsPage() {
   const [selectedProspectId, setSelectedProspectId] = React.useState<string | null>(null);
 
   // Queries
-  const { data: stages, isLoading } = backend.useQuery("get", "/api/admission/stages", {});
+  const { data: prospectsResponse, isLoading } = backend.useQuery("get", "/api/admission/prospects", {
+    query: { page: 1, size: 100 }
+  });
 
   // Extract all prospects
   const prospects = React.useMemo(() => {
-    if (!stages) return [];
-    return (stages as any).flatMap((s: any) => s.prospects || []);
-  }, [stages]);
+    if (!prospectsResponse?.data) return [];
+    return prospectsResponse.data as any[];
+  }, [prospectsResponse]);
 
   // Filtered prospects
   const filteredProspects = React.useMemo(() => {

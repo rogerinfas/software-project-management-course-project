@@ -46,18 +46,18 @@ export default function EvaluationPage() {
   const [activeTab, setActiveTab] = React.useState<"verdict" | "process" | "profile">("verdict");
 
   // Queries
-  const { data: stages, isLoading } = backend.useQuery("get", "/api/admission/stages", {});
+  const { data: prospectsResponse, isLoading } = backend.useQuery("get", "/api/admission/prospects", {
+    query: { page: 1, size: 100 }
+  });
 
   // Extract all prospects
   const prospects = React.useMemo(() => {
-    if (!stages) return [];
-    return (stages as any).flatMap((s: any) =>
-      (s.prospects || []).map((p: any) => ({
-        ...p,
-        stageName: s.name,
-      }))
-    );
-  }, [stages]);
+    if (!prospectsResponse?.data) return [];
+    return (prospectsResponse.data as any[]).map((p: any) => ({
+      ...p,
+      stageName: p.stage || "Sin Etapa",
+    }));
+  }, [prospectsResponse]);
 
   // Filtered prospects
   const filteredProspects = React.useMemo(() => {
@@ -85,7 +85,7 @@ export default function EvaluationPage() {
   const evaluateMutation = backend.useMutation("patch", "/api/admission/prospects/{id}/evaluation", {
     onSuccess: () => {
       toast.success("Evaluación guardada con éxito");
-      queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/stages"] });
+      queryClient.invalidateQueries({ queryKey: ["get", "/api/admission/prospects"] });
     },
     onError: (err: any) => {
       toast.error(err?.message || "Error interno del servidor");
