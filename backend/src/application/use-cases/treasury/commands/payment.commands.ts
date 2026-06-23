@@ -1,7 +1,22 @@
+import { CHARGE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { GUARDIAN_REPOSITORY } from '../../../../config/constants/tokens';
+import { EVALUATION_RESULT_REPOSITORY } from '../../../../config/constants/tokens';
+import { ENROLLMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { COURSE_REPOSITORY } from '../../../../config/constants/tokens';
+import { COMMUNICATION_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IPaymentRepository } from '../../../../domain/repositories/payment.repository.interface';
-import { IChargeRepository } from '../../../../domain/repositories/charge.repository.interface';
+import type { IPaymentRepository } from '../../../../domain/repositories/payment.repository.interface';
+import type { IChargeRepository } from '../../../../domain/repositories/charge.repository.interface';
 import { PaymentEntity } from '../../../../domain/entities/payment.entity';
 import {
   ChargeNotFoundException,
@@ -20,9 +35,9 @@ export class RegisterPaymentCommand implements ICommand {
 @CommandHandler(RegisterPaymentCommand)
 export class RegisterPaymentCommandHandler implements ICommandHandler<RegisterPaymentCommand> {
   constructor(
-    @Inject('IPaymentRepository')
+    @Inject(PAYMENT_REPOSITORY)
     private readonly paymentRepository: IPaymentRepository,
-    @Inject('IChargeRepository')
+    @Inject(CHARGE_REPOSITORY)
     private readonly chargeRepository: IChargeRepository,
   ) {}
 
@@ -33,7 +48,9 @@ export class RegisterPaymentCommandHandler implements ICommandHandler<RegisterPa
     }
 
     if (command.amount <= 0) {
-      throw new InvalidPaymentAmountException('El monto de pago debe ser mayor que cero');
+      throw new InvalidPaymentAmountException(
+        'El monto de pago debe ser mayor que cero',
+      );
     }
 
     if (command.amount > charge.pendingAmount) {
@@ -42,7 +59,9 @@ export class RegisterPaymentCommandHandler implements ICommandHandler<RegisterPa
       );
     }
 
-    const newPending = Number((charge.pendingAmount - command.amount).toFixed(2));
+    const newPending = Number(
+      (charge.pendingAmount - command.amount).toFixed(2),
+    );
     const newStatus = newPending === 0 ? 'PAID' : 'PARTIAL';
 
     // Actualizar el cargo
@@ -54,7 +73,6 @@ export class RegisterPaymentCommandHandler implements ICommandHandler<RegisterPa
     // Registrar el pago
     return this.paymentRepository.create({
       chargeId: charge.id,
-      studentId: charge.studentId,
       totalAmount: command.amount,
       method: command.method,
       timestamp: new Date(),

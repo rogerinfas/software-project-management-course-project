@@ -1,10 +1,29 @@
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { CHARGE_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { GUARDIAN_REPOSITORY } from '../../../../config/constants/tokens';
+import { EVALUATION_RESULT_REPOSITORY } from '../../../../config/constants/tokens';
+import { ENROLLMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { COURSE_REPOSITORY } from '../../../../config/constants/tokens';
+import { COMMUNICATION_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IChargeRepository } from '../../../../domain/repositories/charge.repository.interface';
-import { ITariffRepository } from '../../../../domain/repositories/tariff.repository.interface';
+import type { IChargeRepository } from '../../../../domain/repositories/charge.repository.interface';
+import type { ITariffRepository } from '../../../../domain/repositories/tariff.repository.interface';
 import { ChargeEntity } from '../../../../domain/entities/charge.entity';
-import { ChargeNotFoundException, TariffNotFoundException } from '../../../../domain/exceptions/treasury-domain.exceptions';
+import {
+  ChargeNotFoundException,
+  TariffNotFoundException,
+} from '../../../../domain/exceptions/treasury-domain.exceptions';
 import { PrismaService } from '../../../../infrastructure/persistence/prisma/prisma.service';
+import { ChargeStatus } from '@prisma/client';
 
 export class CreateChargeCommand implements ICommand {
   constructor(
@@ -17,9 +36,9 @@ export class CreateChargeCommand implements ICommand {
 @CommandHandler(CreateChargeCommand)
 export class CreateChargeCommandHandler implements ICommandHandler<CreateChargeCommand> {
   constructor(
-    @Inject('IChargeRepository')
+    @Inject(CHARGE_REPOSITORY)
     private readonly chargeRepository: IChargeRepository,
-    @Inject('ITariffRepository')
+    @Inject(TARIFF_REPOSITORY)
     private readonly tariffRepository: ITariffRepository,
   ) {}
 
@@ -33,8 +52,10 @@ export class CreateChargeCommandHandler implements ICommandHandler<CreateChargeC
       tariffId: command.tariffId,
       originalAmount: tariff.amount,
       pendingAmount: tariff.amount,
-      dueDate: command.dueDate || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 5),
-      status: 'PENDING',
+      dueDate:
+        command.dueDate ||
+        new Date(new Date().getFullYear(), new Date().getMonth() + 1, 5),
+      status: ChargeStatus.PENDING,
     });
   }
 }
@@ -50,9 +71,9 @@ export class GenerateBulkChargesCommand implements ICommand {
 export class GenerateBulkChargesCommandHandler implements ICommandHandler<GenerateBulkChargesCommand> {
   constructor(
     private readonly prisma: PrismaService,
-    @Inject('IChargeRepository')
+    @Inject(CHARGE_REPOSITORY)
     private readonly chargeRepository: IChargeRepository,
-    @Inject('ITariffRepository')
+    @Inject(TARIFF_REPOSITORY)
     private readonly tariffRepository: ITariffRepository,
   ) {}
 
@@ -70,7 +91,9 @@ export class GenerateBulkChargesCommandHandler implements ICommandHandler<Genera
     });
 
     let count = 0;
-    const dueDate = command.dueDate || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 5);
+    const dueDate =
+      command.dueDate ||
+      new Date(new Date().getFullYear(), new Date().getMonth() + 1, 5);
 
     for (const student of students) {
       // Evitar cargos duplicados para el mismo concepto y mes si ya existe uno pendiente/pagado con esta tarifa en el mismo mes de vencimiento
@@ -92,7 +115,7 @@ export class GenerateBulkChargesCommandHandler implements ICommandHandler<Genera
           originalAmount: tariff.amount,
           pendingAmount: tariff.amount,
           dueDate,
-          status: 'PENDING',
+          status: ChargeStatus.PENDING,
         });
         count++;
       }
@@ -109,7 +132,7 @@ export class DeleteChargeCommand implements ICommand {
 @CommandHandler(DeleteChargeCommand)
 export class DeleteChargeCommandHandler implements ICommandHandler<DeleteChargeCommand> {
   constructor(
-    @Inject('IChargeRepository')
+    @Inject(CHARGE_REPOSITORY)
     private readonly chargeRepository: IChargeRepository,
   ) {}
 
