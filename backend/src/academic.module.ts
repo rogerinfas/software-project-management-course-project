@@ -1,3 +1,4 @@
+import { COURSE_REPOSITORY, SCHEDULE_REPOSITORY, COMMUNICATION_REPOSITORY, SECTION_REPOSITORY } from './config/constants/tokens';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AcademicController } from './presentation/controllers/academic/academic.controller';
@@ -19,19 +20,19 @@ import { AcademicQueryHandlers } from './application/use-cases/academic/queries'
   providers: [
     PrismaService,
     {
-      provide: 'ICourseRepository',
+      provide: COURSE_REPOSITORY,
       useClass: PrismaCourseRepository,
     },
     {
-      provide: 'IScheduleRepository',
+      provide: SCHEDULE_REPOSITORY,
       useClass: PrismaScheduleRepository,
     },
     {
-      provide: 'ICommunicationRepository',
+      provide: COMMUNICATION_REPOSITORY,
       useClass: PrismaCommunicationRepository,
     },
     {
-      provide: 'ISectionRepository',
+      provide: SECTION_REPOSITORY,
       useClass: PrismaSectionRepository,
     },
     ...AcademicCommandHandlers,

@@ -1,3 +1,4 @@
+import { ADMISSION_STAGE_REPOSITORY, PROSPECT_REPOSITORY, APPOINTMENT_REPOSITORY, EVALUATION_RESULT_REPOSITORY, PROSPECT_INTERACTION_REPOSITORY } from './config/constants/tokens';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AdmissionController } from './presentation/controllers/admission/admission.controller';
@@ -18,7 +19,10 @@ import { ProspectQueryHandlers } from './application/use-cases/prospect/queries/
 import { AppointmentCommandHandlers } from './application/use-cases/appointment/commands';
 import { AppointmentQueryHandlers } from './application/use-cases/appointment/queries';
 import { EvaluationCommandHandlers } from './application/use-cases/evaluation-result/commands';
-import { InteractionCommandHandlers, InteractionQueryHandlers } from './application/use-cases/interaction';
+import {
+  InteractionCommandHandlers,
+  InteractionQueryHandlers,
+} from './application/use-cases/interaction';
 
 @Module({
   imports: [CqrsModule],
@@ -26,23 +30,23 @@ import { InteractionCommandHandlers, InteractionQueryHandlers } from './applicat
   providers: [
     PrismaService,
     {
-      provide: 'IAdmissionStageRepository',
+      provide: ADMISSION_STAGE_REPOSITORY,
       useClass: PrismaAdmissionStageRepository,
     },
     {
-      provide: 'IProspectRepository',
+      provide: PROSPECT_REPOSITORY,
       useClass: PrismaProspectRepository,
     },
     {
-      provide: 'IAppointmentRepository',
+      provide: APPOINTMENT_REPOSITORY,
       useClass: PrismaAppointmentRepository,
     },
     {
-      provide: 'IEvaluationResultRepository',
+      provide: EVALUATION_RESULT_REPOSITORY,
       useClass: PrismaEvaluationResultRepository,
     },
     {
-      provide: 'IProspectInteractionRepository',
+      provide: PROSPECT_INTERACTION_REPOSITORY,
       useClass: PrismaProspectInteractionRepository,
     },
     ...StageCommandHandlers,
