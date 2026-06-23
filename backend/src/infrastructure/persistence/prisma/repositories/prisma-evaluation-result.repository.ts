@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { IEvaluationResultRepository } from '../../../../domain/repositories/evaluation-result.repository.interface';
+import type { IEvaluationResultRepository } from '../../../../domain/repositories/evaluation-result.repository.interface';
 import { EvaluationResultEntity } from '../../../../domain/entities/evaluation-result.entity';
 
 @Injectable()

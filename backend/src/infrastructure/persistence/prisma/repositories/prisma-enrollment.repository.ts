@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-import { IEnrollmentRepository } from '../../../../domain/repositories/enrollment.repository.interface';
+import type { IEnrollmentRepository } from '../../../../domain/repositories/enrollment.repository.interface';
 import { EnrollmentEntity } from '../../../../domain/entities/enrollment.entity';
 import { StudentEntity } from '../../../../domain/entities/student.entity';
 import { GuardianEntity } from '../../../../domain/entities/guardian.entity';
@@ -30,7 +30,9 @@ export class PrismaEnrollmentRepository implements IEnrollmentRepository {
     return entity;
   }
 
-  async create(enrollment: Partial<EnrollmentEntity>): Promise<EnrollmentEntity> {
+  async create(
+    enrollment: Partial<EnrollmentEntity>,
+  ): Promise<EnrollmentEntity> {
     const created = await this.prisma.enrollment.create({
       data: {
         studentId: enrollment.studentId!,
