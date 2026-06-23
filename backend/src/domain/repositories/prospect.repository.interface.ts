@@ -11,14 +11,14 @@ export interface PaginatedResult<T> {
   };
 }
 
-export abstract class IProspectRepository {
-  abstract create(prospect: Partial<ProspectEntity>): Promise<ProspectEntity>;
-  abstract findById(id: string): Promise<ProspectEntity | null>;
-  abstract update(
+export interface IProspectRepository {
+  create(prospect: Partial<ProspectEntity>): Promise<ProspectEntity>;
+  findById(id: string): Promise<ProspectEntity | null>;
+  update(
     id: string,
     prospect: Partial<ProspectEntity>,
   ): Promise<ProspectEntity>;
-  abstract findManyPaginated(
+  findManyPaginated(
     page: number,
     size: number,
     search?: string,

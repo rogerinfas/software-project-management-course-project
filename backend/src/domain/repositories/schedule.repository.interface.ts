@@ -1,13 +1,16 @@
 import { ScheduleEntity } from '../entities/schedule.entity';
 
-export abstract class IScheduleRepository {
-  abstract create(schedule: Partial<ScheduleEntity>): Promise<ScheduleEntity>;
-  abstract findById(id: string): Promise<ScheduleEntity | null>;
-  abstract update(id: string, schedule: Partial<ScheduleEntity>): Promise<ScheduleEntity>;
-  abstract delete(id: string): Promise<void>;
-  abstract findBySection(sectionId: string): Promise<ScheduleEntity[]>;
-  abstract findByTeacher(staffId: string): Promise<ScheduleEntity[]>;
-  abstract checkConflicts(
+export interface IScheduleRepository {
+  create(schedule: Partial<ScheduleEntity>): Promise<ScheduleEntity>;
+  findById(id: string): Promise<ScheduleEntity | null>;
+  update(
+    id: string,
+    schedule: Partial<ScheduleEntity>,
+  ): Promise<ScheduleEntity>;
+  delete(id: string): Promise<void>;
+  findBySection(sectionId: string): Promise<ScheduleEntity[]>;
+  findByTeacher(staffId: string): Promise<ScheduleEntity[]>;
+  checkConflicts(
     day: number,
     startTime: string,
     endTime: string,
@@ -15,5 +18,5 @@ export abstract class IScheduleRepository {
     staffId: string,
     excludeId?: string,
   ): Promise<ScheduleEntity[]>;
-  abstract findAll(): Promise<ScheduleEntity[]>;
+  findAll(): Promise<ScheduleEntity[]>;
 }
