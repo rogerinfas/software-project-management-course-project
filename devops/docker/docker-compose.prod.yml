@@ -24,7 +24,7 @@ services:
     environment:
       PORT: 5000
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
-      BETTER_AUTH_URL: http://77.42.83.15:5000
+      BETTER_AUTH_URL: https://apicolegio.celebrali.com
       WEB_URL: https://appcolegio.celebrali.com
     depends_on:
       postgres:
@@ -33,6 +33,15 @@ services:
       - "${BACKEND_PORT:-5000}:5000"
     networks:
       - internal
+      - proxy_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy_net"
+      - "traefik.http.routers.school-backend.rule=Host(`apicolegio.celebrali.com`)"
+      - "traefik.http.routers.school-backend.entrypoints=websecure"
+      - "traefik.http.routers.school-backend.tls=true"
+      - "traefik.http.routers.school-backend.tls.certresolver=cloudflare"
+      - "traefik.http.services.school-backend.loadbalancer.server.port=5000"
 
   frontend:
     image: ${FRONTEND_IMAGE:-rderoger/school-frontend:${IMAGE_TAG:-latest}}
