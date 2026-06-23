@@ -35,7 +35,7 @@ async function generate() {
 
   let combinedDocument = document;
   try {
-    const openAPISchema = await auth.api.generateOpenAPISchema();
+    const openAPISchema = await (auth.api as any).generateOpenAPISchema();
     if (openAPISchema) {
       const betterAuthPaths = (openAPISchema as any).paths || {};
       const betterAuthComponents = (openAPISchema as any).components || {};

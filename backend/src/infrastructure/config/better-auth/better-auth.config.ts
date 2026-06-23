@@ -41,7 +41,7 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
   advanced: {
-    cookie: {
+    cookies: {
       maxAge: 7 * 24 * 60 * 60, // 7 dias
       sameSite: 'none', // requerido para cross-site/cross-subdomain
       secure: true, // requerido para sameSite none
