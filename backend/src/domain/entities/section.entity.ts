@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsNotEmpty, IsString } from 'class-validator';
 import { BaseAggregateRootEntity } from '../../config/entities/base-entities/blacklist-strategy/base.entity';
 import { BaseEntityType } from '../../config/entities/base-entities/base-entity.types';
-import { EducationalLevel } from '@prisma/client';
+import { EducationalLevel, SectionStatus } from '@prisma/client';
 import { StudentEntity } from './student.entity';
 
 export interface SectionType extends BaseEntityType {
@@ -10,7 +10,7 @@ export interface SectionType extends BaseEntityType {
   grade: string;
   level: EducationalLevel;
   capacity: number;
-  status: string;
+  status: SectionStatus;
   students?: StudentEntity[];
 }
 
@@ -38,10 +38,10 @@ export class SectionEntity
   @IsNotEmpty()
   capacity: number;
 
-  @ApiProperty({ description: 'Estado de la sección (ej. OPEN, CLOSED)' })
-  @IsString()
+  @ApiProperty({ enum: SectionStatus, description: 'Estado de la sección' })
+  @IsEnum(SectionStatus)
   @IsNotEmpty()
-  status: string;
+  status: SectionStatus;
 
   @ApiProperty({ type: () => [StudentEntity], required: false })
   students?: StudentEntity[];

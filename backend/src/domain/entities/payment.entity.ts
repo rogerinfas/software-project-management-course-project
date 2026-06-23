@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import { BaseAggregateRootEntity } from '../../config/entities/base-entities/blacklist-strategy/base.entity';
 import { BaseEntityType } from '../../config/entities/base-entities/base-entity.types';
 import { PaymentMethod } from '@prisma/client';
@@ -8,7 +14,6 @@ import { ChargeEntity } from './charge.entity';
 export interface PaymentModelType extends BaseEntityType {
   chargeId: string;
   charge?: ChargeEntity | null;
-  studentId: string;
   totalAmount: number;
   method: PaymentMethod;
   timestamp: Date;
@@ -25,11 +30,6 @@ export class PaymentEntity
 
   @ApiProperty({ type: () => ChargeEntity, required: false, nullable: true })
   charge?: ChargeEntity | null;
-
-  @ApiProperty({ description: 'ID del estudiante' })
-  @IsString()
-  @IsNotEmpty()
-  studentId: string;
 
   @ApiProperty({ description: 'Monto total pagado' })
   @IsNumber()
