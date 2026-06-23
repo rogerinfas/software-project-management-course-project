@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { BaseAggregateRootEntity } from '../../config/entities/base-entities/blacklist-strategy/base.entity';
 import { BaseEntityType } from '../../config/entities/base-entities/base-entity.types';
-import { EducationalLevel, ProspectPriority } from '@prisma/client';
+import { EducationalLevel, ProspectPriority, ProspectStage } from '@prisma/client';
 import { AppointmentEntity } from './appointment.entity';
 import { EvaluationResultEntity } from './evaluation-result.entity';
 
@@ -12,7 +12,7 @@ export interface ProspectType extends BaseEntityType {
   targetGrade: string;
   level: EducationalLevel;
   priority: ProspectPriority;
-  currentStageId: string;
+  stage: ProspectStage;
   appointments?: AppointmentEntity[];
   evaluation?: EvaluationResultEntity | null;
 }
@@ -46,10 +46,10 @@ export class ProspectEntity
   @IsNotEmpty()
   priority: ProspectPriority;
 
-  @ApiProperty({ description: 'Current admission stage ID' })
-  @IsString()
+  @ApiProperty({ description: 'Current admission stage', enum: ProspectStage })
+  @IsEnum(ProspectStage)
   @IsNotEmpty()
-  currentStageId: string;
+  stage: ProspectStage;
 
   @ApiProperty({ type: () => [AppointmentEntity], required: false })
   appointments?: AppointmentEntity[];
