@@ -1,4 +1,7 @@
-import { UpdateStageCommand, UpdateStageCommandHandler } from './update-stage.command';
+import {
+  UpdateStageCommand,
+  UpdateStageCommandHandler,
+} from './update-stage.command';
 import { AdmissionStageEntity } from '../../../../domain/entities/admission-stage.entity';
 import { NotFoundException } from '@nestjs/common';
 
@@ -22,8 +25,16 @@ describe('UpdateStageCommandHandler', () => {
   });
 
   it('should update stage successfully if found', async () => {
-    const stage = new AdmissionStageEntity({ id: 's-1', name: 'Old Name', order: 1 });
-    const updated = new AdmissionStageEntity({ id: 's-1', name: 'New Name', order: 2 });
+    const stage = new AdmissionStageEntity({
+      id: 's-1',
+      name: 'Old Name',
+      order: 1,
+    });
+    const updated = new AdmissionStageEntity({
+      id: 's-1',
+      name: 'New Name',
+      order: 2,
+    });
     repository.findById.mockResolvedValue(stage);
     repository.update.mockResolvedValue(updated);
 
@@ -31,6 +42,9 @@ describe('UpdateStageCommandHandler', () => {
     const result = await handler.execute(command);
 
     expect(result).toBe(updated);
-    expect(repository.update).toHaveBeenCalledWith('s-1', { name: 'New Name', order: 2 });
+    expect(repository.update).toHaveBeenCalledWith('s-1', {
+      name: 'New Name',
+      order: 2,
+    });
   });
 });

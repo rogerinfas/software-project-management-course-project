@@ -1,4 +1,7 @@
-import { DeleteStageCommand, DeleteStageCommandHandler } from './delete-stage.command';
+import {
+  DeleteStageCommand,
+  DeleteStageCommandHandler,
+} from './delete-stage.command';
 import { AdmissionStageEntity } from '../../../../domain/entities/admission-stage.entity';
 import { NotFoundException } from '@nestjs/common';
 
@@ -22,7 +25,11 @@ describe('DeleteStageCommandHandler', () => {
   });
 
   it('should delete stage successfully if found', async () => {
-    const stage = new AdmissionStageEntity({ id: 's-1', name: 'Stage 1', order: 1 });
+    const stage = new AdmissionStageEntity({
+      id: 's-1',
+      name: 'Stage 1',
+      order: 1,
+    });
     repository.findById.mockResolvedValue(stage);
     repository.delete.mockResolvedValue(undefined);
 
