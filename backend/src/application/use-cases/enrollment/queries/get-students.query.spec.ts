@@ -1,4 +1,7 @@
-import { GetStudentsQuery, GetStudentsQueryHandler } from './get-students.query';
+import {
+  GetStudentsQuery,
+  GetStudentsQueryHandler,
+} from './get-students.query';
 
 describe('GetStudentsQueryHandler', () => {
   let handler: GetStudentsQueryHandler;
@@ -12,7 +15,17 @@ describe('GetStudentsQueryHandler', () => {
   });
 
   it('should return paginated students', async () => {
-    const paginatedResult = { data: [], meta: { total: 0, page: 1, pageSize: 10, totalPages: 0, hasNext: false, hasPrevious: false } };
+    const paginatedResult = {
+      data: [],
+      meta: {
+        total: 0,
+        page: 1,
+        pageSize: 10,
+        totalPages: 0,
+        hasNext: false,
+        hasPrevious: false,
+      },
+    };
     repository.findManyPaginated.mockResolvedValue(paginatedResult);
 
     const query = new GetStudentsQuery(1, 10, 'search');

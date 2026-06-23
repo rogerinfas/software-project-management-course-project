@@ -1,4 +1,7 @@
-import { GetGuardiansQuery, GetGuardiansQueryHandler } from './get-guardians.query';
+import {
+  GetGuardiansQuery,
+  GetGuardiansQueryHandler,
+} from './get-guardians.query';
 
 describe('GetGuardiansQueryHandler', () => {
   let handler: GetGuardiansQueryHandler;
@@ -12,7 +15,17 @@ describe('GetGuardiansQueryHandler', () => {
   });
 
   it('should return paginated guardians', async () => {
-    const paginatedResult = { data: [], meta: { total: 0, page: 1, pageSize: 10, totalPages: 0, hasNext: false, hasPrevious: false } };
+    const paginatedResult = {
+      data: [],
+      meta: {
+        total: 0,
+        page: 1,
+        pageSize: 10,
+        totalPages: 0,
+        hasNext: false,
+        hasPrevious: false,
+      },
+    };
     repository.findManyPaginated.mockResolvedValue(paginatedResult);
 
     const query = new GetGuardiansQuery(1, 10, 'search');
