@@ -1,4 +1,7 @@
-import { GetUserByIdQuery, GetUserByIdQueryHandler } from './get-user-by-id.query';
+import {
+  GetUserByIdQuery,
+  GetUserByIdQueryHandler,
+} from './get-user-by-id.query';
 import { UserEntity } from '../../../../domain/entities/user.entity';
 
 describe('GetUserByIdQueryHandler', () => {

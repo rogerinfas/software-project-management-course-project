@@ -13,7 +13,17 @@ describe('GetUsersQueryHandler', () => {
   });
 
   it('should call findManyPaginated with default values when no args are provided', async () => {
-    const paginatedResult = { data: [], meta: { total: 0, page: 1, pageSize: 10, totalPages: 0, hasNext: false, hasPrevious: false } };
+    const paginatedResult = {
+      data: [],
+      meta: {
+        total: 0,
+        page: 1,
+        pageSize: 10,
+        totalPages: 0,
+        hasNext: false,
+        hasPrevious: false,
+      },
+    };
     userRepository.findManyPaginated.mockResolvedValue(paginatedResult);
 
     const query = new GetUsersQuery();
@@ -24,7 +34,17 @@ describe('GetUsersQueryHandler', () => {
   });
 
   it('should call findManyPaginated with custom values when arguments are provided', async () => {
-    const paginatedResult = { data: [], meta: { total: 0, page: 2, pageSize: 5, totalPages: 0, hasNext: false, hasPrevious: false } };
+    const paginatedResult = {
+      data: [],
+      meta: {
+        total: 0,
+        page: 2,
+        pageSize: 5,
+        totalPages: 0,
+        hasNext: false,
+        hasPrevious: false,
+      },
+    };
     userRepository.findManyPaginated.mockResolvedValue(paginatedResult);
 
     const query = new GetUsersQuery(2, 5);

@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsInt, IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import {
+  IsDate,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Min,
+} from 'class-validator';
 import { BaseAggregateRootEntity } from '../../config/entities/base-entities/blacklist-strategy/base.entity';
 import { BaseEntityType } from '../../config/entities/base-entities/base-entity.types';
 import { StaffProfileEntity } from './staff-profile.entity';
@@ -23,7 +30,11 @@ export class AttendanceRecordEntity
   @IsNotEmpty()
   staffId: string;
 
-  @ApiProperty({ type: () => StaffProfileEntity, required: false, nullable: true })
+  @ApiProperty({
+    type: () => StaffProfileEntity,
+    required: false,
+    nullable: true,
+  })
   staff?: StaffProfileEntity | null;
 
   @ApiProperty({ description: 'Tipo de marcación (entry, exit)' })
