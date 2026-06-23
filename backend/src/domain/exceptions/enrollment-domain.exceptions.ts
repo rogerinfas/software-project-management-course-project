@@ -20,24 +20,36 @@ export class SectionNotFoundException extends DomainException {
 
 export class NoVacanciesAvailableException extends DomainException {
   constructor(sectionName: string) {
-    super(`No quedan vacantes disponibles en la sección ${sectionName}`, 'NO_VACANCIES_AVAILABLE');
+    super(
+      `No quedan vacantes disponibles en la sección ${sectionName}`,
+      'NO_VACANCIES_AVAILABLE',
+    );
   }
 }
 
 export class DeudaPendienteException extends DomainException {
   constructor(guardianName: string) {
-    super(`El apoderado ${guardianName} registra deudas pendientes de años anteriores. Matrícula bloqueada.`, 'GUARDIAN_HAS_DEBT');
+    super(
+      `El apoderado ${guardianName} registra deudas pendientes de años anteriores. Matrícula bloqueada.`,
+      'GUARDIAN_HAS_DEBT',
+    );
   }
 }
 
 export class GuardianAlreadyExistsException extends DomainException {
   constructor(dni: string) {
-    super(`Ya existe un apoderado registrado con el DNI ${dni}`, 'GUARDIAN_ALREADY_EXISTS');
+    super(
+      `Ya existe un apoderado registrado con el DNI ${dni}`,
+      'GUARDIAN_ALREADY_EXISTS',
+    );
   }
 }
 
 export class StudentAlreadyExistsException extends DomainException {
   constructor(dni: string) {
-    super(`Ya existe un estudiante registrado con el DNI ${dni}`, 'STUDENT_ALREADY_EXISTS');
+    super(
+      `Ya existe un estudiante registrado con el DNI ${dni}`,
+      'STUDENT_ALREADY_EXISTS',
+    );
   }
 }

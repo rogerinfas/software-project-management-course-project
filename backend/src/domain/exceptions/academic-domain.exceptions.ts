@@ -8,7 +8,10 @@ export class CourseNotFoundException extends DomainException {
 
 export class CourseAlreadyExistsException extends DomainException {
   constructor(name: string) {
-    super(`Ya existe un curso registrado con el nombre "${name}"`, 'COURSE_ALREADY_EXISTS');
+    super(
+      `Ya existe un curso registrado con el nombre "${name}"`,
+      'COURSE_ALREADY_EXISTS',
+    );
   }
 }
 
@@ -32,6 +35,9 @@ export class CommunicationNotFoundException extends DomainException {
 
 export class TeacherNotFoundException extends DomainException {
   constructor(id: string) {
-    super(`Docente con ID de perfil de personal ${id} no encontrado`, 'TEACHER_NOT_FOUND');
+    super(
+      `Docente con ID de perfil de personal ${id} no encontrado`,
+      'TEACHER_NOT_FOUND',
+    );
   }
 }

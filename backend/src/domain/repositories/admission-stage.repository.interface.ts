@@ -1,14 +1,14 @@
 import { AdmissionStageEntity } from '../entities/admission-stage.entity';
 
-export abstract class IAdmissionStageRepository {
-  abstract create(
+export interface IAdmissionStageRepository {
+  create(
     stage: Partial<AdmissionStageEntity>,
   ): Promise<AdmissionStageEntity>;
-  abstract findAllWithProspects(): Promise<AdmissionStageEntity[]>;
-  abstract findById(id: string): Promise<AdmissionStageEntity | null>;
-  abstract update(
+  findAllWithProspects(): Promise<AdmissionStageEntity[]>;
+  findById(id: string): Promise<AdmissionStageEntity | null>;
+  update(
     id: string,
     stage: Partial<AdmissionStageEntity>,
   ): Promise<AdmissionStageEntity>;
-  abstract delete(id: string): Promise<void>;
+  delete(id: string): Promise<void>;
 }

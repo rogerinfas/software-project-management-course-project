@@ -30,7 +30,10 @@ export class TariffEntity
   @IsNotEmpty()
   type: TariffType;
 
-  @ApiProperty({ enum: EducationalLevel, description: 'Nivel educativo asignado' })
+  @ApiProperty({
+    enum: EducationalLevel,
+    description: 'Nivel educativo asignado',
+  })
   @IsEnum(EducationalLevel)
   @IsNotEmpty()
   level: EducationalLevel;
