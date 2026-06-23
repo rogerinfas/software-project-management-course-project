@@ -40,4 +40,15 @@ export const auth = betterAuth({
   },
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
+  advanced: {
+    cookie: {
+      maxAge: 7 * 24 * 60 * 60, // 7 dias
+      sameSite: 'none', // requerido para cross-site/cross-subdomain
+      secure: true, // requerido para sameSite none
+      // Extrae el dominio raíz de WEB_URL en producción para compartir cookies entre subdominios
+      domain: process.env.WEB_URL && process.env.WEB_URL.includes('celebrali.com') 
+        ? '.celebrali.com' 
+        : undefined,
+    }
+  }
 });
