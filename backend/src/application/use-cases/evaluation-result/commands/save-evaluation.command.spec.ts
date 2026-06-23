@@ -1,4 +1,7 @@
-import { SaveEvaluationCommand, SaveEvaluationCommandHandler } from './save-evaluation.command';
+import {
+  SaveEvaluationCommand,
+  SaveEvaluationCommandHandler,
+} from './save-evaluation.command';
 import { EvaluationResultEntity } from '../../../../domain/entities/evaluation-result.entity';
 import { EvaluationStatus } from '@prisma/client';
 import { NotFoundException } from '@nestjs/common';
@@ -30,23 +33,42 @@ describe('SaveEvaluationCommandHandler', () => {
 
   it('should throw ProspectAlreadyApprovedException if evaluation exists and is already FIT', async () => {
     prospectRepository.findById.mockResolvedValue({});
-    const existing = new EvaluationResultEntity({ id: 'e-1', prospectId: 'p-1', aptitude: EvaluationStatus.FIT });
+    const existing = new EvaluationResultEntity({
+      id: 'e-1',
+      prospectId: 'p-1',
+      aptitude: EvaluationStatus.FIT,
+    });
     repository.findByProspectId.mockResolvedValue(existing);
 
     const command = new SaveEvaluationCommand('p-1', EvaluationStatus.UNFIT);
 
-    await expect(handler.execute(command)).rejects.toThrow(ProspectAlreadyApprovedException);
+    await expect(handler.execute(command)).rejects.toThrow(
+      ProspectAlreadyApprovedException,
+    );
   });
 
   it('should update evaluation if it exists and is not FIT', async () => {
     prospectRepository.findById.mockResolvedValue({});
-    const existing = new EvaluationResultEntity({ id: 'e-1', prospectId: 'p-1', aptitude: EvaluationStatus.PENDING });
+    const existing = new EvaluationResultEntity({
+      id: 'e-1',
+      prospectId: 'p-1',
+      aptitude: EvaluationStatus.PENDING,
+    });
     repository.findByProspectId.mockResolvedValue(existing);
 
-    const updated = new EvaluationResultEntity({ id: 'e-1', prospectId: 'p-1', aptitude: EvaluationStatus.FIT, comments: 'Now fit' });
+    const updated = new EvaluationResultEntity({
+      id: 'e-1',
+      prospectId: 'p-1',
+      aptitude: EvaluationStatus.FIT,
+      comments: 'Now fit',
+    });
     repository.update.mockResolvedValue(updated);
 
-    const command = new SaveEvaluationCommand('p-1', EvaluationStatus.FIT, 'Now fit');
+    const command = new SaveEvaluationCommand(
+      'p-1',
+      EvaluationStatus.FIT,
+      'Now fit',
+    );
     const result = await handler.execute(command);
 
     expect(result).toBe(updated);
@@ -60,10 +82,19 @@ describe('SaveEvaluationCommandHandler', () => {
     prospectRepository.findById.mockResolvedValue({});
     repository.findByProspectId.mockResolvedValue(null);
 
-    const created = new EvaluationResultEntity({ id: 'e-1', prospectId: 'p-1', aptitude: EvaluationStatus.FIT, comments: 'Good' });
+    const created = new EvaluationResultEntity({
+      id: 'e-1',
+      prospectId: 'p-1',
+      aptitude: EvaluationStatus.FIT,
+      comments: 'Good',
+    });
     repository.create.mockResolvedValue(created);
 
-    const command = new SaveEvaluationCommand('p-1', EvaluationStatus.FIT, 'Good');
+    const command = new SaveEvaluationCommand(
+      'p-1',
+      EvaluationStatus.FIT,
+      'Good',
+    );
     const result = await handler.execute(command);
 
     expect(result).toBe(created);
