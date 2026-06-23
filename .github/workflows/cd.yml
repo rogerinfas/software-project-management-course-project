@@ -75,7 +75,7 @@ jobs:
           file: devops/docker/Dockerfile.frontend
           push: true
           build-args: |
-            NEXT_PUBLIC_BACKEND_URL=https://apicolegio.celebrali.com
+            NEXT_PUBLIC_BACKEND_URL=http://77.42.83.15:5000
           tags: |
             ${{ secrets.REGISTRY_USERNAME }}/school-frontend:${{ github.sha }}
             ${{ secrets.REGISTRY_USERNAME }}/school-frontend:latest

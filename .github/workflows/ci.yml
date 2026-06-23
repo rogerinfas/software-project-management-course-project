@@ -149,7 +149,7 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          NEXT_PUBLIC_BACKEND_URL: https://apicolegio.celebrali.com
+          NEXT_PUBLIC_BACKEND_URL: http://77.42.83.15:5000
 
   # ── RELEASE GATE (PR → production) ────────────────────────────────────────
 
@@ -206,4 +206,4 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          NEXT_PUBLIC_BACKEND_URL: https://apicolegio.celebrali.com
+          NEXT_PUBLIC_BACKEND_URL: http://77.42.83.15:5000
