@@ -13,6 +13,19 @@ import { EvaluationResultEntity } from '../../../../domain/entities/evaluation-r
 export class PrismaProspectRepository implements IProspectRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  /** Mapea el registro de Prisma (con include) a la entidad de dominio. */
+  private toEntity(raw: any): ProspectEntity {
+    const { appointments, evaluation, ...prospectData } = raw;
+    const entity = new ProspectEntity(prospectData);
+    entity.appointments = appointments.map(
+      (app: any) => new AppointmentEntity(app),
+    );
+    entity.evaluation = evaluation
+      ? new EvaluationResultEntity(evaluation)
+      : null;
+    return entity;
+  }
+
   async create(prospect: Partial<ProspectEntity>): Promise<ProspectEntity> {
     const created = await this.prisma.prospect.create({
       data: {
@@ -23,38 +36,18 @@ export class PrismaProspectRepository implements IProspectRepository {
         priority: prospect.priority!,
         currentStageId: prospect.currentStageId!,
       },
-      include: {
-        appointments: true,
-        evaluation: true,
-      },
+      include: { appointments: true, evaluation: true },
     });
-
-    const { appointments, evaluation, ...prospectData } = created;
-    const entity = new ProspectEntity(prospectData);
-    entity.appointments = appointments.map((app) => new AppointmentEntity(app));
-    entity.evaluation = evaluation
-      ? new EvaluationResultEntity(evaluation)
-      : null;
-    return entity;
+    return this.toEntity(created);
   }
 
   async findById(id: string): Promise<ProspectEntity | null> {
     const p = await this.prisma.prospect.findUnique({
       where: { id },
-      include: {
-        appointments: true,
-        evaluation: true,
-      },
+      include: { appointments: true, evaluation: true },
     });
     if (!p) return null;
-
-    const { appointments, evaluation, ...prospectData } = p;
-    const entity = new ProspectEntity(prospectData);
-    entity.appointments = appointments.map((app) => new AppointmentEntity(app));
-    entity.evaluation = evaluation
-      ? new EvaluationResultEntity(evaluation)
-      : null;
-    return entity;
+    return this.toEntity(p);
   }
 
   async update(
@@ -71,19 +64,9 @@ export class PrismaProspectRepository implements IProspectRepository {
         priority: prospect.priority,
         currentStageId: prospect.currentStageId,
       },
-      include: {
-        appointments: true,
-        evaluation: true,
-      },
+      include: { appointments: true, evaluation: true },
     });
-
-    const { appointments, evaluation, ...prospectData } = updated;
-    const entity = new ProspectEntity(prospectData);
-    entity.appointments = appointments.map((app) => new AppointmentEntity(app));
-    entity.evaluation = evaluation
-      ? new EvaluationResultEntity(evaluation)
-      : null;
-    return entity;
+    return this.toEntity(updated);
   }
 
   async findManyPaginated(
@@ -102,29 +85,14 @@ export class PrismaProspectRepository implements IProspectRepository {
         skip: (page - 1) * size,
         take: size,
         orderBy: { createdAt: 'desc' },
-        include: {
-          appointments: true,
-          evaluation: true,
-        },
+        include: { appointments: true, evaluation: true },
       }),
     ]);
 
     const totalPages = Math.ceil(total / size);
 
-    const data = prospects.map((p) => {
-      const { appointments, evaluation, ...prospectData } = p;
-      const entity = new ProspectEntity(prospectData);
-      entity.appointments = appointments.map(
-        (app) => new AppointmentEntity(app),
-      );
-      entity.evaluation = evaluation
-        ? new EvaluationResultEntity(evaluation)
-        : null;
-      return entity;
-    });
-
     return {
-      data,
+      data: prospects.map((p) => this.toEntity(p)),
       meta: {
         total,
         page,

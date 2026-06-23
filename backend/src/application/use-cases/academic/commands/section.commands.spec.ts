@@ -24,11 +24,23 @@ describe('Section Commands', () => {
 
   describe('CreateSectionCommandHandler', () => {
     it('should create and return a section', async () => {
-      const created = new SectionEntity({ id: 's-1', name: 'A', grade: '1', level: EducationalLevel.PRIMARY, capacity: 25, status: 'OPEN' });
+      const created = new SectionEntity({
+        id: 's-1',
+        name: 'A',
+        grade: '1',
+        level: EducationalLevel.PRIMARY,
+        capacity: 25,
+        status: 'OPEN',
+      });
       sectionRepository.create.mockResolvedValue(created);
 
       const handler = new CreateSectionCommandHandler(sectionRepository);
-      const command = new CreateSectionCommand('A', '1', EducationalLevel.PRIMARY, 25);
+      const command = new CreateSectionCommand(
+        'A',
+        '1',
+        EducationalLevel.PRIMARY,
+        25,
+      );
       const result = await handler.execute(command);
 
       expect(result).toBe(created);
@@ -49,17 +61,37 @@ describe('Section Commands', () => {
       const handler = new UpdateSectionCommandHandler(sectionRepository);
       const command = new UpdateSectionCommand('non-existent-id', 'B');
 
-      await expect(handler.execute(command)).rejects.toThrow(SectionNotFoundException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        SectionNotFoundException,
+      );
     });
 
     it('should update and return the updated section', async () => {
-      const section = new SectionEntity({ id: 's-1', name: 'A', grade: '1', level: EducationalLevel.PRIMARY, capacity: 25 });
-      const updated = new SectionEntity({ id: 's-1', name: 'B', grade: '1', level: EducationalLevel.PRIMARY, capacity: 30 });
+      const section = new SectionEntity({
+        id: 's-1',
+        name: 'A',
+        grade: '1',
+        level: EducationalLevel.PRIMARY,
+        capacity: 25,
+      });
+      const updated = new SectionEntity({
+        id: 's-1',
+        name: 'B',
+        grade: '1',
+        level: EducationalLevel.PRIMARY,
+        capacity: 30,
+      });
       sectionRepository.findById.mockResolvedValue(section);
       sectionRepository.update.mockResolvedValue(updated);
 
       const handler = new UpdateSectionCommandHandler(sectionRepository);
-      const command = new UpdateSectionCommand('s-1', 'B', undefined, undefined, 30);
+      const command = new UpdateSectionCommand(
+        's-1',
+        'B',
+        undefined,
+        undefined,
+        30,
+      );
       const result = await handler.execute(command);
 
       expect(result).toBe(updated);
@@ -80,11 +112,19 @@ describe('Section Commands', () => {
       const handler = new DeleteSectionCommandHandler(sectionRepository);
       const command = new DeleteSectionCommand('non-existent-id');
 
-      await expect(handler.execute(command)).rejects.toThrow(SectionNotFoundException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        SectionNotFoundException,
+      );
     });
 
     it('should delete the section if found', async () => {
-      const section = new SectionEntity({ id: 's-1', name: 'A', grade: '1', level: EducationalLevel.PRIMARY, capacity: 25 });
+      const section = new SectionEntity({
+        id: 's-1',
+        name: 'A',
+        grade: '1',
+        level: EducationalLevel.PRIMARY,
+        capacity: 25,
+      });
       sectionRepository.findById.mockResolvedValue(section);
 
       const handler = new DeleteSectionCommandHandler(sectionRepository);

@@ -17,7 +17,11 @@ export class CourseEntity
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ description: 'Descripción opcional del curso', required: false, nullable: true })
+  @ApiProperty({
+    description: 'Descripción opcional del curso',
+    required: false,
+    nullable: true,
+  })
   @IsString()
   @IsOptional()
   description?: string | null;

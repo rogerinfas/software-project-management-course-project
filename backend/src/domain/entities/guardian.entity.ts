@@ -32,12 +32,20 @@ export class GuardianEntity
   @IsNotEmpty()
   phone: string;
 
-  @ApiProperty({ description: 'Correo electrónico', required: false, nullable: true })
+  @ApiProperty({
+    description: 'Correo electrónico',
+    required: false,
+    nullable: true,
+  })
   @IsString()
   @IsOptional()
   email?: string | null;
 
-  @ApiProperty({ description: 'Ocupación o profesión', required: false, nullable: true })
+  @ApiProperty({
+    description: 'Ocupación o profesión',
+    required: false,
+    nullable: true,
+  })
   @IsString()
   @IsOptional()
   occupation?: string | null;

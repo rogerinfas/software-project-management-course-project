@@ -1,7 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { BaseAggregateRootEntity } from '../../config/entities/base-entities/blacklist-strategy/base.entity';
 import { BaseEntityType } from '../../config/entities/base-entities/base-entity.types';
+import { ChargeStatus } from '@prisma/client';
 import { StudentEntity } from './student.entity';
 import { TariffEntity } from './tariff.entity';
 
@@ -13,7 +21,7 @@ export interface ChargeModelType extends BaseEntityType {
   originalAmount: number;
   pendingAmount: number;
   dueDate?: Date | null;
-  status: string;
+  status: ChargeStatus;
 }
 
 export class ChargeEntity
@@ -46,15 +54,19 @@ export class ChargeEntity
   @IsNotEmpty()
   pendingAmount: number;
 
-  @ApiProperty({ description: 'Fecha de vencimiento', required: false, nullable: true })
+  @ApiProperty({
+    description: 'Fecha de vencimiento',
+    required: false,
+    nullable: true,
+  })
   @IsDate()
   @IsOptional()
   dueDate?: Date | null;
 
-  @ApiProperty({ description: 'Estado del cargo (PENDING, PARTIAL, PAID)' })
-  @IsString()
+  @ApiProperty({ enum: ChargeStatus, description: 'Estado del cargo' })
+  @IsEnum(ChargeStatus)
   @IsNotEmpty()
-  status: string;
+  status: ChargeStatus;
 
   constructor(partial: Partial<ChargeModelType>) {
     super(partial);

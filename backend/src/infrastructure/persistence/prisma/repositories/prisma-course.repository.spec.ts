@@ -83,6 +83,8 @@ describe('PrismaCourseRepository', () => {
 
     await repository.delete('c-1');
 
-    expect(mockPrisma.course.delete).toHaveBeenCalledWith({ where: { id: 'c-1' } });
+    expect(mockPrisma.course.delete).toHaveBeenCalledWith({
+      where: { id: 'c-1' },
+    });
   });
 });

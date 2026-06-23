@@ -15,14 +15,21 @@ export class RegisterPaymentDto {
   @IsNotEmpty()
   amount: number;
 
-  @ApiProperty({ enum: PaymentMethod, description: 'Método de pago', example: PaymentMethod.CASH })
+  @ApiProperty({
+    enum: PaymentMethod,
+    description: 'Método de pago',
+    example: PaymentMethod.CASH,
+  })
   @IsEnum(PaymentMethod)
   @IsNotEmpty()
   method: PaymentMethod;
 }
 
 export class PaymentResponse {
-  @ApiProperty({ description: 'ID de la transacción de pago', example: 'payment-123' })
+  @ApiProperty({
+    description: 'ID de la transacción de pago',
+    example: 'payment-123',
+  })
   @Expose()
   id: string;
 
@@ -34,10 +41,6 @@ export class PaymentResponse {
   @Expose()
   charge?: ChargeResponse;
 
-  @ApiProperty({ description: 'ID del estudiante', example: 'student-123' })
-  @Expose()
-  studentId: string;
-
   @ApiProperty({ description: 'Monto pagado', example: 150.0 })
   @Expose()
   totalAmount: number;
@@ -46,7 +49,10 @@ export class PaymentResponse {
   @Expose()
   method: PaymentMethod;
 
-  @ApiProperty({ description: 'Fecha y hora de pago', example: '2026-05-25T00:00:00.000Z' })
+  @ApiProperty({
+    description: 'Fecha y hora de pago',
+    example: '2026-05-25T00:00:00.000Z',
+  })
   @Expose()
   timestamp: Date;
 }

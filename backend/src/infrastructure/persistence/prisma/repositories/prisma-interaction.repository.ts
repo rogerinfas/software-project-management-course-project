@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { IProspectInteractionRepository } from '../../../../domain/repositories/interaction.repository.interface';
+import type { IProspectInteractionRepository } from '../../../../domain/repositories/interaction.repository.interface';
 import { ProspectInteractionEntity } from '../../../../domain/entities/interaction.entity';
 
 @Injectable()

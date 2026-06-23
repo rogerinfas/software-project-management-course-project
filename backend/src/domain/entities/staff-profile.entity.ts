@@ -31,7 +31,11 @@ export class StaffProfileEntity
   @IsNotEmpty()
   specialty: string;
 
-  @ApiProperty({ description: 'URL del CV o expediente', required: false, nullable: true })
+  @ApiProperty({
+    description: 'URL del CV o expediente',
+    required: false,
+    nullable: true,
+  })
   @IsString()
   @IsOptional()
   cvUrl?: string | null;

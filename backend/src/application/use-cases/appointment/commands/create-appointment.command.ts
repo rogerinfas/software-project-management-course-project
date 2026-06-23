@@ -1,7 +1,25 @@
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { APPOINTMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { GUARDIAN_REPOSITORY } from '../../../../config/constants/tokens';
+import { EVALUATION_RESULT_REPOSITORY } from '../../../../config/constants/tokens';
+import { ENROLLMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { COURSE_REPOSITORY } from '../../../../config/constants/tokens';
+import { COMMUNICATION_REPOSITORY } from '../../../../config/constants/tokens';
+import { CHARGE_REPOSITORY } from '../../../../config/constants/tokens';
+import { ATTENDANCE_RULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { ATTENDANCE_RECORD_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
-import { IAppointmentRepository } from '../../../../domain/repositories/appointment.repository.interface';
-import { IProspectRepository } from '../../../../domain/repositories/prospect.repository.interface';
+import type { IAppointmentRepository } from '../../../../domain/repositories/appointment.repository.interface';
+import type { IProspectRepository } from '../../../../domain/repositories/prospect.repository.interface';
 import { AppointmentEntity } from '../../../../domain/entities/appointment.entity';
 
 export class CreateAppointmentCommand implements ICommand {
@@ -16,9 +34,9 @@ export class CreateAppointmentCommand implements ICommand {
 @CommandHandler(CreateAppointmentCommand)
 export class CreateAppointmentCommandHandler implements ICommandHandler<CreateAppointmentCommand> {
   constructor(
-    @Inject('IAppointmentRepository')
+    @Inject(APPOINTMENT_REPOSITORY)
     private readonly repository: IAppointmentRepository,
-    @Inject('IProspectRepository')
+    @Inject(PROSPECT_REPOSITORY)
     private readonly prospectRepository: IProspectRepository,
   ) {}
 

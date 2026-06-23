@@ -1,6 +1,7 @@
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
 import { IQuery, IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
+import type { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
 import { UserEntity } from '../../../../domain/entities/user.entity';
 
 export class GetUserByIdQuery implements IQuery {
@@ -10,7 +11,7 @@ export class GetUserByIdQuery implements IQuery {
 @QueryHandler(GetUserByIdQuery)
 export class GetUserByIdQueryHandler implements IQueryHandler<GetUserByIdQuery> {
   constructor(
-    @Inject('IUserRepository')
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
   ) {}
 

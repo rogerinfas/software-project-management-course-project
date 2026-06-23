@@ -25,7 +25,11 @@ export class StudentEntity
   extends BaseAggregateRootEntity<StudentEntity>
   implements StudentType
 {
-  @ApiProperty({ description: 'Código único de estudiante', required: false, nullable: true })
+  @ApiProperty({
+    description: 'Código único de estudiante',
+    required: false,
+    nullable: true,
+  })
   @IsString()
   @IsOptional()
   code?: string | null;
@@ -55,7 +59,11 @@ export class StudentEntity
   @IsNotEmpty()
   grade: string;
 
-  @ApiProperty({ description: 'ID de la sección asignada', required: false, nullable: true })
+  @ApiProperty({
+    description: 'ID de la sección asignada',
+    required: false,
+    nullable: true,
+  })
   @IsString()
   @IsOptional()
   sectionId?: string | null;

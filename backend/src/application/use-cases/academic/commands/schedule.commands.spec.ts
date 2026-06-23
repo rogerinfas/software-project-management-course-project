@@ -38,41 +38,97 @@ describe('Schedule Commands', () => {
   describe('CreateScheduleCommandHandler', () => {
     it('should throw SectionNotFoundException if section not found', async () => {
       sectionRepository.findById.mockResolvedValue(null);
-      const handler = new CreateScheduleCommandHandler(scheduleRepository, sectionRepository, courseRepository);
-      const command = new CreateScheduleCommand('s-1', 'c-1', 'staff-1', 1, '08:00', '10:00');
+      const handler = new CreateScheduleCommandHandler(
+        scheduleRepository,
+        sectionRepository,
+        courseRepository,
+      );
+      const command = new CreateScheduleCommand(
+        's-1',
+        'c-1',
+        'staff-1',
+        1,
+        '08:00',
+        '10:00',
+      );
 
-      await expect(handler.execute(command)).rejects.toThrow(SectionNotFoundException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        SectionNotFoundException,
+      );
     });
 
     it('should throw CourseNotFoundException if course not found', async () => {
       sectionRepository.findById.mockResolvedValue({});
       courseRepository.findById.mockResolvedValue(null);
-      const handler = new CreateScheduleCommandHandler(scheduleRepository, sectionRepository, courseRepository);
-      const command = new CreateScheduleCommand('s-1', 'c-1', 'staff-1', 1, '08:00', '10:00');
+      const handler = new CreateScheduleCommandHandler(
+        scheduleRepository,
+        sectionRepository,
+        courseRepository,
+      );
+      const command = new CreateScheduleCommand(
+        's-1',
+        'c-1',
+        'staff-1',
+        1,
+        '08:00',
+        '10:00',
+      );
 
-      await expect(handler.execute(command)).rejects.toThrow(CourseNotFoundException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        CourseNotFoundException,
+      );
     });
 
     it('should throw ScheduleConflictException if section conflict exists', async () => {
       sectionRepository.findById.mockResolvedValue({});
       courseRepository.findById.mockResolvedValue({});
-      scheduleRepository.checkConflicts.mockResolvedValue([{ sectionId: 's-1', staffId: 'other-staff' }]);
+      scheduleRepository.checkConflicts.mockResolvedValue([
+        { sectionId: 's-1', staffId: 'other-staff' },
+      ]);
 
-      const handler = new CreateScheduleCommandHandler(scheduleRepository, sectionRepository, courseRepository);
-      const command = new CreateScheduleCommand('s-1', 'c-1', 'staff-1', 1, '08:00', '10:00');
+      const handler = new CreateScheduleCommandHandler(
+        scheduleRepository,
+        sectionRepository,
+        courseRepository,
+      );
+      const command = new CreateScheduleCommand(
+        's-1',
+        'c-1',
+        'staff-1',
+        1,
+        '08:00',
+        '10:00',
+      );
 
-      await expect(handler.execute(command)).rejects.toThrow(ScheduleConflictException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        ScheduleConflictException,
+      );
     });
 
     it('should throw ScheduleConflictException if teacher conflict exists', async () => {
       sectionRepository.findById.mockResolvedValue({});
       courseRepository.findById.mockResolvedValue({});
-      scheduleRepository.checkConflicts.mockResolvedValue([{ sectionId: 'other-section', staffId: 'staff-1' }]);
+      scheduleRepository.checkConflicts.mockResolvedValue([
+        { sectionId: 'other-section', staffId: 'staff-1' },
+      ]);
 
-      const handler = new CreateScheduleCommandHandler(scheduleRepository, sectionRepository, courseRepository);
-      const command = new CreateScheduleCommand('s-1', 'c-1', 'staff-1', 1, '08:00', '10:00');
+      const handler = new CreateScheduleCommandHandler(
+        scheduleRepository,
+        sectionRepository,
+        courseRepository,
+      );
+      const command = new CreateScheduleCommand(
+        's-1',
+        'c-1',
+        'staff-1',
+        1,
+        '08:00',
+        '10:00',
+      );
 
-      await expect(handler.execute(command)).rejects.toThrow(ScheduleConflictException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        ScheduleConflictException,
+      );
     });
 
     it('should create schedule successfully', async () => {
@@ -90,8 +146,19 @@ describe('Schedule Commands', () => {
       });
       scheduleRepository.create.mockResolvedValue(created);
 
-      const handler = new CreateScheduleCommandHandler(scheduleRepository, sectionRepository, courseRepository);
-      const command = new CreateScheduleCommand('s-1', 'c-1', 'staff-1', 1, '08:00', '10:00');
+      const handler = new CreateScheduleCommandHandler(
+        scheduleRepository,
+        sectionRepository,
+        courseRepository,
+      );
+      const command = new CreateScheduleCommand(
+        's-1',
+        'c-1',
+        'staff-1',
+        1,
+        '08:00',
+        '10:00',
+      );
       const result = await handler.execute(command);
 
       expect(result).toBe(created);
@@ -101,10 +168,16 @@ describe('Schedule Commands', () => {
   describe('UpdateScheduleCommandHandler', () => {
     it('should throw ScheduleNotFoundException if schedule not found', async () => {
       scheduleRepository.findById.mockResolvedValue(null);
-      const handler = new UpdateScheduleCommandHandler(scheduleRepository, sectionRepository, courseRepository);
+      const handler = new UpdateScheduleCommandHandler(
+        scheduleRepository,
+        sectionRepository,
+        courseRepository,
+      );
       const command = new UpdateScheduleCommand('non-existent-id');
 
-      await expect(handler.execute(command)).rejects.toThrow(ScheduleNotFoundException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        ScheduleNotFoundException,
+      );
     });
   });
 
@@ -114,7 +187,9 @@ describe('Schedule Commands', () => {
       const handler = new DeleteScheduleCommandHandler(scheduleRepository);
       const command = new DeleteScheduleCommand('non-existent-id');
 
-      await expect(handler.execute(command)).rejects.toThrow(ScheduleNotFoundException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        ScheduleNotFoundException,
+      );
     });
 
     it('should delete schedule if found', async () => {

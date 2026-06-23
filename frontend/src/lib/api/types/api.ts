@@ -2346,7 +2346,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-05-26T17:27:35.149Z
+             * @example 2026-06-23T15:16:47.843Z
              */
             timestamp: string;
             /**
@@ -2417,13 +2417,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-26T17:27:35.250Z
+             * @example 2026-06-23T15:16:47.987Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-26T17:27:35.250Z
+             * @example 2026-06-23T15:16:47.987Z
              */
             updatedAt: string;
         };
@@ -2475,7 +2475,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Appointment date and time
-             * @example 2026-05-26T17:27:35.769Z
+             * @example 2026-06-23T15:16:48.575Z
              */
             date: string;
             /**
@@ -2493,7 +2493,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-26T17:27:35.769Z
+             * @example 2026-06-23T15:16:48.576Z
              */
             createdAt: string;
         };
@@ -2522,7 +2522,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Evaluation process date
-             * @example 2026-05-26T17:27:35.774Z
+             * @example 2026-06-23T15:16:48.579Z
              */
             date: string;
             /**
@@ -2576,7 +2576,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-26T17:27:35.774Z
+             * @example 2026-06-23T15:16:48.579Z
              */
             createdAt: string;
         };
@@ -2601,13 +2601,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-05-26T17:27:35.774Z
+             * @example 2026-06-23T15:16:48.579Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-05-26T17:27:35.774Z
+             * @example 2026-06-23T15:16:48.579Z
              */
             updatedAt: string;
         };
@@ -2700,7 +2700,7 @@ export interface components {
             prospectId: string;
             /**
              * @description Appointment date and time in ISO format
-             * @example 2026-05-26T17:27:35.787Z
+             * @example 2026-06-23T15:16:48.591Z
              */
             date: string;
             /**
@@ -2756,7 +2756,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Date and time of the interaction
-             * @example 2026-05-26T17:27:35.796Z
+             * @example 2026-06-23T15:16:48.598Z
              */
             date: string;
         };
@@ -3057,7 +3057,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Fecha de la matrícula
-             * @example 2026-05-26T17:27:35.980Z
+             * @example 2026-06-23T15:16:48.794Z
              */
             date: string;
             /**
@@ -3344,8 +3344,9 @@ export interface components {
              * @description Estado
              * @default OPEN
              * @example OPEN
+             * @enum {string}
              */
-            status: string;
+            status: "OPEN" | "CLOSED";
         };
         UpdateSectionDto: {
             /**
@@ -3371,8 +3372,9 @@ export interface components {
             /**
              * @description Estado
              * @example CLOSED
+             * @enum {string}
              */
-            status?: string;
+            status?: "OPEN" | "CLOSED";
         };
         TariffResponse: {
             /**
@@ -3530,11 +3532,6 @@ export interface components {
             chargeId: string;
             charge?: components["schemas"]["ChargeResponse"];
             /**
-             * @description ID del estudiante
-             * @example student-123
-             */
-            studentId: string;
-            /**
              * @description Monto pagado
              * @example 150
              */
@@ -3606,13 +3603,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-05-26T17:27:35.316Z
+             * @example 2026-06-23T15:16:48.044Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-05-26T17:27:35.316Z
+             * @example 2026-06-23T15:16:48.044Z
              */
             updatedAt: string;
             /**
@@ -3658,13 +3655,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-05-26T17:27:35.316Z
+             * @example 2026-06-23T15:16:48.044Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-05-26T17:27:35.316Z
+             * @example 2026-06-23T15:16:48.044Z
              */
             updatedAt: string;
             /**
@@ -3734,13 +3731,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-05-26T17:27:35.316Z
+             * @example 2026-06-23T15:16:48.044Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-05-26T17:27:35.316Z
+             * @example 2026-06-23T15:16:48.044Z
              */
             updatedAt: string;
             /**
@@ -3788,13 +3785,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Timestamp when the entity was created
-             * @example 2026-05-26T17:27:35.316Z
+             * @example 2026-06-23T15:16:48.044Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Timestamp when the entity was last updated
-             * @example 2026-05-26T17:27:35.316Z
+             * @example 2026-06-23T15:16:48.044Z
              */
             updatedAt: string;
             /**
@@ -3802,6 +3799,11 @@ export interface components {
              * @example null
              */
             deletedAt?: Record<string, never>;
+            /**
+             * @description Identificador para asegurar singleton
+             * @default true
+             */
+            isSingleton: boolean;
             /**
              * @description Minutos de gracia permitidos globalmente
              * @default 5

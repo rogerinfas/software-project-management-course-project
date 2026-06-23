@@ -35,8 +35,18 @@ describe('PrismaPaymentRepository', () => {
 
   it('should create a payment', async () => {
     const timestamp = new Date();
-    const data = { chargeId: 'ch-1', studentId: 'stud-1', totalAmount: 100.0, method: PaymentMethod.CASH, timestamp };
-    mockPrisma.payment.create.mockResolvedValue({ id: 'p-1', ...data, charge: null });
+    const data = {
+      chargeId: 'ch-1',
+      studentId: 'stud-1',
+      totalAmount: 100.0,
+      method: PaymentMethod.CASH,
+      timestamp,
+    };
+    mockPrisma.payment.create.mockResolvedValue({
+      id: 'p-1',
+      ...data,
+      charge: null,
+    });
 
     const result = await repository.create(data);
 
@@ -45,7 +55,15 @@ describe('PrismaPaymentRepository', () => {
   });
 
   it('should find payment by id', async () => {
-    mockPrisma.payment.findUnique.mockResolvedValue({ id: 'p-1', chargeId: 'ch-1', studentId: 'stud-1', totalAmount: 100.0, method: PaymentMethod.CASH, timestamp: new Date(), charge: null });
+    mockPrisma.payment.findUnique.mockResolvedValue({
+      id: 'p-1',
+      chargeId: 'ch-1',
+      studentId: 'stud-1',
+      totalAmount: 100.0,
+      method: PaymentMethod.CASH,
+      timestamp: new Date(),
+      charge: null,
+    });
 
     const result = await repository.findById('p-1');
 
@@ -53,7 +71,9 @@ describe('PrismaPaymentRepository', () => {
   });
 
   it('should find payments by charge id', async () => {
-    mockPrisma.payment.findMany.mockResolvedValue([{ id: 'p-1', chargeId: 'ch-1', charge: null }]);
+    mockPrisma.payment.findMany.mockResolvedValue([
+      { id: 'p-1', chargeId: 'ch-1', charge: null },
+    ]);
 
     const result = await repository.findByChargeId('ch-1');
 
@@ -61,7 +81,9 @@ describe('PrismaPaymentRepository', () => {
   });
 
   it('should find payments by student id', async () => {
-    mockPrisma.payment.findMany.mockResolvedValue([{ id: 'p-1', studentId: 'stud-1', charge: null }]);
+    mockPrisma.payment.findMany.mockResolvedValue([
+      { id: 'p-1', studentId: 'stud-1', charge: null },
+    ]);
 
     const result = await repository.findByStudentId('stud-1');
 
@@ -69,7 +91,9 @@ describe('PrismaPaymentRepository', () => {
   });
 
   it('should find all payments', async () => {
-    mockPrisma.payment.findMany.mockResolvedValue([{ id: 'p-1', charge: null }]);
+    mockPrisma.payment.findMany.mockResolvedValue([
+      { id: 'p-1', charge: null },
+    ]);
 
     const result = await repository.findAll();
 

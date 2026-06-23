@@ -4,10 +4,14 @@ process.emitWarning = function (warning, ...args: any[]) {
   if (typeof warning === 'string' && warning.includes('client.query()')) {
     return;
   }
-  if (warning instanceof Error && warning.message && warning.message.includes('client.query()')) {
+  if (
+    warning instanceof Error &&
+    warning.message &&
+    warning.message.includes('client.query()')
+  ) {
     return;
   }
-  return originalEmitWarning.call(process, warning, ...args as any);
+  return originalEmitWarning.call(process, warning, ...(args as any));
 };
 
 import { NestFactory } from '@nestjs/core';
@@ -99,7 +103,10 @@ async function generate() {
   if (!existsSync(outputDir)) {
     mkdirSync(outputDir, { recursive: true });
   }
-  writeFileSync(join(outputDir, 'openapi-schema.json'), JSON.stringify(combinedDocument, null, 2));
+  writeFileSync(
+    join(outputDir, 'openapi-schema.json'),
+    JSON.stringify(combinedDocument, null, 2),
+  );
   console.log('✅ Generated openapi-schema.json successfully!');
   await app.close();
   process.exit(0);

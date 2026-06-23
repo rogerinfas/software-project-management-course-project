@@ -23,11 +23,23 @@ describe('Communication Commands', () => {
 
   describe('CreateCommunicationCommandHandler', () => {
     it('should create and return a communication', async () => {
-      const created = new CommunicationEntity({ id: 'comm-1', title: 'Welcome', content: 'Hello', category: 'General', isVisible: true });
+      const created = new CommunicationEntity({
+        id: 'comm-1',
+        title: 'Welcome',
+        content: 'Hello',
+        category: 'General',
+        isVisible: true,
+      });
       communicationRepository.create.mockResolvedValue(created);
 
-      const handler = new CreateCommunicationCommandHandler(communicationRepository);
-      const command = new CreateCommunicationCommand('Welcome', 'Hello', 'General');
+      const handler = new CreateCommunicationCommandHandler(
+        communicationRepository,
+      );
+      const command = new CreateCommunicationCommand(
+        'Welcome',
+        'Hello',
+        'General',
+      );
       const result = await handler.execute(command);
 
       expect(result).toBe(created);
@@ -45,20 +57,43 @@ describe('Communication Commands', () => {
     it('should throw CommunicationNotFoundException if communication not found', async () => {
       communicationRepository.findById.mockResolvedValue(null);
 
-      const handler = new UpdateCommunicationCommandHandler(communicationRepository);
-      const command = new UpdateCommunicationCommand('non-existent-id', 'Title');
+      const handler = new UpdateCommunicationCommandHandler(
+        communicationRepository,
+      );
+      const command = new UpdateCommunicationCommand(
+        'non-existent-id',
+        'Title',
+      );
 
-      await expect(handler.execute(command)).rejects.toThrow(CommunicationNotFoundException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        CommunicationNotFoundException,
+      );
     });
 
     it('should update and return the updated communication', async () => {
-      const communication = new CommunicationEntity({ id: 'comm-1', title: 'Welcome', content: 'Hello', category: 'General' });
-      const updated = new CommunicationEntity({ id: 'comm-1', title: 'Welcome Updated', content: 'Hello World', category: 'General' });
+      const communication = new CommunicationEntity({
+        id: 'comm-1',
+        title: 'Welcome',
+        content: 'Hello',
+        category: 'General',
+      });
+      const updated = new CommunicationEntity({
+        id: 'comm-1',
+        title: 'Welcome Updated',
+        content: 'Hello World',
+        category: 'General',
+      });
       communicationRepository.findById.mockResolvedValue(communication);
       communicationRepository.update.mockResolvedValue(updated);
 
-      const handler = new UpdateCommunicationCommandHandler(communicationRepository);
-      const command = new UpdateCommunicationCommand('comm-1', 'Welcome Updated', 'Hello World');
+      const handler = new UpdateCommunicationCommandHandler(
+        communicationRepository,
+      );
+      const command = new UpdateCommunicationCommand(
+        'comm-1',
+        'Welcome Updated',
+        'Hello World',
+      );
       const result = await handler.execute(command);
 
       expect(result).toBe(updated);
@@ -76,17 +111,28 @@ describe('Communication Commands', () => {
     it('should throw CommunicationNotFoundException if not found', async () => {
       communicationRepository.findById.mockResolvedValue(null);
 
-      const handler = new DeleteCommunicationCommandHandler(communicationRepository);
+      const handler = new DeleteCommunicationCommandHandler(
+        communicationRepository,
+      );
       const command = new DeleteCommunicationCommand('non-existent-id');
 
-      await expect(handler.execute(command)).rejects.toThrow(CommunicationNotFoundException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        CommunicationNotFoundException,
+      );
     });
 
     it('should delete if found', async () => {
-      const communication = new CommunicationEntity({ id: 'comm-1', title: 'Welcome', content: 'Hello', category: 'General' });
+      const communication = new CommunicationEntity({
+        id: 'comm-1',
+        title: 'Welcome',
+        content: 'Hello',
+        category: 'General',
+      });
       communicationRepository.findById.mockResolvedValue(communication);
 
-      const handler = new DeleteCommunicationCommandHandler(communicationRepository);
+      const handler = new DeleteCommunicationCommandHandler(
+        communicationRepository,
+      );
       const command = new DeleteCommunicationCommand('comm-1');
       await handler.execute(command);
 

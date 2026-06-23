@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { IAttendanceRecordRepository } from '../../../../domain/repositories/attendance-record.repository.interface';
+import type { IAttendanceRecordRepository } from '../../../../domain/repositories/attendance-record.repository.interface';
 import { AttendanceRecordEntity } from '../../../../domain/entities/attendance-record.entity';
 
 @Injectable()
@@ -12,14 +12,17 @@ export class PrismaAttendanceRecordRepository implements IAttendanceRecordReposi
     return new AttendanceRecordEntity(dbRecord);
   }
 
-  async create(record: Partial<AttendanceRecordEntity>): Promise<AttendanceRecordEntity> {
+  async create(
+    record: Partial<AttendanceRecordEntity>,
+  ): Promise<AttendanceRecordEntity> {
     const dbRecord = await this.prisma.attendanceRecord.create({
       data: {
         staffId: record.staffId!,
         type: record.type!,
         timestamp: record.timestamp || new Date(),
         method: record.method || 'FACIAL',
-        delayMinutes: record.delayMinutes !== undefined ? record.delayMinutes : 0,
+        delayMinutes:
+          record.delayMinutes !== undefined ? record.delayMinutes : 0,
         fineAmount: record.fineAmount !== undefined ? record.fineAmount : 0.0,
       },
       include: {
@@ -62,7 +65,10 @@ export class PrismaAttendanceRecordRepository implements IAttendanceRecordReposi
     return records.map((r) => this.mapToEntity(r)!);
   }
 
-  async update(id: string, record: Partial<AttendanceRecordEntity>): Promise<AttendanceRecordEntity> {
+  async update(
+    id: string,
+    record: Partial<AttendanceRecordEntity>,
+  ): Promise<AttendanceRecordEntity> {
     const dbRecord = await this.prisma.attendanceRecord.update({
       where: { id },
       data: {

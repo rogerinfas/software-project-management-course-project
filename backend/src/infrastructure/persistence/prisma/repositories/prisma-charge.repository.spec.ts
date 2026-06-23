@@ -35,8 +35,20 @@ describe('PrismaChargeRepository', () => {
   });
 
   it('should create a charge', async () => {
-    const data = { studentId: 'stud-1', tariffId: 'tariff-1', originalAmount: 100.0, pendingAmount: 100.0, dueDate: new Date(), status: 'PENDING' };
-    mockPrisma.charge.create.mockResolvedValue({ id: 'ch-1', ...data, student: null, tariff: null });
+    const data = {
+      studentId: 'stud-1',
+      tariffId: 'tariff-1',
+      originalAmount: 100.0,
+      pendingAmount: 100.0,
+      dueDate: new Date(),
+      status: 'PENDING',
+    };
+    mockPrisma.charge.create.mockResolvedValue({
+      id: 'ch-1',
+      ...data,
+      student: null,
+      tariff: null,
+    });
 
     const result = await repository.create(data);
 
@@ -45,7 +57,17 @@ describe('PrismaChargeRepository', () => {
   });
 
   it('should find charge by id', async () => {
-    mockPrisma.charge.findUnique.mockResolvedValue({ id: 'ch-1', studentId: 'stud-1', tariffId: 'tariff-1', originalAmount: 100.0, pendingAmount: 100.0, dueDate: new Date(), status: 'PENDING', student: null, tariff: null });
+    mockPrisma.charge.findUnique.mockResolvedValue({
+      id: 'ch-1',
+      studentId: 'stud-1',
+      tariffId: 'tariff-1',
+      originalAmount: 100.0,
+      pendingAmount: 100.0,
+      dueDate: new Date(),
+      status: 'PENDING',
+      student: null,
+      tariff: null,
+    });
 
     const result = await repository.findById('ch-1');
 
@@ -53,7 +75,9 @@ describe('PrismaChargeRepository', () => {
   });
 
   it('should find charges by student id', async () => {
-    mockPrisma.charge.findMany.mockResolvedValue([{ id: 'ch-1', studentId: 'stud-1', student: null, tariff: null }]);
+    mockPrisma.charge.findMany.mockResolvedValue([
+      { id: 'ch-1', studentId: 'stud-1', student: null, tariff: null },
+    ]);
 
     const result = await repository.findByStudentId('stud-1');
 
@@ -61,9 +85,22 @@ describe('PrismaChargeRepository', () => {
   });
 
   it('should update charge', async () => {
-    mockPrisma.charge.update.mockResolvedValue({ id: 'ch-1', studentId: 'stud-1', tariffId: 'tariff-1', originalAmount: 100.0, pendingAmount: 80.0, dueDate: new Date(), status: 'PARTIAL', student: null, tariff: null });
+    mockPrisma.charge.update.mockResolvedValue({
+      id: 'ch-1',
+      studentId: 'stud-1',
+      tariffId: 'tariff-1',
+      originalAmount: 100.0,
+      pendingAmount: 80.0,
+      dueDate: new Date(),
+      status: 'PARTIAL',
+      student: null,
+      tariff: null,
+    });
 
-    const result = await repository.update('ch-1', { pendingAmount: 80.0, status: 'PARTIAL' });
+    const result = await repository.update('ch-1', {
+      pendingAmount: 80.0,
+      status: 'PARTIAL',
+    });
 
     expect(result.pendingAmount).toBe(80.0);
     expect(result.status).toBe('PARTIAL');
@@ -74,11 +111,15 @@ describe('PrismaChargeRepository', () => {
 
     await repository.delete('ch-1');
 
-    expect(mockPrisma.charge.delete).toHaveBeenCalledWith({ where: { id: 'ch-1' } });
+    expect(mockPrisma.charge.delete).toHaveBeenCalledWith({
+      where: { id: 'ch-1' },
+    });
   });
 
   it('should find all charges', async () => {
-    mockPrisma.charge.findMany.mockResolvedValue([{ id: 'ch-1', student: null, tariff: null }]);
+    mockPrisma.charge.findMany.mockResolvedValue([
+      { id: 'ch-1', student: null, tariff: null },
+    ]);
 
     const result = await repository.findAll();
 

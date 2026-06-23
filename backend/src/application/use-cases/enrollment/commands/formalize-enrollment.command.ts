@@ -1,11 +1,23 @@
+import { ENROLLMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { GUARDIAN_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { EVALUATION_RESULT_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IStudentRepository } from '../../../../domain/repositories/student.repository.interface';
-import { IGuardianRepository } from '../../../../domain/repositories/guardian.repository.interface';
-import { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
-import { IEnrollmentRepository } from '../../../../domain/repositories/enrollment.repository.interface';
+import type { IStudentRepository } from '../../../../domain/repositories/student.repository.interface';
+import type { IGuardianRepository } from '../../../../domain/repositories/guardian.repository.interface';
+import type { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
+import type { IEnrollmentRepository } from '../../../../domain/repositories/enrollment.repository.interface';
 import { EnrollmentEntity } from '../../../../domain/entities/enrollment.entity';
-import { EducationalLevel } from '@prisma/client';
+import { EducationalLevel, EnrollmentStatus } from '@prisma/client';
 import {
   SectionNotFoundException,
   NoVacanciesAvailableException,
@@ -30,21 +42,21 @@ export class FormalizeEnrollmentCommand implements ICommand {
 }
 
 @CommandHandler(FormalizeEnrollmentCommand)
-export class FormalizeEnrollmentCommandHandler
-  implements ICommandHandler<FormalizeEnrollmentCommand>
-{
+export class FormalizeEnrollmentCommandHandler implements ICommandHandler<FormalizeEnrollmentCommand> {
   constructor(
-    @Inject('IStudentRepository')
+    @Inject(STUDENT_REPOSITORY)
     private readonly studentRepository: IStudentRepository,
-    @Inject('IGuardianRepository')
+    @Inject(GUARDIAN_REPOSITORY)
     private readonly guardianRepository: IGuardianRepository,
-    @Inject('ISectionRepository')
+    @Inject(SECTION_REPOSITORY)
     private readonly sectionRepository: ISectionRepository,
-    @Inject('IEnrollmentRepository')
+    @Inject(ENROLLMENT_REPOSITORY)
     private readonly enrollmentRepository: IEnrollmentRepository,
   ) {}
 
-  async execute(command: FormalizeEnrollmentCommand): Promise<EnrollmentEntity> {
+  async execute(
+    command: FormalizeEnrollmentCommand,
+  ): Promise<EnrollmentEntity> {
     // 1. Validar la sección asignada y sus vacantes
     const section = await this.sectionRepository.findById(command.sectionId);
     if (!section) {
@@ -53,7 +65,9 @@ export class FormalizeEnrollmentCommandHandler
 
     const currentCount = section.students?.length ?? 0;
     if (currentCount >= section.capacity) {
-      throw new NoVacanciesAvailableException(`${section.grade} ${section.name}`);
+      throw new NoVacanciesAvailableException(
+        `${section.grade} ${section.name}`,
+      );
     }
 
     // 2. Validar que el estudiante no exista por DNI
@@ -101,7 +115,7 @@ export class FormalizeEnrollmentCommandHandler
     const enrollment = await this.enrollmentRepository.create({
       studentId: student.id,
       year,
-      status: 'activa',
+      status: EnrollmentStatus.ACTIVE,
       pdfUrl,
     });
 

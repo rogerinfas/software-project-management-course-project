@@ -1,7 +1,18 @@
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { EVALUATION_RESULT_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { GUARDIAN_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
-import { IEvaluationResultRepository } from '../../../../domain/repositories/evaluation-result.repository.interface';
-import { IProspectRepository } from '../../../../domain/repositories/prospect.repository.interface';
+import type { IEvaluationResultRepository } from '../../../../domain/repositories/evaluation-result.repository.interface';
+import type { IProspectRepository } from '../../../../domain/repositories/prospect.repository.interface';
 import { EvaluationResultEntity } from '../../../../domain/entities/evaluation-result.entity';
 import { EvaluationStatus } from '@prisma/client';
 import { ProspectAlreadyApprovedException } from '../../../../domain/exceptions/admission-domain.exceptions';
@@ -17,9 +28,9 @@ export class SaveEvaluationCommand implements ICommand {
 @CommandHandler(SaveEvaluationCommand)
 export class SaveEvaluationCommandHandler implements ICommandHandler<SaveEvaluationCommand> {
   constructor(
-    @Inject('IEvaluationResultRepository')
+    @Inject(EVALUATION_RESULT_REPOSITORY)
     private readonly repository: IEvaluationResultRepository,
-    @Inject('IProspectRepository')
+    @Inject(PROSPECT_REPOSITORY)
     private readonly prospectRepository: IProspectRepository,
   ) {}
 
@@ -44,7 +55,7 @@ export class SaveEvaluationCommandHandler implements ICommandHandler<SaveEvaluat
       }
 
       // 3. Caso de actualización (UPDATE):
-      // Si la evaluación ya existe en la base de datos, actualizamos el dictamen 
+      // Si la evaluación ya existe en la base de datos, actualizamos el dictamen
       // (aptitude: FIT/UNFIT/PENDING) y los comentarios u observaciones.
       return this.repository.update(command.prospectId, {
         aptitude: command.aptitude,
@@ -52,7 +63,7 @@ export class SaveEvaluationCommandHandler implements ICommandHandler<SaveEvaluat
       });
     } else {
       // 4. Caso de creación (CREATE):
-      // Si es la primera vez que se evalúa al postulante, se crea un nuevo 
+      // Si es la primera vez que se evalúa al postulante, se crea un nuevo
       // registro de evaluación asociado a su ID de prospecto.
       return this.repository.create({
         prospectId: command.prospectId,

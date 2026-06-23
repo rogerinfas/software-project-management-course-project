@@ -28,7 +28,9 @@ describe('PrismaCommunicationRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PrismaCommunicationRepository>(PrismaCommunicationRepository);
+    repository = module.get<PrismaCommunicationRepository>(
+      PrismaCommunicationRepository,
+    );
   });
 
   afterEach(() => {
@@ -37,7 +39,11 @@ describe('PrismaCommunicationRepository', () => {
 
   it('should create a communication', async () => {
     const data = { title: 'T', content: 'C', category: 'Cat' };
-    mockPrisma.communication.create.mockResolvedValue({ id: 'comm-1', ...data, isVisible: true });
+    mockPrisma.communication.create.mockResolvedValue({
+      id: 'comm-1',
+      ...data,
+      isVisible: true,
+    });
 
     const result = await repository.create(data);
 
@@ -46,7 +52,10 @@ describe('PrismaCommunicationRepository', () => {
   });
 
   it('should find communication by id', async () => {
-    mockPrisma.communication.findUnique.mockResolvedValue({ id: 'comm-1', title: 'T' });
+    mockPrisma.communication.findUnique.mockResolvedValue({
+      id: 'comm-1',
+      title: 'T',
+    });
 
     const result = await repository.findById('comm-1');
 
@@ -54,7 +63,10 @@ describe('PrismaCommunicationRepository', () => {
   });
 
   it('should update communication', async () => {
-    mockPrisma.communication.update.mockResolvedValue({ id: 'comm-1', title: 'New T' });
+    mockPrisma.communication.update.mockResolvedValue({
+      id: 'comm-1',
+      title: 'New T',
+    });
 
     const result = await repository.update('comm-1', { title: 'New T' });
 
@@ -66,7 +78,9 @@ describe('PrismaCommunicationRepository', () => {
 
     await repository.delete('comm-1');
 
-    expect(mockPrisma.communication.delete).toHaveBeenCalledWith({ where: { id: 'comm-1' } });
+    expect(mockPrisma.communication.delete).toHaveBeenCalledWith({
+      where: { id: 'comm-1' },
+    });
   });
 
   it('should find all active communications', async () => {
@@ -81,7 +95,12 @@ describe('PrismaCommunicationRepository', () => {
     mockPrisma.communication.findMany.mockResolvedValue([{ id: 'comm-1' }]);
     mockPrisma.communication.count.mockResolvedValue(1);
 
-    const result = await repository.findManyPaginated(1, 10, 'General', 'search');
+    const result = await repository.findManyPaginated(
+      1,
+      10,
+      'General',
+      'search',
+    );
 
     expect(result.data).toHaveLength(1);
     expect(result.meta.total).toBe(1);

@@ -62,17 +62,18 @@ export class TreasuryController {
     const results = await this.queryBus.execute<GetTariffsQuery, any[]>(
       new GetTariffsQuery(),
     );
-    return results.map((t) => new TariffEntity(t).toDto() as TariffResponse);
+    return results.map((t) => new TariffEntity(t).toDto());
   }
 
   @Post('tariffs')
   @ApiOperation({ summary: 'Create a new school tariff' })
   @ApiResponse({ status: 201, type: TariffResponse })
   async createTariff(@Body() dto: CreateTariffDto): Promise<TariffResponse> {
-    const result = await this.commandBus.execute<CreateTariffCommand, TariffEntity>(
-      new CreateTariffCommand(dto.concept, dto.amount, dto.type, dto.level),
-    );
-    return result.toDto() as TariffResponse;
+    const result = await this.commandBus.execute<
+      CreateTariffCommand,
+      TariffEntity
+    >(new CreateTariffCommand(dto.concept, dto.amount, dto.type, dto.level));
+    return result.toDto();
   }
 
   @Put('tariffs/:id')
@@ -82,10 +83,13 @@ export class TreasuryController {
     @Param('id') id: string,
     @Body() dto: UpdateTariffDto,
   ): Promise<TariffResponse> {
-    const result = await this.commandBus.execute<UpdateTariffCommand, TariffEntity>(
+    const result = await this.commandBus.execute<
+      UpdateTariffCommand,
+      TariffEntity
+    >(
       new UpdateTariffCommand(id, dto.concept, dto.amount, dto.type, dto.level),
     );
-    return result.toDto() as TariffResponse;
+    return result.toDto();
   }
 
   @Delete('tariffs/:id')
@@ -109,7 +113,7 @@ export class TreasuryController {
     const results = await this.queryBus.execute<GetChargesQuery, any[]>(
       new GetChargesQuery(studentId, status),
     );
-    return results.map((c) => new ChargeEntity(c).toDto() as ChargeResponse);
+    return results.map((c) => new ChargeEntity(c).toDto());
   }
 
   @Post('charges')
@@ -117,20 +121,27 @@ export class TreasuryController {
   @ApiResponse({ status: 201, type: ChargeResponse })
   async createCharge(@Body() dto: CreateChargeDto): Promise<ChargeResponse> {
     const parsedDate = dto.dueDate ? new Date(dto.dueDate) : undefined;
-    const result = await this.commandBus.execute<CreateChargeCommand, ChargeEntity>(
-      new CreateChargeCommand(dto.studentId, dto.tariffId, parsedDate),
-    );
-    return result.toDto() as ChargeResponse;
+    const result = await this.commandBus.execute<
+      CreateChargeCommand,
+      ChargeEntity
+    >(new CreateChargeCommand(dto.studentId, dto.tariffId, parsedDate));
+    return result.toDto();
   }
 
   @Post('charges/bulk')
   @ApiOperation({ summary: 'Generate monthly bulk charges' })
-  @ApiResponse({ status: 201, description: 'Number of charges successfully created.' })
-  async generateBulkCharges(@Body() dto: GenerateBulkChargesDto): Promise<{ count: number }> {
+  @ApiResponse({
+    status: 201,
+    description: 'Number of charges successfully created.',
+  })
+  async generateBulkCharges(
+    @Body() dto: GenerateBulkChargesDto,
+  ): Promise<{ count: number }> {
     const parsedDate = dto.dueDate ? new Date(dto.dueDate) : undefined;
-    const count = await this.commandBus.execute<GenerateBulkChargesCommand, number>(
-      new GenerateBulkChargesCommand(dto.tariffId, parsedDate),
-    );
+    const count = await this.commandBus.execute<
+      GenerateBulkChargesCommand,
+      number
+    >(new GenerateBulkChargesCommand(dto.tariffId, parsedDate));
     return { count };
   }
 
@@ -155,16 +166,19 @@ export class TreasuryController {
     const results = await this.queryBus.execute<GetPaymentsQuery, any[]>(
       new GetPaymentsQuery(studentId, chargeId),
     );
-    return results.map((p) => new PaymentEntity(p).toDto() as PaymentResponse);
+    return results.map((p) => new PaymentEntity(p).toDto());
   }
 
   @Post('payments')
   @ApiOperation({ summary: 'Register a payment receipt against a charge' })
   @ApiResponse({ status: 201, type: PaymentResponse })
-  async registerPayment(@Body() dto: RegisterPaymentDto): Promise<PaymentResponse> {
-    const result = await this.commandBus.execute<RegisterPaymentCommand, PaymentEntity>(
-      new RegisterPaymentCommand(dto.chargeId, dto.amount, dto.method),
-    );
-    return result.toDto() as PaymentResponse;
+  async registerPayment(
+    @Body() dto: RegisterPaymentDto,
+  ): Promise<PaymentResponse> {
+    const result = await this.commandBus.execute<
+      RegisterPaymentCommand,
+      PaymentEntity
+    >(new RegisterPaymentCommand(dto.chargeId, dto.amount, dto.method));
+    return result.toDto();
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { IPaymentRepository } from '../../../../domain/repositories/payment.repository.interface';
+import type { IPaymentRepository } from '../../../../domain/repositories/payment.repository.interface';
 import { PaymentEntity } from '../../../../domain/entities/payment.entity';
 
 @Injectable()
@@ -16,7 +16,6 @@ export class PrismaPaymentRepository implements IPaymentRepository {
     const record = await this.prisma.payment.create({
       data: {
         chargeId: payment.chargeId!,
-        studentId: payment.studentId!,
         totalAmount: payment.totalAmount!,
         method: payment.method!,
         timestamp: payment.timestamp || new Date(),
@@ -66,7 +65,7 @@ export class PrismaPaymentRepository implements IPaymentRepository {
 
   async findByStudentId(studentId: string): Promise<PaymentEntity[]> {
     const records = await this.prisma.payment.findMany({
-      where: { studentId },
+      where: { charge: { studentId } },
       include: {
         charge: {
           include: {

@@ -1,4 +1,7 @@
-import { GetInteractionsQuery, GetInteractionsQueryHandler } from './get-interactions.query';
+import {
+  GetInteractionsQuery,
+  GetInteractionsQueryHandler,
+} from './get-interactions.query';
 import { ProspectInteractionEntity } from '../../../../domain/entities/interaction.entity';
 import { NotFoundException } from '@nestjs/common';
 
@@ -26,7 +29,16 @@ describe('GetInteractionsQueryHandler', () => {
 
   it('should return interactions if prospect found', async () => {
     prospectRepository.findById.mockResolvedValue({});
-    const list = [new ProspectInteractionEntity({ id: 'i-1', prospectId: 'p-1', type: 'Call', summary: 'Called', author: 'Admin', date: new Date() })];
+    const list = [
+      new ProspectInteractionEntity({
+        id: 'i-1',
+        prospectId: 'p-1',
+        type: 'Call',
+        summary: 'Called',
+        author: 'Admin',
+        date: new Date(),
+      }),
+    ];
     repository.findByProspectId.mockResolvedValue(list);
 
     const query = new GetInteractionsQuery('p-1');

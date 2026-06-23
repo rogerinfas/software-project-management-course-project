@@ -7294,7 +7294,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-05-26T17:49:43.678Z"
+            "example": "2026-06-23T15:16:47.843Z"
           },
           "path": {
             "type": "string",
@@ -7399,13 +7399,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-26T17:49:43.806Z"
+            "example": "2026-06-23T15:16:47.987Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-26T17:49:43.806Z"
+            "example": "2026-06-23T15:16:47.987Z"
           }
         },
         "required": [
@@ -7515,7 +7515,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Appointment date and time",
-            "example": "2026-05-26T17:49:44.238Z"
+            "example": "2026-06-23T15:16:48.575Z"
           },
           "type": {
             "type": "string",
@@ -7539,7 +7539,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-26T17:49:44.238Z"
+            "example": "2026-06-23T15:16:48.576Z"
           }
         },
         "required": [
@@ -7582,7 +7582,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Evaluation process date",
-            "example": "2026-05-26T17:49:44.238Z"
+            "example": "2026-06-23T15:16:48.579Z"
           },
           "evaluatorId": {
             "type": "object",
@@ -7664,7 +7664,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-26T17:49:44.239Z"
+            "example": "2026-06-23T15:16:48.579Z"
           }
         },
         "required": [
@@ -7707,13 +7707,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-05-26T17:49:44.239Z"
+            "example": "2026-06-23T15:16:48.579Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-05-26T17:49:44.239Z"
+            "example": "2026-06-23T15:16:48.579Z"
           }
         },
         "required": [
@@ -7885,7 +7885,7 @@
           "date": {
             "type": "string",
             "description": "Appointment date and time in ISO format",
-            "example": "2026-05-26T17:49:44.242Z"
+            "example": "2026-06-23T15:16:48.591Z"
           },
           "type": {
             "type": "string",
@@ -7959,7 +7959,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Date and time of the interaction",
-            "example": "2026-05-26T17:49:44.244Z"
+            "example": "2026-06-23T15:16:48.598Z"
           }
         },
         "required": [
@@ -8412,7 +8412,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Fecha de la matrícula",
-            "example": "2026-05-26T17:49:44.263Z"
+            "example": "2026-06-23T15:16:48.794Z"
           },
           "status": {
             "type": "string",
@@ -8830,6 +8830,10 @@
           },
           "status": {
             "type": "string",
+            "enum": [
+              "OPEN",
+              "CLOSED"
+            ],
             "description": "Estado",
             "example": "OPEN",
             "default": "OPEN"
@@ -8871,6 +8875,10 @@
           },
           "status": {
             "type": "string",
+            "enum": [
+              "OPEN",
+              "CLOSED"
+            ],
             "description": "Estado",
             "example": "CLOSED"
           }
@@ -9111,11 +9119,6 @@
           "charge": {
             "$ref": "#/components/schemas/ChargeResponse"
           },
-          "studentId": {
-            "type": "string",
-            "description": "ID del estudiante",
-            "example": "student-123"
-          },
           "totalAmount": {
             "type": "number",
             "description": "Monto pagado",
@@ -9140,7 +9143,6 @@
         "required": [
           "id",
           "chargeId",
-          "studentId",
           "totalAmount",
           "method",
           "timestamp"
@@ -9232,13 +9234,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-05-26T17:49:43.809Z"
+            "example": "2026-06-23T15:16:48.044Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-05-26T17:49:43.809Z"
+            "example": "2026-06-23T15:16:48.044Z"
           },
           "deletedAt": {
             "type": "object",
@@ -9304,13 +9306,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-05-26T17:49:43.809Z"
+            "example": "2026-06-23T15:16:48.044Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-05-26T17:49:43.809Z"
+            "example": "2026-06-23T15:16:48.044Z"
           },
           "deletedAt": {
             "type": "object",
@@ -9437,13 +9439,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-05-26T17:49:43.809Z"
+            "example": "2026-06-23T15:16:48.044Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-05-26T17:49:43.809Z"
+            "example": "2026-06-23T15:16:48.044Z"
           },
           "deletedAt": {
             "type": "object",
@@ -9518,18 +9520,23 @@
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was created",
-            "example": "2026-05-26T17:49:43.809Z"
+            "example": "2026-06-23T15:16:48.044Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Timestamp when the entity was last updated",
-            "example": "2026-05-26T17:49:43.809Z"
+            "example": "2026-06-23T15:16:48.044Z"
           },
           "deletedAt": {
             "type": "object",
             "description": "Timestamp when the entity was deleted (for soft delete)",
             "example": null
+          },
+          "isSingleton": {
+            "type": "boolean",
+            "description": "Identificador para asegurar singleton",
+            "default": true
           },
           "gracePeriodMinutes": {
             "type": "number",
@@ -9547,6 +9554,7 @@
           "isActive",
           "createdAt",
           "updatedAt",
+          "isSingleton",
           "gracePeriodMinutes",
           "finePerMinute"
         ]

@@ -17,7 +17,12 @@ export class GetCoursesQueryHandler implements IQueryHandler<GetCoursesQuery> {
       ? {
           OR: [
             { name: { contains: query.search, mode: 'insensitive' as const } },
-            { description: { contains: query.search, mode: 'insensitive' as const } },
+            {
+              description: {
+                contains: query.search,
+                mode: 'insensitive' as const,
+              },
+            },
           ],
         }
       : {};
@@ -59,10 +64,7 @@ export class GetSchedulesQueryHandler implements IQueryHandler<GetSchedulesQuery
           },
         },
       },
-      orderBy: [
-        { day: 'asc' },
-        { startTime: 'asc' },
-      ],
+      orderBy: [{ day: 'asc' }, { startTime: 'asc' }],
     });
   }
 }
@@ -143,11 +145,7 @@ export class GetSectionsQueryHandler implements IQueryHandler<GetSectionsQuery> 
       include: {
         students: true,
       },
-      orderBy: [
-        { level: 'asc' },
-        { grade: 'asc' },
-        { name: 'asc' },
-      ],
+      orderBy: [{ level: 'asc' }, { grade: 'asc' }, { name: 'asc' }],
     });
   }
 }

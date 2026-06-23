@@ -1,8 +1,13 @@
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
+import type { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
 import { SectionEntity } from '../../../../domain/entities/section.entity';
-import { EducationalLevel } from '@prisma/client';
+import { EducationalLevel, SectionStatus } from '@prisma/client';
 import { SectionNotFoundException } from '../../../../domain/exceptions/enrollment-domain.exceptions';
 
 // --- Create Section ---
@@ -12,14 +17,14 @@ export class CreateSectionCommand implements ICommand {
     public readonly grade: string,
     public readonly level: EducationalLevel,
     public readonly capacity: number,
-    public readonly status?: string,
+    public readonly status?: SectionStatus,
   ) {}
 }
 
 @CommandHandler(CreateSectionCommand)
 export class CreateSectionCommandHandler implements ICommandHandler<CreateSectionCommand> {
   constructor(
-    @Inject('ISectionRepository')
+    @Inject(SECTION_REPOSITORY)
     private readonly sectionRepository: ISectionRepository,
   ) {}
 
@@ -29,7 +34,7 @@ export class CreateSectionCommandHandler implements ICommandHandler<CreateSectio
       grade: command.grade,
       level: command.level,
       capacity: command.capacity,
-      status: command.status ?? 'OPEN',
+      status: command.status ?? SectionStatus.OPEN,
     });
   }
 }
@@ -42,14 +47,14 @@ export class UpdateSectionCommand implements ICommand {
     public readonly grade?: string,
     public readonly level?: EducationalLevel,
     public readonly capacity?: number,
-    public readonly status?: string,
+    public readonly status?: SectionStatus,
   ) {}
 }
 
 @CommandHandler(UpdateSectionCommand)
 export class UpdateSectionCommandHandler implements ICommandHandler<UpdateSectionCommand> {
   constructor(
-    @Inject('ISectionRepository')
+    @Inject(SECTION_REPOSITORY)
     private readonly sectionRepository: ISectionRepository,
   ) {}
 
@@ -77,7 +82,7 @@ export class DeleteSectionCommand implements ICommand {
 @CommandHandler(DeleteSectionCommand)
 export class DeleteSectionCommandHandler implements ICommandHandler<DeleteSectionCommand> {
   constructor(
-    @Inject('ISectionRepository')
+    @Inject(SECTION_REPOSITORY)
     private readonly sectionRepository: ISectionRepository,
   ) {}
 

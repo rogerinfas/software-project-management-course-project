@@ -27,7 +27,9 @@ describe('PrismaEnrollmentRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PrismaEnrollmentRepository>(PrismaEnrollmentRepository);
+    repository = module.get<PrismaEnrollmentRepository>(
+      PrismaEnrollmentRepository,
+    );
   });
 
   afterEach(() => {
@@ -35,8 +37,17 @@ describe('PrismaEnrollmentRepository', () => {
   });
 
   it('should create an enrollment', async () => {
-    const data = { studentId: 'stud-1', year: 2026, status: 'activa', pdfUrl: 'pdf' };
-    mockPrisma.enrollment.create.mockResolvedValue({ id: 'e-1', ...data, student: null });
+    const data = {
+      studentId: 'stud-1',
+      year: 2026,
+      status: 'activa',
+      pdfUrl: 'pdf',
+    };
+    mockPrisma.enrollment.create.mockResolvedValue({
+      id: 'e-1',
+      ...data,
+      student: null,
+    });
 
     const result = await repository.create(data);
 
@@ -45,7 +56,14 @@ describe('PrismaEnrollmentRepository', () => {
   });
 
   it('should find enrollment by id', async () => {
-    mockPrisma.enrollment.findUnique.mockResolvedValue({ id: 'e-1', studentId: 'stud-1', year: 2026, status: 'activa', pdfUrl: 'pdf', student: null });
+    mockPrisma.enrollment.findUnique.mockResolvedValue({
+      id: 'e-1',
+      studentId: 'stud-1',
+      year: 2026,
+      status: 'activa',
+      pdfUrl: 'pdf',
+      student: null,
+    });
 
     const result = await repository.findById('e-1');
 
@@ -53,7 +71,9 @@ describe('PrismaEnrollmentRepository', () => {
   });
 
   it('should find by student id', async () => {
-    mockPrisma.enrollment.findMany.mockResolvedValue([{ id: 'e-1', studentId: 'stud-1', student: null }]);
+    mockPrisma.enrollment.findMany.mockResolvedValue([
+      { id: 'e-1', studentId: 'stud-1', student: null },
+    ]);
 
     const result = await repository.findByStudentId('stud-1');
 

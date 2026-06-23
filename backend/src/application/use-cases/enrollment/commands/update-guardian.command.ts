@@ -1,6 +1,16 @@
+import { GUARDIAN_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IGuardianRepository } from '../../../../domain/repositories/guardian.repository.interface';
+import type { IGuardianRepository } from '../../../../domain/repositories/guardian.repository.interface';
 import { GuardianEntity } from '../../../../domain/entities/guardian.entity';
 import { GuardianNotFoundException } from '../../../../domain/exceptions/enrollment-domain.exceptions';
 
@@ -16,11 +26,9 @@ export class UpdateGuardianCommand implements ICommand {
 }
 
 @CommandHandler(UpdateGuardianCommand)
-export class UpdateGuardianCommandHandler
-  implements ICommandHandler<UpdateGuardianCommand>
-{
+export class UpdateGuardianCommandHandler implements ICommandHandler<UpdateGuardianCommand> {
   constructor(
-    @Inject('IGuardianRepository')
+    @Inject(GUARDIAN_REPOSITORY)
     private readonly repository: IGuardianRepository,
   ) {}
 

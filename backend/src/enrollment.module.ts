@@ -1,3 +1,4 @@
+import { GUARDIAN_REPOSITORY, STUDENT_REPOSITORY, ENROLLMENT_REPOSITORY, SECTION_REPOSITORY } from './config/constants/tokens';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { EnrollmentController } from './presentation/controllers/enrollment/enrollment.controller';
@@ -19,19 +20,19 @@ import { EnrollmentQueryHandlers } from './application/use-cases/enrollment/quer
   providers: [
     PrismaService,
     {
-      provide: 'IGuardianRepository',
+      provide: GUARDIAN_REPOSITORY,
       useClass: PrismaGuardianRepository,
     },
     {
-      provide: 'IStudentRepository',
+      provide: STUDENT_REPOSITORY,
       useClass: PrismaStudentRepository,
     },
     {
-      provide: 'IEnrollmentRepository',
+      provide: ENROLLMENT_REPOSITORY,
       useClass: PrismaEnrollmentRepository,
     },
     {
-      provide: 'ISectionRepository',
+      provide: SECTION_REPOSITORY,
       useClass: PrismaSectionRepository,
     },
     ...EnrollmentCommandHandlers,

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { IChargeRepository } from '../../../../domain/repositories/charge.repository.interface';
+import type { IChargeRepository } from '../../../../domain/repositories/charge.repository.interface';
 import { ChargeEntity } from '../../../../domain/entities/charge.entity';
+import { ChargeStatus } from '@prisma/client';
 
 @Injectable()
 export class PrismaChargeRepository implements IChargeRepository {
@@ -20,7 +21,7 @@ export class PrismaChargeRepository implements IChargeRepository {
         originalAmount: charge.originalAmount!,
         pendingAmount: charge.pendingAmount!,
         dueDate: charge.dueDate,
-        status: charge.status || 'PENDING',
+        status: charge.status ?? ChargeStatus.PENDING,
       },
       include: {
         student: true,
@@ -41,7 +42,10 @@ export class PrismaChargeRepository implements IChargeRepository {
     return this.mapToEntity(record);
   }
 
-  async update(id: string, charge: Partial<ChargeEntity>): Promise<ChargeEntity> {
+  async update(
+    id: string,
+    charge: Partial<ChargeEntity>,
+  ): Promise<ChargeEntity> {
     const record = await this.prisma.charge.update({
       where: { id },
       data: {

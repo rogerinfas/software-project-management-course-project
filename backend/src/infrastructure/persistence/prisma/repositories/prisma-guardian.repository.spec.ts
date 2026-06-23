@@ -37,8 +37,18 @@ describe('PrismaGuardianRepository', () => {
   });
 
   it('should create a guardian', async () => {
-    const data = { dni: '12345678', name: 'G Name', phone: '987654321', email: 'g@g.com', occupation: 'O' };
-    mockPrisma.guardian.create.mockResolvedValue({ id: 'g-1', ...data, students: [] });
+    const data = {
+      dni: '12345678',
+      name: 'G Name',
+      phone: '987654321',
+      email: 'g@g.com',
+      occupation: 'O',
+    };
+    mockPrisma.guardian.create.mockResolvedValue({
+      id: 'g-1',
+      ...data,
+      students: [],
+    });
 
     const result = await repository.create(data);
 
@@ -47,7 +57,15 @@ describe('PrismaGuardianRepository', () => {
   });
 
   it('should find guardian by id', async () => {
-    mockPrisma.guardian.findUnique.mockResolvedValue({ id: 'g-1', dni: '12345678', name: 'G Name', phone: '987654321', email: 'g@g.com', occupation: 'O', students: [] });
+    mockPrisma.guardian.findUnique.mockResolvedValue({
+      id: 'g-1',
+      dni: '12345678',
+      name: 'G Name',
+      phone: '987654321',
+      email: 'g@g.com',
+      occupation: 'O',
+      students: [],
+    });
 
     const result = await repository.findById('g-1');
 
@@ -55,7 +73,15 @@ describe('PrismaGuardianRepository', () => {
   });
 
   it('should find guardian by dni', async () => {
-    mockPrisma.guardian.findUnique.mockResolvedValue({ id: 'g-1', dni: '12345678', name: 'G Name', phone: '987654321', email: 'g@g.com', occupation: 'O', students: [] });
+    mockPrisma.guardian.findUnique.mockResolvedValue({
+      id: 'g-1',
+      dni: '12345678',
+      name: 'G Name',
+      phone: '987654321',
+      email: 'g@g.com',
+      occupation: 'O',
+      students: [],
+    });
 
     const result = await repository.findByDni('12345678');
 
@@ -63,7 +89,15 @@ describe('PrismaGuardianRepository', () => {
   });
 
   it('should update guardian', async () => {
-    mockPrisma.guardian.update.mockResolvedValue({ id: 'g-1', dni: '12345678', name: 'G Name II', phone: '987654321', email: 'g@g.com', occupation: 'O', students: [] });
+    mockPrisma.guardian.update.mockResolvedValue({
+      id: 'g-1',
+      dni: '12345678',
+      name: 'G Name II',
+      phone: '987654321',
+      email: 'g@g.com',
+      occupation: 'O',
+      students: [],
+    });
 
     const result = await repository.update('g-1', { name: 'G Name II' });
 
@@ -71,7 +105,15 @@ describe('PrismaGuardianRepository', () => {
   });
 
   it('should delete guardian', async () => {
-    mockPrisma.guardian.delete.mockResolvedValue({ id: 'g-1', dni: '12345678', name: 'G Name', phone: '987654321', email: 'g@g.com', occupation: 'O', students: [] });
+    mockPrisma.guardian.delete.mockResolvedValue({
+      id: 'g-1',
+      dni: '12345678',
+      name: 'G Name',
+      phone: '987654321',
+      email: 'g@g.com',
+      occupation: 'O',
+      students: [],
+    });
 
     const result = await repository.delete('g-1');
 
@@ -81,7 +123,17 @@ describe('PrismaGuardianRepository', () => {
   it('should find guardians paginated', async () => {
     mockPrisma.$transaction.mockResolvedValue([
       1,
-      [{ id: 'g-1', dni: '12345678', name: 'G Name', phone: '987654321', email: 'g@g.com', occupation: 'O', students: [] }],
+      [
+        {
+          id: 'g-1',
+          dni: '12345678',
+          name: 'G Name',
+          phone: '987654321',
+          email: 'g@g.com',
+          occupation: 'O',
+          students: [],
+        },
+      ],
     ]);
 
     const result = await repository.findManyPaginated(1, 10);

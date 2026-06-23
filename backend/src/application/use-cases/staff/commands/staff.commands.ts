@@ -1,8 +1,25 @@
+import { ATTENDANCE_RULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { ATTENDANCE_RECORD_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { GUARDIAN_REPOSITORY } from '../../../../config/constants/tokens';
+import { EVALUATION_RESULT_REPOSITORY } from '../../../../config/constants/tokens';
+import { ENROLLMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { COURSE_REPOSITORY } from '../../../../config/constants/tokens';
+import { COMMUNICATION_REPOSITORY } from '../../../../config/constants/tokens';
+import { CHARGE_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IStaffProfileRepository } from '../../../../domain/repositories/staff-profile.repository.interface';
-import { IAttendanceRecordRepository } from '../../../../domain/repositories/attendance-record.repository.interface';
-import { IAttendanceRuleRepository } from '../../../../domain/repositories/attendance-rule.repository.interface';
+import type { IStaffProfileRepository } from '../../../../domain/repositories/staff-profile.repository.interface';
+import type { IAttendanceRecordRepository } from '../../../../domain/repositories/attendance-record.repository.interface';
+import type { IAttendanceRuleRepository } from '../../../../domain/repositories/attendance-rule.repository.interface';
 import { StaffProfileEntity } from '../../../../domain/entities/staff-profile.entity';
 import { AttendanceRecordEntity } from '../../../../domain/entities/attendance-record.entity';
 import { AttendanceRuleEntity } from '../../../../domain/entities/attendance-rule.entity';
@@ -28,11 +45,13 @@ export class CreateStaffProfileCommand implements ICommand {
 @CommandHandler(CreateStaffProfileCommand)
 export class CreateStaffProfileCommandHandler implements ICommandHandler<CreateStaffProfileCommand> {
   constructor(
-    @Inject('IStaffProfileRepository')
+    @Inject(STAFF_PROFILE_REPOSITORY)
     private readonly staffRepository: IStaffProfileRepository,
   ) {}
 
-  async execute(command: CreateStaffProfileCommand): Promise<StaffProfileEntity> {
+  async execute(
+    command: CreateStaffProfileCommand,
+  ): Promise<StaffProfileEntity> {
     const existing = await this.staffRepository.findByUserId(command.userId);
     if (existing) {
       throw new DuplicateStaffProfileException(command.userId);
@@ -62,11 +81,13 @@ export class UpdateStaffProfileCommand implements ICommand {
 @CommandHandler(UpdateStaffProfileCommand)
 export class UpdateStaffProfileCommandHandler implements ICommandHandler<UpdateStaffProfileCommand> {
   constructor(
-    @Inject('IStaffProfileRepository')
+    @Inject(STAFF_PROFILE_REPOSITORY)
     private readonly staffRepository: IStaffProfileRepository,
   ) {}
 
-  async execute(command: UpdateStaffProfileCommand): Promise<StaffProfileEntity> {
+  async execute(
+    command: UpdateStaffProfileCommand,
+  ): Promise<StaffProfileEntity> {
     const staff = await this.staffRepository.findById(command.id);
     if (!staff) {
       throw new StaffProfileNotFoundException(command.id);
@@ -88,7 +109,7 @@ export class DeleteStaffProfileCommand implements ICommand {
 @CommandHandler(DeleteStaffProfileCommand)
 export class DeleteStaffProfileCommandHandler implements ICommandHandler<DeleteStaffProfileCommand> {
   constructor(
-    @Inject('IStaffProfileRepository')
+    @Inject(STAFF_PROFILE_REPOSITORY)
     private readonly staffRepository: IStaffProfileRepository,
   ) {}
 
@@ -115,15 +136,17 @@ export class RegisterAttendanceCommand implements ICommand {
 @CommandHandler(RegisterAttendanceCommand)
 export class RegisterAttendanceCommandHandler implements ICommandHandler<RegisterAttendanceCommand> {
   constructor(
-    @Inject('IStaffProfileRepository')
+    @Inject(STAFF_PROFILE_REPOSITORY)
     private readonly staffRepository: IStaffProfileRepository,
-    @Inject('IAttendanceRecordRepository')
+    @Inject(ATTENDANCE_RECORD_REPOSITORY)
     private readonly recordRepository: IAttendanceRecordRepository,
-    @Inject('IAttendanceRuleRepository')
+    @Inject(ATTENDANCE_RULE_REPOSITORY)
     private readonly ruleRepository: IAttendanceRuleRepository,
   ) {}
 
-  async execute(command: RegisterAttendanceCommand): Promise<AttendanceRecordEntity> {
+  async execute(
+    command: RegisterAttendanceCommand,
+  ): Promise<AttendanceRecordEntity> {
     const staff = await this.staffRepository.findById(command.staffId);
     if (!staff) {
       throw new StaffProfileNotFoundException(command.staffId);
@@ -175,11 +198,13 @@ export class UpdateAttendanceRulesCommand implements ICommand {
 @CommandHandler(UpdateAttendanceRulesCommand)
 export class UpdateAttendanceRulesCommandHandler implements ICommandHandler<UpdateAttendanceRulesCommand> {
   constructor(
-    @Inject('IAttendanceRuleRepository')
+    @Inject(ATTENDANCE_RULE_REPOSITORY)
     private readonly ruleRepository: IAttendanceRuleRepository,
   ) {}
 
-  async execute(command: UpdateAttendanceRulesCommand): Promise<AttendanceRuleEntity> {
+  async execute(
+    command: UpdateAttendanceRulesCommand,
+  ): Promise<AttendanceRuleEntity> {
     return this.ruleRepository.updateRule({
       gracePeriodMinutes: command.gracePeriodMinutes,
       finePerMinute: command.finePerMinute,

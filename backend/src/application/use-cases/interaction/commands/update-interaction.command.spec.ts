@@ -1,4 +1,7 @@
-import { UpdateInteractionCommand, UpdateInteractionCommandHandler } from './update-interaction.command';
+import {
+  UpdateInteractionCommand,
+  UpdateInteractionCommandHandler,
+} from './update-interaction.command';
 import { ProspectInteractionEntity } from '../../../../domain/entities/interaction.entity';
 import { NotFoundException } from '@nestjs/common';
 
@@ -22,8 +25,22 @@ describe('UpdateInteractionCommandHandler', () => {
   });
 
   it('should update interaction successfully if found', async () => {
-    const existing = new ProspectInteractionEntity({ id: 'i-1', prospectId: 'p-1', type: 'Call', summary: 'Old', author: 'Admin', date: new Date() });
-    const updated = new ProspectInteractionEntity({ id: 'i-1', prospectId: 'p-1', type: 'Call', summary: 'Updated', author: 'Admin', date: new Date() });
+    const existing = new ProspectInteractionEntity({
+      id: 'i-1',
+      prospectId: 'p-1',
+      type: 'Call',
+      summary: 'Old',
+      author: 'Admin',
+      date: new Date(),
+    });
+    const updated = new ProspectInteractionEntity({
+      id: 'i-1',
+      prospectId: 'p-1',
+      type: 'Call',
+      summary: 'Updated',
+      author: 'Admin',
+      date: new Date(),
+    });
     repository.findById.mockResolvedValue(existing);
     repository.update.mockResolvedValue(updated);
 

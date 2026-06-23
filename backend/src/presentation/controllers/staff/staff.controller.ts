@@ -15,7 +15,12 @@ import {
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CreateStaffProfileDto, UpdateStaffProfileDto, RegisterAttendanceDto, UpdateAttendanceRulesDto } from './dto';
+import {
+  CreateStaffProfileDto,
+  UpdateStaffProfileDto,
+  RegisterAttendanceDto,
+  UpdateAttendanceRulesDto,
+} from './dto';
 import {
   CreateStaffProfileCommand,
   UpdateStaffProfileCommand,
@@ -80,9 +85,13 @@ export class StaffController {
   @ApiOperation({ summary: 'Obtener perfil de personal por ID' })
   @ApiResponse({ status: HttpStatus.OK, type: StaffProfileEntity })
   async getProfileById(@Param('id') id: string) {
-    const result = await this.queryBus.execute(new GetStaffProfileByIdQuery(id));
+    const result = await this.queryBus.execute(
+      new GetStaffProfileByIdQuery(id),
+    );
     if (!result) {
-      throw new NotFoundException(`Perfil de personal con ID ${id} no encontrado`);
+      throw new NotFoundException(
+        `Perfil de personal con ID ${id} no encontrado`,
+      );
     }
     return new StaffProfileEntity(result);
   }
@@ -90,7 +99,10 @@ export class StaffController {
   @Put('profiles/:id')
   @ApiOperation({ summary: 'Actualizar perfil de personal' })
   @ApiResponse({ status: HttpStatus.OK, type: StaffProfileEntity })
-  async updateProfile(@Param('id') id: string, @Body() dto: UpdateStaffProfileDto) {
+  async updateProfile(
+    @Param('id') id: string,
+    @Body() dto: UpdateStaffProfileDto,
+  ) {
     try {
       const result = await this.commandBus.execute(
         new UpdateStaffProfileCommand(
@@ -151,10 +163,14 @@ export class StaffController {
   }
 
   @Get('attendance')
-  @ApiOperation({ summary: 'Obtener historial de asistencia completo o filtrado' })
+  @ApiOperation({
+    summary: 'Obtener historial de asistencia completo o filtrado',
+  })
   @ApiResponse({ status: HttpStatus.OK, type: [AttendanceRecordEntity] })
   async getAttendance(@Query('staffId') staffId?: string) {
-    const results = await this.queryBus.execute(new GetAttendanceRecordsQuery(staffId));
+    const results = await this.queryBus.execute(
+      new GetAttendanceRecordsQuery(staffId),
+    );
     return results.map((r: any) => new AttendanceRecordEntity(r));
   }
 
@@ -173,7 +189,10 @@ export class StaffController {
   @ApiResponse({ status: HttpStatus.OK, type: AttendanceRuleEntity })
   async updateRules(@Body() dto: UpdateAttendanceRulesDto) {
     const result = await this.commandBus.execute(
-      new UpdateAttendanceRulesCommand(dto.gracePeriodMinutes, dto.finePerMinute),
+      new UpdateAttendanceRulesCommand(
+        dto.gracePeriodMinutes,
+        dto.finePerMinute,
+      ),
     );
     return new AttendanceRuleEntity(result);
   }

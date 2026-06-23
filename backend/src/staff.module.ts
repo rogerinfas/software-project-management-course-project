@@ -1,3 +1,4 @@
+import { STAFF_PROFILE_REPOSITORY, ATTENDANCE_RECORD_REPOSITORY, ATTENDANCE_RULE_REPOSITORY } from './config/constants/tokens';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { StaffController } from './presentation/controllers/staff/staff.controller';
@@ -18,15 +19,15 @@ import { StaffQueryHandlers } from './application/use-cases/staff/queries';
   providers: [
     PrismaService,
     {
-      provide: 'IStaffProfileRepository',
+      provide: STAFF_PROFILE_REPOSITORY,
       useClass: PrismaStaffProfileRepository,
     },
     {
-      provide: 'IAttendanceRecordRepository',
+      provide: ATTENDANCE_RECORD_REPOSITORY,
       useClass: PrismaAttendanceRecordRepository,
     },
     {
-      provide: 'IAttendanceRuleRepository',
+      provide: ATTENDANCE_RULE_REPOSITORY,
       useClass: PrismaAttendanceRuleRepository,
     },
     ...StaffCommandHandlers,

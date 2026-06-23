@@ -4,6 +4,7 @@ import { BaseAggregateRootEntity } from '../../config/entities/base-entities/bla
 import { BaseEntityType } from '../../config/entities/base-entities/base-entity.types';
 
 export interface AttendanceRuleType extends BaseEntityType {
+  isSingleton: boolean;
   gracePeriodMinutes: number;
   finePerMinute: number;
 }
@@ -12,13 +13,24 @@ export class AttendanceRuleEntity
   extends BaseAggregateRootEntity<AttendanceRuleEntity>
   implements AttendanceRuleType
 {
-  @ApiProperty({ description: 'Minutos de gracia permitidos globalmente', default: 5 })
+  @ApiProperty({
+    description: 'Identificador para asegurar singleton',
+    default: true,
+  })
+  isSingleton: boolean;
+  @ApiProperty({
+    description: 'Minutos de gracia permitidos globalmente',
+    default: 5,
+  })
   @IsInt()
   @Min(0)
   @IsNotEmpty()
   gracePeriodMinutes: number;
 
-  @ApiProperty({ description: 'Monto de multa cobrado por minuto de tardanza', default: 0.5 })
+  @ApiProperty({
+    description: 'Monto de multa cobrado por minuto de tardanza',
+    default: 0.5,
+  })
   @IsNumber()
   @Min(0)
   @IsNotEmpty()

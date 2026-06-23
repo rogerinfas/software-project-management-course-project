@@ -36,8 +36,18 @@ describe('PrismaSectionRepository', () => {
   });
 
   it('should create a section', async () => {
-    const data = { name: 'A', grade: '1', level: EducationalLevel.PRIMARY, capacity: 25 };
-    mockPrisma.section.create.mockResolvedValue({ id: 's-1', ...data, status: 'OPEN', students: [] });
+    const data = {
+      name: 'A',
+      grade: '1',
+      level: EducationalLevel.PRIMARY,
+      capacity: 25,
+    };
+    mockPrisma.section.create.mockResolvedValue({
+      id: 's-1',
+      ...data,
+      status: 'OPEN',
+      students: [],
+    });
 
     const result = await repository.create(data);
 
@@ -46,7 +56,17 @@ describe('PrismaSectionRepository', () => {
   });
 
   it('should find all sections', async () => {
-    mockPrisma.section.findMany.mockResolvedValue([{ id: 's-1', name: 'A', grade: '1', level: EducationalLevel.PRIMARY, capacity: 25, status: 'OPEN', students: [] }]);
+    mockPrisma.section.findMany.mockResolvedValue([
+      {
+        id: 's-1',
+        name: 'A',
+        grade: '1',
+        level: EducationalLevel.PRIMARY,
+        capacity: 25,
+        status: 'OPEN',
+        students: [],
+      },
+    ]);
 
     const result = await repository.findAll();
 
@@ -55,7 +75,15 @@ describe('PrismaSectionRepository', () => {
   });
 
   it('should find section by id', async () => {
-    mockPrisma.section.findUnique.mockResolvedValue({ id: 's-1', name: 'A', grade: '1', level: EducationalLevel.PRIMARY, capacity: 25, status: 'OPEN', students: [] });
+    mockPrisma.section.findUnique.mockResolvedValue({
+      id: 's-1',
+      name: 'A',
+      grade: '1',
+      level: EducationalLevel.PRIMARY,
+      capacity: 25,
+      status: 'OPEN',
+      students: [],
+    });
 
     const result = await repository.findById('s-1');
 
@@ -63,7 +91,15 @@ describe('PrismaSectionRepository', () => {
   });
 
   it('should update section', async () => {
-    mockPrisma.section.update.mockResolvedValue({ id: 's-1', name: 'B', grade: '1', level: EducationalLevel.PRIMARY, capacity: 25, status: 'OPEN', students: [] });
+    mockPrisma.section.update.mockResolvedValue({
+      id: 's-1',
+      name: 'B',
+      grade: '1',
+      level: EducationalLevel.PRIMARY,
+      capacity: 25,
+      status: 'OPEN',
+      students: [],
+    });
 
     const result = await repository.update('s-1', { name: 'B' });
 
@@ -75,6 +111,8 @@ describe('PrismaSectionRepository', () => {
 
     await repository.delete('s-1');
 
-    expect(mockPrisma.section.delete).toHaveBeenCalledWith({ where: { id: 's-1' } });
+    expect(mockPrisma.section.delete).toHaveBeenCalledWith({
+      where: { id: 's-1' },
+    });
   });
 });

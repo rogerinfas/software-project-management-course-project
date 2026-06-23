@@ -14,11 +14,26 @@ async function main() {
 
   // 1. Crear Cursos
   const coursesToCreate = [
-    { name: 'Matemática', description: 'Curso de razonamiento lógico, álgebra y geometría.' },
-    { name: 'Comunicación', description: 'Curso de lenguaje, literatura y redacción.' },
-    { name: 'Ciencia y Tecnología', description: 'Curso de biología, física, química y ecología.' },
-    { name: 'Historia y Geografía', description: 'Curso de historia universal, nacional y geografía.' },
-    { name: 'Inglés', description: 'Curso de idioma extranjero, gramática y conversación.' },
+    {
+      name: 'Matemática',
+      description: 'Curso de razonamiento lógico, álgebra y geometría.',
+    },
+    {
+      name: 'Comunicación',
+      description: 'Curso de lenguaje, literatura y redacción.',
+    },
+    {
+      name: 'Ciencia y Tecnología',
+      description: 'Curso de biología, física, química y ecología.',
+    },
+    {
+      name: 'Historia y Geografía',
+      description: 'Curso de historia universal, nacional y geografía.',
+    },
+    {
+      name: 'Inglés',
+      description: 'Curso de idioma extranjero, gramática y conversación.',
+    },
   ];
 
   const courseIds: Record<string, string> = {};
@@ -114,7 +129,9 @@ async function main() {
   // 3. Obtener Secciones
   const sections = await prisma.section.findMany();
   if (sections.length === 0) {
-    console.log('⚠️ No hay secciones creadas. Por favor ejecuta el seed de secciones primero.');
+    console.log(
+      '⚠️ No hay secciones creadas. Por favor ejecuta el seed de secciones primero.',
+    );
     return;
   }
 
@@ -180,7 +197,9 @@ async function main() {
 
     if (!existing) {
       await prisma.schedule.create({ data: sched });
-      console.log(`✅ Horario asignado: Día ${sched.day}, ${sched.startTime} - ${sched.endTime}`);
+      console.log(
+        `✅ Horario asignado: Día ${sched.day}, ${sched.startTime} - ${sched.endTime}`,
+      );
     }
   }
 
@@ -189,19 +208,22 @@ async function main() {
   const sampleCommunications = [
     {
       title: 'Inicio del Año Escolar 2026',
-      content: 'Estimada comunidad educativa, les damos la bienvenida al nuevo año académico. Las clases se iniciarán formalmente el lunes 2 de marzo.',
+      content:
+        'Estimada comunidad educativa, les damos la bienvenida al nuevo año académico. Las clases se iniciarán formalmente el lunes 2 de marzo.',
       category: 'Informativo',
       isVisible: true,
     },
     {
       title: 'Reunión General de Padres de Familia',
-      content: 'Se convoca con carácter de URGENTE a todos los padres de familia a la primera asamblea general ordinaria este viernes a las 6:00 PM.',
+      content:
+        'Se convoca con carácter de URGENTE a todos los padres de familia a la primera asamblea general ordinaria este viernes a las 6:00 PM.',
       category: 'Urgente',
       isVisible: true,
     },
     {
       title: 'Feria Escolar de Ciencia y Tecnología',
-      content: 'El departamento de ciencias invita a todos los estudiantes a participar del concurso de proyectos tecnológicos este mes.',
+      content:
+        'El departamento de ciencias invita a todos los estudiantes a participar del concurso de proyectos tecnológicos este mes.',
       category: 'Evento',
       isVisible: true,
     },

@@ -1,4 +1,7 @@
-import { DeleteUserCommand, DeleteUserCommandHandler } from './delete-user.command';
+import {
+  DeleteUserCommand,
+  DeleteUserCommandHandler,
+} from './delete-user.command';
 import { UserEntity } from '../../../../domain/entities/user.entity';
 import { UserNotFoundException } from '../../../../domain/exceptions/user.exceptions';
 
@@ -18,7 +21,9 @@ describe('DeleteUserCommandHandler', () => {
     userRepository.findById.mockResolvedValue(null);
     const command = new DeleteUserCommand('non-existent-id');
 
-    await expect(handler.execute(command)).rejects.toThrow(UserNotFoundException);
+    await expect(handler.execute(command)).rejects.toThrow(
+      UserNotFoundException,
+    );
     expect(userRepository.findById).toHaveBeenCalledWith('non-existent-id');
   });
 

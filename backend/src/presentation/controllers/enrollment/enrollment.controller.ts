@@ -59,8 +59,14 @@ export class EnrollmentController {
   // ────────────────────────────────────────────────────────────────────────────
 
   @Get('guardians')
-  @ApiOperation({ summary: 'List apoderados (guardians) with pagination and search' })
-  @ApiResponse({ status: 200, description: 'Return paginated guardians.', type: PaginatedGuardiansResponse })
+  @ApiOperation({
+    summary: 'List apoderados (guardians) with pagination and search',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return paginated guardians.',
+    type: PaginatedGuardiansResponse,
+  })
   async getGuardians(
     @Query() query: GetGuardiansPaginatedRequest,
   ): Promise<PaginatedResult<GuardianResponse>> {
@@ -69,14 +75,18 @@ export class EnrollmentController {
       PaginatedResult<GuardianEntity>
     >(new GetGuardiansQuery(query.page, query.size, query.search));
     return {
-      data: results.data.map((r) => r.toDto() as any),
+      data: results.data.map((r) => r.toDto()),
       meta: results.meta,
     };
   }
 
   @Post('guardians')
   @ApiOperation({ summary: 'Create a new guardian' })
-  @ApiResponse({ status: 201, description: 'Guardian created successfully.', type: GuardianResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'Guardian created successfully.',
+    type: GuardianResponse,
+  })
   async createGuardian(
     @Body() dto: CreateGuardianRequest,
   ): Promise<GuardianResponse> {
@@ -92,12 +102,16 @@ export class EnrollmentController {
         dto.occupation,
       ),
     );
-    return result.toDto() as any;
+    return result.toDto();
   }
 
   @Put('guardians/:id')
   @ApiOperation({ summary: 'Update an existing guardian' })
-  @ApiResponse({ status: 200, description: 'Guardian updated successfully.', type: GuardianResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Guardian updated successfully.',
+    type: GuardianResponse,
+  })
   async updateGuardian(
     @Param('id') id: string,
     @Body() dto: UpdateGuardianRequest,
@@ -115,7 +129,7 @@ export class EnrollmentController {
         dto.occupation,
       ),
     );
-    return result.toDto() as any;
+    return result.toDto();
   }
 
   @Delete('guardians/:id')
@@ -131,8 +145,14 @@ export class EnrollmentController {
   // ────────────────────────────────────────────────────────────────────────────
 
   @Get('students')
-  @ApiOperation({ summary: 'List enrolled students with pagination and search' })
-  @ApiResponse({ status: 200, description: 'Return paginated students.', type: PaginatedStudentsResponse })
+  @ApiOperation({
+    summary: 'List enrolled students with pagination and search',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return paginated students.',
+    type: PaginatedStudentsResponse,
+  })
   async getStudents(
     @Query() query: GetGuardiansPaginatedRequest,
   ): Promise<PaginatedResult<StudentResponse>> {
@@ -141,7 +161,7 @@ export class EnrollmentController {
       PaginatedResult<StudentEntity>
     >(new GetStudentsQuery(query.page, query.size, query.search));
     return {
-      data: results.data.map((r) => r.toDto() as any),
+      data: results.data.map((r) => r.toDto()),
       meta: results.meta,
     };
   }
@@ -152,16 +172,20 @@ export class EnrollmentController {
 
   @Get('sections')
   @ApiOperation({ summary: 'List all academic sections with vacancy count' })
-  @ApiResponse({ status: 200, description: 'Return all sections.', type: [SectionResponse] })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all sections.',
+    type: [SectionResponse],
+  })
   async getSections(): Promise<SectionResponse[]> {
     const results = await this.queryBus.execute<
       GetSectionsQuery,
       SectionEntity[]
     >(new GetSectionsQuery());
     return results.map((s) => {
-      const plain = s.toDto() as any;
-      plain.matriculados = s.students?.length ?? 0;
-      return plain;
+      const plain = new SectionEntity(s).toDto();
+      (plain as any).matriculados = s.students?.length ?? 0;
+      return plain as any;
     });
   }
 
@@ -170,8 +194,15 @@ export class EnrollmentController {
   // ────────────────────────────────────────────────────────────────────────────
 
   @Post('formalize')
-  @ApiOperation({ summary: 'Formalize a student enrollment (registers student, guardian & enrollment)' })
-  @ApiResponse({ status: 201, description: 'Enrollment completed successfully.', type: EnrollmentResponse })
+  @ApiOperation({
+    summary:
+      'Formalize a student enrollment (registers student, guardian & enrollment)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Enrollment completed successfully.',
+    type: EnrollmentResponse,
+  })
   async formalizeEnrollment(
     @Body() dto: FormalizeEnrollmentRequest,
   ): Promise<EnrollmentResponse> {
@@ -193,7 +224,7 @@ export class EnrollmentController {
         dto.guardianOccupation,
       ),
     );
-    return result.toDto() as any;
+    return result.toDto();
   }
 
   // ────────────────────────────────────────────────────────────────────────────
@@ -201,8 +232,14 @@ export class EnrollmentController {
   // ────────────────────────────────────────────────────────────────────────────
 
   @Get('documents')
-  @ApiOperation({ summary: 'List all academic enrollment documents/records paginated' })
-  @ApiResponse({ status: 200, description: 'Return paginated documents.', type: PaginatedEnrollmentsResponse })
+  @ApiOperation({
+    summary: 'List all academic enrollment documents/records paginated',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return paginated documents.',
+    type: PaginatedEnrollmentsResponse,
+  })
   async getDocuments(
     @Query() query: GetGuardiansPaginatedRequest,
   ): Promise<PaginatedResult<EnrollmentResponse>> {
@@ -211,7 +248,7 @@ export class EnrollmentController {
       PaginatedResult<EnrollmentEntity>
     >(new GetEnrollmentDocumentsQuery(query.page, query.size, query.search));
     return {
-      data: results.data.map((r) => r.toDto() as any),
+      data: results.data.map((r) => r.toDto()),
       meta: results.meta,
     };
   }

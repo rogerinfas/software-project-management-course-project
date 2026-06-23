@@ -103,7 +103,6 @@ async function main() {
         await prisma.payment.create({
           data: {
             chargeId: createdCharge.id,
-            studentId: student.id,
             totalAmount: matriculaTariff.amount,
             method: PaymentMethod.TRANSFER,
             timestamp: new Date(2026, 2, 4),
@@ -143,7 +142,6 @@ async function main() {
           await prisma.payment.create({
             data: {
               chargeId: createdCharge.id,
-              studentId: student.id,
               totalAmount: pensionTariff.amount,
               method: PaymentMethod.CASH,
               timestamp: new Date(2026, 4, 10),
@@ -153,7 +151,6 @@ async function main() {
           await prisma.payment.create({
             data: {
               chargeId: createdCharge.id,
-              studentId: student.id,
               totalAmount: 200.0,
               method: PaymentMethod.CARD,
               timestamp: new Date(2026, 4, 12),

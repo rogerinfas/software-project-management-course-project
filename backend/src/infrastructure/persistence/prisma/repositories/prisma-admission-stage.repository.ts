@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { IAdmissionStageRepository } from '../../../../domain/repositories/admission-stage.repository.interface';
+import type { IAdmissionStageRepository } from '../../../../domain/repositories/admission-stage.repository.interface';
 import { AdmissionStageEntity } from '../../../../domain/entities/admission-stage.entity';
 import { ProspectEntity } from '../../../../domain/entities/prospect.entity';
 import { AppointmentEntity } from '../../../../domain/entities/appointment.entity';
@@ -22,6 +22,18 @@ export class PrismaAdmissionStageRepository implements IAdmissionStageRepository
     return new AdmissionStageEntity(created);
   }
 
+  private toProspectEntity(p: any): ProspectEntity {
+    const { appointments, evaluation, ...prospectData } = p;
+    const prospect = new ProspectEntity(prospectData);
+    prospect.appointments = appointments.map(
+      (app: any) => new AppointmentEntity(app),
+    );
+    prospect.evaluation = evaluation
+      ? new EvaluationResultEntity(evaluation)
+      : null;
+    return prospect;
+  }
+
   async findAllWithProspects(): Promise<AdmissionStageEntity[]> {
     const stages = await this.prisma.admissionStage.findMany({
       orderBy: { order: 'asc' },
@@ -39,17 +51,7 @@ export class PrismaAdmissionStageRepository implements IAdmissionStageRepository
     return stages.map((s) => {
       const { prospects, ...stageData } = s;
       const stage = new AdmissionStageEntity(stageData);
-      stage.prospects = prospects.map((p) => {
-        const { appointments, evaluation, ...prospectData } = p;
-        const prospect = new ProspectEntity(prospectData);
-        prospect.appointments = appointments.map(
-          (app) => new AppointmentEntity(app),
-        );
-        prospect.evaluation = evaluation
-          ? new EvaluationResultEntity(evaluation)
-          : null;
-        return prospect;
-      });
+      stage.prospects = prospects.map((p) => this.toProspectEntity(p));
       return stage;
     });
   }

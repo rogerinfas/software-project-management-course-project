@@ -1,6 +1,11 @@
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
 import { IQuery, IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
+import type { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
 import { SectionEntity } from '../../../../domain/entities/section.entity';
 
 export class GetSectionsQuery implements IQuery {}
@@ -8,7 +13,7 @@ export class GetSectionsQuery implements IQuery {}
 @QueryHandler(GetSectionsQuery)
 export class GetSectionsQueryHandler implements IQueryHandler<GetSectionsQuery> {
   constructor(
-    @Inject('ISectionRepository')
+    @Inject(SECTION_REPOSITORY)
     private readonly repository: ISectionRepository,
   ) {}
 

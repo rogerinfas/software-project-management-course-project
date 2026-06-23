@@ -1,6 +1,15 @@
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject, NotFoundException } from '@nestjs/common';
-import { IProspectInteractionRepository } from '../../../../domain/repositories/interaction.repository.interface';
+import type { IProspectInteractionRepository } from '../../../../domain/repositories/interaction.repository.interface';
 import { ProspectInteractionEntity } from '../../../../domain/entities/interaction.entity';
 
 export class UpdateInteractionCommand implements ICommand {
@@ -13,11 +22,9 @@ export class UpdateInteractionCommand implements ICommand {
 }
 
 @CommandHandler(UpdateInteractionCommand)
-export class UpdateInteractionCommandHandler
-  implements ICommandHandler<UpdateInteractionCommand>
-{
+export class UpdateInteractionCommandHandler implements ICommandHandler<UpdateInteractionCommand> {
   constructor(
-    @Inject('IProspectInteractionRepository')
+    @Inject(PROSPECT_INTERACTION_REPOSITORY)
     private readonly repository: IProspectInteractionRepository,
   ) {}
 

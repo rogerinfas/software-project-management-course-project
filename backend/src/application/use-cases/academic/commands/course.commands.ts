@@ -1,6 +1,19 @@
+import { COURSE_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { PROSPECT_INTERACTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { GUARDIAN_REPOSITORY } from '../../../../config/constants/tokens';
+import { EVALUATION_RESULT_REPOSITORY } from '../../../../config/constants/tokens';
+import { ENROLLMENT_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { ICourseRepository } from '../../../../domain/repositories/course.repository.interface';
+import type { ICourseRepository } from '../../../../domain/repositories/course.repository.interface';
 import { CourseEntity } from '../../../../domain/entities/course.entity';
 import {
   CourseNotFoundException,
@@ -18,7 +31,7 @@ export class CreateCourseCommand implements ICommand {
 @CommandHandler(CreateCourseCommand)
 export class CreateCourseCommandHandler implements ICommandHandler<CreateCourseCommand> {
   constructor(
-    @Inject('ICourseRepository')
+    @Inject(COURSE_REPOSITORY)
     private readonly courseRepository: ICourseRepository,
   ) {}
 
@@ -46,7 +59,7 @@ export class UpdateCourseCommand implements ICommand {
 @CommandHandler(UpdateCourseCommand)
 export class UpdateCourseCommandHandler implements ICommandHandler<UpdateCourseCommand> {
   constructor(
-    @Inject('ICourseRepository')
+    @Inject(COURSE_REPOSITORY)
     private readonly courseRepository: ICourseRepository,
   ) {}
 
@@ -78,7 +91,7 @@ export class DeleteCourseCommand implements ICommand {
 @CommandHandler(DeleteCourseCommand)
 export class DeleteCourseCommandHandler implements ICommandHandler<DeleteCourseCommand> {
   constructor(
-    @Inject('ICourseRepository')
+    @Inject(COURSE_REPOSITORY)
     private readonly courseRepository: ICourseRepository,
   ) {}
 

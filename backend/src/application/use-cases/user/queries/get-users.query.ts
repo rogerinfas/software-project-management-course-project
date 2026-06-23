@@ -1,6 +1,7 @@
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
 import { IQuery, IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
+import type { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
 import { UserEntity } from '../../../../domain/entities/user.entity';
 import { PaginatedResult } from '../../../../config/interfaces/pagination.interface';
 
@@ -17,7 +18,7 @@ export class GetUsersQueryHandler implements IQueryHandler<
   PaginatedResult<UserEntity>
 > {
   constructor(
-    @Inject('IUserRepository')
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
   ) {}
 

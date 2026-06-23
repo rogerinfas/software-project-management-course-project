@@ -4,7 +4,11 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { StaffProfileEntity } from '../../../domain/entities/staff-profile.entity';
 import { AttendanceRecordEntity } from '../../../domain/entities/attendance-record.entity';
 import { AttendanceRuleEntity } from '../../../domain/entities/attendance-rule.entity';
-import { NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
+import {
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import { DomainException } from '../../../domain/exceptions/domain-exception';
 
 describe('StaffController (Unit)', () => {
@@ -34,10 +38,25 @@ describe('StaffController (Unit)', () => {
 
   describe('createProfile', () => {
     it('should create and return staff profile', async () => {
-      const profile = { id: 's-1', userId: 'u-1', specialty: 'Math', cvUrl: 'cv', entryTime: '08:00', exitTime: '16:00', gracePeriod: 5 };
+      const profile = {
+        id: 's-1',
+        userId: 'u-1',
+        specialty: 'Math',
+        cvUrl: 'cv',
+        entryTime: '08:00',
+        exitTime: '16:00',
+        gracePeriod: 5,
+      };
       commandBus.execute.mockResolvedValue(profile);
 
-      const result = await controller.createProfile({ userId: 'u-1', specialty: 'Math', cvUrl: 'cv', entryTime: '08:00', exitTime: '16:00', gracePeriod: 5 });
+      const result = await controller.createProfile({
+        userId: 'u-1',
+        specialty: 'Math',
+        cvUrl: 'cv',
+        entryTime: '08:00',
+        exitTime: '16:00',
+        gracePeriod: 5,
+      });
 
       expect(result).toBeInstanceOf(StaffProfileEntity);
       expect(result.id).toBe('s-1');
@@ -46,7 +65,9 @@ describe('StaffController (Unit)', () => {
     it('should throw ConflictException if domain exception occurs', async () => {
       commandBus.execute.mockRejectedValue(new DomainException('Exists'));
 
-      await expect(controller.createProfile({ userId: 'u-1', specialty: 'Math' })).rejects.toThrow(ConflictException);
+      await expect(
+        controller.createProfile({ userId: 'u-1', specialty: 'Math' }),
+      ).rejects.toThrow(ConflictException);
     });
   });
 
@@ -73,7 +94,9 @@ describe('StaffController (Unit)', () => {
     it('should throw NotFoundException if profile not found', async () => {
       queryBus.execute.mockResolvedValue(null);
 
-      await expect(controller.getProfileById('s-1')).rejects.toThrow(NotFoundException);
+      await expect(controller.getProfileById('s-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -81,7 +104,9 @@ describe('StaffController (Unit)', () => {
     it('should update profile successfully', async () => {
       commandBus.execute.mockResolvedValue({ id: 's-1', specialty: 'Science' });
 
-      const result = await controller.updateProfile('s-1', { specialty: 'Science' });
+      const result = await controller.updateProfile('s-1', {
+        specialty: 'Science',
+      });
 
       expect(result.specialty).toBe('Science');
     });
@@ -89,7 +114,9 @@ describe('StaffController (Unit)', () => {
     it('should throw NotFoundException if update fails with DomainException', async () => {
       commandBus.execute.mockRejectedValue(new DomainException('Not found'));
 
-      await expect(controller.updateProfile('s-1', { specialty: 'Science' })).rejects.toThrow(NotFoundException);
+      await expect(
+        controller.updateProfile('s-1', { specialty: 'Science' }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -105,16 +132,30 @@ describe('StaffController (Unit)', () => {
     it('should throw NotFoundException if delete fails with DomainException', async () => {
       commandBus.execute.mockRejectedValue(new DomainException('Not found'));
 
-      await expect(controller.deleteProfile('s-1')).rejects.toThrow(NotFoundException);
+      await expect(controller.deleteProfile('s-1')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('registerAttendance', () => {
     it('should register attendance record', async () => {
-      const record = { id: 'r-1', staffId: 's-1', type: 'entry', timestamp: new Date(), delayMinutes: 0, fineAmount: 0.0, method: 'FACIAL' };
+      const record = {
+        id: 'r-1',
+        staffId: 's-1',
+        type: 'entry',
+        timestamp: new Date(),
+        delayMinutes: 0,
+        fineAmount: 0.0,
+        method: 'FACIAL',
+      };
       commandBus.execute.mockResolvedValue(record);
 
-      const result = await controller.registerAttendance({ staffId: 's-1', type: 'entry', method: 'FACIAL' });
+      const result = await controller.registerAttendance({
+        staffId: 's-1',
+        type: 'entry',
+        method: 'FACIAL',
+      });
 
       expect(result).toBeInstanceOf(AttendanceRecordEntity);
       expect(result.id).toBe('r-1');
@@ -123,7 +164,13 @@ describe('StaffController (Unit)', () => {
     it('should throw BadRequestException if register fails with DomainException', async () => {
       commandBus.execute.mockRejectedValue(new DomainException('Bad request'));
 
-      await expect(controller.registerAttendance({ staffId: 's-1', type: 'entry', method: 'FACIAL' })).rejects.toThrow(BadRequestException);
+      await expect(
+        controller.registerAttendance({
+          staffId: 's-1',
+          type: 'entry',
+          method: 'FACIAL',
+        }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -139,7 +186,11 @@ describe('StaffController (Unit)', () => {
 
   describe('getRules', () => {
     it('should return attendance rules', async () => {
-      queryBus.execute.mockResolvedValue({ id: 'rule-1', gracePeriodMinutes: 5, finePerMinute: 0.5 });
+      queryBus.execute.mockResolvedValue({
+        id: 'rule-1',
+        gracePeriodMinutes: 5,
+        finePerMinute: 0.5,
+      });
 
       const result = await controller.getRules();
 
@@ -149,9 +200,16 @@ describe('StaffController (Unit)', () => {
 
   describe('updateRules', () => {
     it('should update rules successfully', async () => {
-      commandBus.execute.mockResolvedValue({ id: 'rule-1', gracePeriodMinutes: 10, finePerMinute: 0.8 });
+      commandBus.execute.mockResolvedValue({
+        id: 'rule-1',
+        gracePeriodMinutes: 10,
+        finePerMinute: 0.8,
+      });
 
-      const result = await controller.updateRules({ gracePeriodMinutes: 10, finePerMinute: 0.8 });
+      const result = await controller.updateRules({
+        gracePeriodMinutes: 10,
+        finePerMinute: 0.8,
+      });
 
       expect(result.gracePeriodMinutes).toBe(10);
     });

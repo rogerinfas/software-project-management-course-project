@@ -1,10 +1,13 @@
 import { ChargeEntity } from '../entities/charge.entity';
 
-export abstract class IChargeRepository {
-  abstract create(charge: Partial<ChargeEntity>): Promise<ChargeEntity>;
-  abstract findById(id: string): Promise<ChargeEntity | null>;
-  abstract update(id: string, charge: Partial<ChargeEntity>): Promise<ChargeEntity>;
-  abstract delete(id: string): Promise<void>;
-  abstract findByStudentId(studentId: string): Promise<ChargeEntity[]>;
-  abstract findAll(): Promise<ChargeEntity[]>;
+export interface IChargeRepository {
+  create(charge: Partial<ChargeEntity>): Promise<ChargeEntity>;
+  findById(id: string): Promise<ChargeEntity | null>;
+  update(
+    id: string,
+    charge: Partial<ChargeEntity>,
+  ): Promise<ChargeEntity>;
+  delete(id: string): Promise<void>;
+  findByStudentId(studentId: string): Promise<ChargeEntity[]>;
+  findAll(): Promise<ChargeEntity[]>;
 }

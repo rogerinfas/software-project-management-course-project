@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { IStaffProfileRepository } from '../../../../domain/repositories/staff-profile.repository.interface';
+import type { IStaffProfileRepository } from '../../../../domain/repositories/staff-profile.repository.interface';
 import { StaffProfileEntity } from '../../../../domain/entities/staff-profile.entity';
 
 @Injectable()
@@ -12,7 +12,9 @@ export class PrismaStaffProfileRepository implements IStaffProfileRepository {
     return new StaffProfileEntity(dbRecord);
   }
 
-  async create(staff: Partial<StaffProfileEntity>): Promise<StaffProfileEntity> {
+  async create(
+    staff: Partial<StaffProfileEntity>,
+  ): Promise<StaffProfileEntity> {
     const record = await this.prisma.staffProfile.create({
       data: {
         userId: staff.userId!,
@@ -49,7 +51,10 @@ export class PrismaStaffProfileRepository implements IStaffProfileRepository {
     return this.mapToEntity(record);
   }
 
-  async update(id: string, staff: Partial<StaffProfileEntity>): Promise<StaffProfileEntity> {
+  async update(
+    id: string,
+    staff: Partial<StaffProfileEntity>,
+  ): Promise<StaffProfileEntity> {
     const record = await this.prisma.staffProfile.update({
       where: { id },
       data: {

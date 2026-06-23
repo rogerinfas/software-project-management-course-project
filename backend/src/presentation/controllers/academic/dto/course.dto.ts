@@ -8,19 +8,31 @@ export class CreateCourseDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ description: 'Descripción del curso', example: 'Álgebra, geometría y aritmética', required: false })
+  @ApiProperty({
+    description: 'Descripción del curso',
+    example: 'Álgebra, geometría y aritmética',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   description?: string;
 }
 
 export class UpdateCourseDto {
-  @ApiProperty({ description: 'Nombre del curso', example: 'Matemática Avanzada', required: false })
+  @ApiProperty({
+    description: 'Nombre del curso',
+    example: 'Matemática Avanzada',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   name?: string;
 
-  @ApiProperty({ description: 'Descripción del curso', example: 'Álgebra y cálculo', required: false })
+  @ApiProperty({
+    description: 'Descripción del curso',
+    example: 'Álgebra y cálculo',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   description?: string;
@@ -35,7 +47,11 @@ export class CourseResponse {
   @Expose()
   name: string;
 
-  @ApiProperty({ description: 'Descripción del curso', example: 'Álgebra, geometría y aritmética', nullable: true })
+  @ApiProperty({
+    description: 'Descripción del curso',
+    example: 'Álgebra, geometría y aritmética',
+    nullable: true,
+  })
   @Expose()
   description?: string | null;
 }

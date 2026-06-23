@@ -13,7 +13,9 @@ describe('GetStagesQueryHandler', () => {
   });
 
   it('should return all stages with prospects', async () => {
-    const list = [new AdmissionStageEntity({ id: 's-1', name: 'Stage 1', order: 1 })];
+    const list = [
+      new AdmissionStageEntity({ id: 's-1', name: 'Stage 1', order: 1 }),
+    ];
     repository.findAllWithProspects.mockResolvedValue(list);
 
     const query = new GetStagesQuery();

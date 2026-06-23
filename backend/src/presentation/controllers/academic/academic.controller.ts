@@ -75,35 +75,51 @@ export class AcademicController {
 
   @Get('courses')
   @ApiOperation({ summary: 'List all academic courses' })
-  @ApiResponse({ status: 200, description: 'Return list of courses.', type: [CourseResponse] })
-  async getCourses(@Query('search') search?: string): Promise<CourseResponse[]> {
+  @ApiResponse({
+    status: 200,
+    description: 'Return list of courses.',
+    type: [CourseResponse],
+  })
+  async getCourses(
+    @Query('search') search?: string,
+  ): Promise<CourseResponse[]> {
     const results = await this.queryBus.execute<GetCoursesQuery, any[]>(
       new GetCoursesQuery(search),
     );
-    return results.map((c) => new CourseEntity(c).toDto() as CourseResponse);
+    return results.map((c) => new CourseEntity(c).toDto());
   }
 
   @Post('courses')
   @ApiOperation({ summary: 'Create a new course' })
-  @ApiResponse({ status: 201, description: 'Course created successfully.', type: CourseResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'Course created successfully.',
+    type: CourseResponse,
+  })
   async createCourse(@Body() dto: CreateCourseDto): Promise<CourseResponse> {
-    const result = await this.commandBus.execute<CreateCourseCommand, CourseEntity>(
-      new CreateCourseCommand(dto.name, dto.description),
-    );
-    return result.toDto() as CourseResponse;
+    const result = await this.commandBus.execute<
+      CreateCourseCommand,
+      CourseEntity
+    >(new CreateCourseCommand(dto.name, dto.description));
+    return result.toDto();
   }
 
   @Patch('courses/:id')
   @ApiOperation({ summary: 'Update an existing course' })
-  @ApiResponse({ status: 200, description: 'Course updated successfully.', type: CourseResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Course updated successfully.',
+    type: CourseResponse,
+  })
   async updateCourse(
     @Param('id') id: string,
     @Body() dto: UpdateCourseDto,
   ): Promise<CourseResponse> {
-    const result = await this.commandBus.execute<UpdateCourseCommand, CourseEntity>(
-      new UpdateCourseCommand(id, dto.name, dto.description),
-    );
-    return result.toDto() as CourseResponse;
+    const result = await this.commandBus.execute<
+      UpdateCourseCommand,
+      CourseEntity
+    >(new UpdateCourseCommand(id, dto.name, dto.description));
+    return result.toDto();
   }
 
   @Delete('courses/:id')
@@ -120,7 +136,11 @@ export class AcademicController {
 
   @Get('schedules')
   @ApiOperation({ summary: 'List weekly class schedules with filters' })
-  @ApiResponse({ status: 200, description: 'Return schedules list.', type: [ScheduleResponse] })
+  @ApiResponse({
+    status: 200,
+    description: 'Return schedules list.',
+    type: [ScheduleResponse],
+  })
   async getSchedules(
     @Query('sectionId') sectionId?: string,
     @Query('staffId') staffId?: string,
@@ -130,14 +150,23 @@ export class AcademicController {
     const results = await this.queryBus.execute<GetSchedulesQuery, any[]>(
       new GetSchedulesQuery(sectionId, staffId, parsedDay),
     );
-    return results.map((s) => new ScheduleEntity(s).toDto() as ScheduleResponse);
+    return results.map((s) => new ScheduleEntity(s).toDto());
   }
 
   @Post('schedules')
   @ApiOperation({ summary: 'Create a new schedule assignment' })
-  @ApiResponse({ status: 201, description: 'Schedule created successfully.', type: ScheduleResponse })
-  async createSchedule(@Body() dto: CreateScheduleDto): Promise<ScheduleResponse> {
-    const result = await this.commandBus.execute<CreateScheduleCommand, ScheduleEntity>(
+  @ApiResponse({
+    status: 201,
+    description: 'Schedule created successfully.',
+    type: ScheduleResponse,
+  })
+  async createSchedule(
+    @Body() dto: CreateScheduleDto,
+  ): Promise<ScheduleResponse> {
+    const result = await this.commandBus.execute<
+      CreateScheduleCommand,
+      ScheduleEntity
+    >(
       new CreateScheduleCommand(
         dto.sectionId,
         dto.courseId,
@@ -147,17 +176,24 @@ export class AcademicController {
         dto.endTime,
       ),
     );
-    return result.toDto() as ScheduleResponse;
+    return result.toDto();
   }
 
   @Patch('schedules/:id')
   @ApiOperation({ summary: 'Update an existing schedule assignment' })
-  @ApiResponse({ status: 200, description: 'Schedule updated successfully.', type: ScheduleResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Schedule updated successfully.',
+    type: ScheduleResponse,
+  })
   async updateSchedule(
     @Param('id') id: string,
     @Body() dto: UpdateScheduleDto,
   ): Promise<ScheduleResponse> {
-    const result = await this.commandBus.execute<UpdateScheduleCommand, ScheduleEntity>(
+    const result = await this.commandBus.execute<
+      UpdateScheduleCommand,
+      ScheduleEntity
+    >(
       new UpdateScheduleCommand(
         id,
         dto.sectionId,
@@ -168,7 +204,7 @@ export class AcademicController {
         dto.endTime,
       ),
     );
-    return result.toDto() as ScheduleResponse;
+    return result.toDto();
   }
 
   @Delete('schedules/:id')
@@ -185,7 +221,11 @@ export class AcademicController {
 
   @Get('communications')
   @ApiOperation({ summary: 'List all visible announcements/communications' })
-  @ApiResponse({ status: 200, description: 'Return communications.', type: [CommunicationResponse] })
+  @ApiResponse({
+    status: 200,
+    description: 'Return communications.',
+    type: [CommunicationResponse],
+  })
   async getCommunications(
     @Query('category') category?: string,
     @Query('search') search?: string,
@@ -193,14 +233,23 @@ export class AcademicController {
     const results = await this.queryBus.execute<GetCommunicationsQuery, any[]>(
       new GetCommunicationsQuery(category, search),
     );
-    return results.map((c) => new CommunicationEntity(c).toDto() as CommunicationResponse);
+    return results.map((c) => new CommunicationEntity(c).toDto());
   }
 
   @Post('communications')
   @ApiOperation({ summary: 'Create a new announcement' })
-  @ApiResponse({ status: 201, description: 'Announcement created successfully.', type: CommunicationResponse })
-  async createCommunication(@Body() dto: CreateCommunicationDto): Promise<CommunicationResponse> {
-    const result = await this.commandBus.execute<CreateCommunicationCommand, CommunicationEntity>(
+  @ApiResponse({
+    status: 201,
+    description: 'Announcement created successfully.',
+    type: CommunicationResponse,
+  })
+  async createCommunication(
+    @Body() dto: CreateCommunicationDto,
+  ): Promise<CommunicationResponse> {
+    const result = await this.commandBus.execute<
+      CreateCommunicationCommand,
+      CommunicationEntity
+    >(
       new CreateCommunicationCommand(
         dto.title,
         dto.content,
@@ -209,17 +258,24 @@ export class AcademicController {
         dto.expiresAt ? new Date(dto.expiresAt) : null,
       ),
     );
-    return result.toDto() as CommunicationResponse;
+    return result.toDto();
   }
 
   @Patch('communications/:id')
   @ApiOperation({ summary: 'Update an existing announcement' })
-  @ApiResponse({ status: 200, description: 'Announcement updated successfully.', type: CommunicationResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Announcement updated successfully.',
+    type: CommunicationResponse,
+  })
   async updateCommunication(
     @Param('id') id: string,
     @Body() dto: UpdateCommunicationDto,
   ): Promise<CommunicationResponse> {
-    const result = await this.commandBus.execute<UpdateCommunicationCommand, CommunicationEntity>(
+    const result = await this.commandBus.execute<
+      UpdateCommunicationCommand,
+      CommunicationEntity
+    >(
       new UpdateCommunicationCommand(
         id,
         dto.title,
@@ -229,13 +285,16 @@ export class AcademicController {
         dto.expiresAt ? new Date(dto.expiresAt) : null,
       ),
     );
-    return result.toDto() as CommunicationResponse;
+    return result.toDto();
   }
 
   @Delete('communications/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete an announcement' })
-  @ApiResponse({ status: 204, description: 'Announcement deleted successfully.' })
+  @ApiResponse({
+    status: 204,
+    description: 'Announcement deleted successfully.',
+  })
   async deleteCommunication(@Param('id') id: string): Promise<void> {
     await this.commandBus.execute(new DeleteCommunicationCommand(id));
   }
@@ -246,23 +305,36 @@ export class AcademicController {
 
   @Get('sections')
   @ApiOperation({ summary: 'List all sections with student count' })
-  @ApiResponse({ status: 200, description: 'Return all sections.', type: [SectionResponse] })
-  async getSections(@Query('level') level?: EducationalLevel): Promise<SectionResponse[]> {
+  @ApiResponse({
+    status: 200,
+    description: 'Return all sections.',
+    type: [SectionResponse],
+  })
+  async getSections(
+    @Query('level') level?: EducationalLevel,
+  ): Promise<SectionResponse[]> {
     const results = await this.queryBus.execute<GetSectionsQuery, any[]>(
       new GetSectionsQuery(level),
     );
     return results.map((s) => {
-      const plain = new SectionEntity(s).toDto() as any;
-      plain.matriculados = s.students?.length ?? 0;
-      return plain;
+      const plain = new SectionEntity(s).toDto();
+      (plain as any).matriculados = s.students?.length ?? 0;
+      return plain as any;
     });
   }
 
   @Post('sections')
   @ApiOperation({ summary: 'Create a new section' })
-  @ApiResponse({ status: 201, description: 'Section created successfully.', type: SectionResponse })
+  @ApiResponse({
+    status: 201,
+    description: 'Section created successfully.',
+    type: SectionResponse,
+  })
   async createSection(@Body() dto: CreateSectionDto): Promise<SectionResponse> {
-    const result = await this.commandBus.execute<CreateSectionCommand, SectionEntity>(
+    const result = await this.commandBus.execute<
+      CreateSectionCommand,
+      SectionEntity
+    >(
       new CreateSectionCommand(
         dto.name,
         dto.grade,
@@ -271,17 +343,24 @@ export class AcademicController {
         dto.status,
       ),
     );
-    return result.toDto() as SectionResponse;
+    return result.toDto();
   }
 
   @Patch('sections/:id')
   @ApiOperation({ summary: 'Update an existing section' })
-  @ApiResponse({ status: 200, description: 'Section updated successfully.', type: SectionResponse })
+  @ApiResponse({
+    status: 200,
+    description: 'Section updated successfully.',
+    type: SectionResponse,
+  })
   async updateSection(
     @Param('id') id: string,
     @Body() dto: UpdateSectionDto,
   ): Promise<SectionResponse> {
-    const result = await this.commandBus.execute<UpdateSectionCommand, SectionEntity>(
+    const result = await this.commandBus.execute<
+      UpdateSectionCommand,
+      SectionEntity
+    >(
       new UpdateSectionCommand(
         id,
         dto.name,
@@ -291,7 +370,7 @@ export class AcademicController {
         dto.status,
       ),
     );
-    return result.toDto() as SectionResponse;
+    return result.toDto();
   }
 
   @Delete('sections/:id')

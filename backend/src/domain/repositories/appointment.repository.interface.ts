@@ -1,8 +1,8 @@
 import { AppointmentEntity } from '../entities/appointment.entity';
 
-export abstract class IAppointmentRepository {
-  abstract create(
+export interface IAppointmentRepository {
+  create(
     appointment: Partial<AppointmentEntity>,
   ): Promise<AppointmentEntity>;
-  abstract findAll(): Promise<AppointmentEntity[]>;
+  findAll(): Promise<AppointmentEntity[]>;
 }

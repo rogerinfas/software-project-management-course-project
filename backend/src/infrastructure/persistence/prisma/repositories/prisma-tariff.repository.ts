@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { ITariffRepository } from '../../../../domain/repositories/tariff.repository.interface';
+import type { ITariffRepository } from '../../../../domain/repositories/tariff.repository.interface';
 import { TariffEntity } from '../../../../domain/entities/tariff.entity';
 
 @Injectable()
@@ -31,7 +31,10 @@ export class PrismaTariffRepository implements ITariffRepository {
     return this.mapToEntity(record);
   }
 
-  async update(id: string, tariff: Partial<TariffEntity>): Promise<TariffEntity> {
+  async update(
+    id: string,
+    tariff: Partial<TariffEntity>,
+  ): Promise<TariffEntity> {
     const record = await this.prisma.tariff.update({
       where: { id },
       data: {

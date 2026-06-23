@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { BaseAggregateRootEntity } from '../../config/entities/base-entities/blacklist-strategy/base.entity';
 import { BaseEntityType } from '../../config/entities/base-entities/base-entity.types';
 
@@ -25,7 +31,9 @@ export class CommunicationEntity
   @IsNotEmpty()
   content: string;
 
-  @ApiProperty({ description: 'Categoría del comunicado (Urgente, Evento, Informativo)' })
+  @ApiProperty({
+    description: 'Categoría del comunicado (Urgente, Evento, Informativo)',
+  })
   @IsString()
   @IsNotEmpty()
   category: string;
@@ -35,7 +43,11 @@ export class CommunicationEntity
   @IsOptional()
   isVisible?: boolean;
 
-  @ApiProperty({ description: 'Fecha de vencimiento del comunicado', required: false, nullable: true })
+  @ApiProperty({
+    description: 'Fecha de vencimiento del comunicado',
+    required: false,
+    nullable: true,
+  })
   @IsDate()
   @IsOptional()
   expiresAt?: Date | null;
@@ -45,4 +57,3 @@ export class CommunicationEntity
     Object.assign(this, partial);
   }
 }
-

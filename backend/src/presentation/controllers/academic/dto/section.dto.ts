@@ -1,9 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
-import { EducationalLevel } from '@prisma/client';
+import {
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
+import { EducationalLevel, SectionStatus } from '@prisma/client';
 
 export class CreateSectionDto {
-  @ApiProperty({ description: 'Nombre de la sección (ej. A, B, C)', example: 'A' })
+  @ApiProperty({
+    description: 'Nombre de la sección (ej. A, B, C)',
+    example: 'A',
+  })
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -25,38 +36,65 @@ export class CreateSectionDto {
   @IsNotEmpty()
   capacity: number;
 
-  @ApiProperty({ description: 'Estado', example: 'OPEN', required: false, default: 'OPEN' })
-  @IsString()
+  @ApiProperty({
+    enum: SectionStatus,
+    description: 'Estado',
+    example: SectionStatus.OPEN,
+    required: false,
+    default: SectionStatus.OPEN,
+  })
+  @IsEnum(SectionStatus)
   @IsOptional()
-  status?: string;
+  status?: SectionStatus;
 }
 
 export class UpdateSectionDto {
-  @ApiProperty({ description: 'Nombre de la sección', example: 'B', required: false })
+  @ApiProperty({
+    description: 'Nombre de la sección',
+    example: 'B',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   name?: string;
 
-  @ApiProperty({ description: 'Grado académico', example: '1ro de Primaria', required: false })
+  @ApiProperty({
+    description: 'Grado académico',
+    example: '1ro de Primaria',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   grade?: string;
 
-  @ApiProperty({ enum: EducationalLevel, example: EducationalLevel.PRIMARY, required: false })
+  @ApiProperty({
+    enum: EducationalLevel,
+    example: EducationalLevel.PRIMARY,
+    required: false,
+  })
   @IsEnum(EducationalLevel)
   @IsOptional()
   level?: EducationalLevel;
 
-  @ApiProperty({ description: 'Aforo máximo permitido', example: 30, required: false })
+  @ApiProperty({
+    description: 'Aforo máximo permitido',
+    example: 30,
+    required: false,
+  })
   @IsInt()
   @Min(1)
   @Max(100)
   @IsOptional()
   capacity?: number;
 
-  @ApiProperty({ description: 'Estado', example: 'CLOSED', required: false })
-  @IsString()
+  @ApiProperty({
+    enum: SectionStatus,
+    description: 'Estado',
+    example: SectionStatus.CLOSED,
+    required: false,
+  })
+  @IsEnum(SectionStatus)
   @IsOptional()
-  status?: string;
+  status?: SectionStatus;
 }
 export { SectionResponse } from '../../enrollment/dto/section.dto';

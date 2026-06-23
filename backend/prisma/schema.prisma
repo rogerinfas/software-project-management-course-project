@@ -5,6 +5,8 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// NOTE: En Prisma 7, la URL de conexión se configura en prisma.config.ts
+// (datasource.url) y no en este archivo. Ver: https://pris.ly/d/config-datasource
 datasource db {
   provider = "postgresql"
 }
@@ -190,13 +192,20 @@ model Student {
 }
 
 model Enrollment {
-  id        String   @id @default(cuid())
+  id        String           @id @default(cuid())
   studentId String
-  student   Student  @relation(fields: [studentId], references: [id])
+  student   Student          @relation(fields: [studentId], references: [id])
   year      Int
-  date      DateTime @default(now())
-  status    String // activa, retirada, etc.
+  date      DateTime         @default(now())
+  status    EnrollmentStatus @default(ACTIVE)
   pdfUrl    String? // URL a la Ficha de Matrícula PDF
+}
+
+// Estados posibles de una matrícula
+enum EnrollmentStatus {
+  ACTIVE // Matrícula vigente
+  WITHDRAWN // Retirado
+  GRADUATED // Egresado
 }
 
 // ── M3: GESTIÓN ACADÉMICA (Academic Management) ───────────────────────────────
@@ -207,9 +216,15 @@ model Section {
   grade     String
   level     EducationalLevel
   capacity  Int // Aforo máximo
-  status    String           @default("OPEN") // OPEN, CLOSED
+  status    SectionStatus    @default(OPEN) // OPEN, CLOSED
   students  Student[]
   schedules Schedule[]
+}
+
+// Estados posibles de una sección/aula
+enum SectionStatus {
+  OPEN // Abierta para matrícula
+  CLOSED // Cerrada / llena
 }
 
 model Course {
@@ -260,23 +275,29 @@ enum TariffType {
 }
 
 model Charge {
-  id             String    @id @default(cuid())
+  id             String       @id @default(cuid())
   studentId      String
-  student        Student   @relation(fields: [studentId], references: [id])
+  student        Student      @relation(fields: [studentId], references: [id])
   tariffId       String
-  tariff         Tariff    @relation(fields: [tariffId], references: [id])
+  tariff         Tariff       @relation(fields: [tariffId], references: [id])
   originalAmount Float
   pendingAmount  Float
   dueDate        DateTime?
-  status         String    @default("PENDING") // PAID, PARTIAL, PENDING
+  status         ChargeStatus @default(PENDING) // PAID, PARTIAL, PENDING
   payments       Payment[]
+}
+
+// Estados posibles de un cargo de pago
+enum ChargeStatus {
+  PENDING // Pendiente de pago
+  PARTIAL // Pago parcial recibido
+  PAID // Pagado en su totalidad
 }
 
 model Payment {
   id          String        @id @default(cuid())
   chargeId    String
   charge      Charge        @relation(fields: [chargeId], references: [id])
-  studentId   String
   totalAmount Float
   method      PaymentMethod @default(CASH)
   timestamp   DateTime      @default(now())
@@ -314,8 +335,13 @@ model AttendanceRecord {
   fineAmount   Float        @default(0.0)
 }
 
+// NOTE: AttendanceRule es un modelo de configuración global (singleton).
+// La aplicación debe garantizar que solo exista un registro a nivel de servicio.
+// Considerar agregar una columna única (ej. `singleton Boolean @unique @default(true)`)
+// en una futura migración si se requiere restricción a nivel de BD.
 model AttendanceRule {
-  id                 String @id @default(cuid())
-  gracePeriodMinutes Int    @default(5)
-  finePerMinute      Float  @default(0.5)
+  id                 String  @id @default(cuid())
+  isSingleton        Boolean @unique @default(true)
+  gracePeriodMinutes Int     @default(5)
+  finePerMinute      Float   @default(0.5)
 }

@@ -27,7 +27,9 @@ describe('PrismaAdmissionStageRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PrismaAdmissionStageRepository>(PrismaAdmissionStageRepository);
+    repository = module.get<PrismaAdmissionStageRepository>(
+      PrismaAdmissionStageRepository,
+    );
   });
 
   afterEach(() => {
@@ -45,7 +47,10 @@ describe('PrismaAdmissionStageRepository', () => {
   });
 
   it('should find stage by id', async () => {
-    mockPrisma.admissionStage.findUnique.mockResolvedValue({ id: 's-1', name: 'Stage 1' });
+    mockPrisma.admissionStage.findUnique.mockResolvedValue({
+      id: 's-1',
+      name: 'Stage 1',
+    });
 
     const result = await repository.findById('s-1');
 
@@ -53,7 +58,10 @@ describe('PrismaAdmissionStageRepository', () => {
   });
 
   it('should update stage', async () => {
-    mockPrisma.admissionStage.update.mockResolvedValue({ id: 's-1', name: 'New Name' });
+    mockPrisma.admissionStage.update.mockResolvedValue({
+      id: 's-1',
+      name: 'New Name',
+    });
 
     const result = await repository.update('s-1', { name: 'New Name' });
 
@@ -65,7 +73,9 @@ describe('PrismaAdmissionStageRepository', () => {
 
     await repository.delete('s-1');
 
-    expect(mockPrisma.admissionStage.delete).toHaveBeenCalledWith({ where: { id: 's-1' } });
+    expect(mockPrisma.admissionStage.delete).toHaveBeenCalledWith({
+      where: { id: 's-1' },
+    });
   });
 
   it('should find all stages with prospects', async () => {

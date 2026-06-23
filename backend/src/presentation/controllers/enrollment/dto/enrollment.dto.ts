@@ -26,12 +26,18 @@ export class FormalizeEnrollmentRequest {
   @IsNotEmpty()
   level: EducationalLevel;
 
-  @ApiProperty({ description: 'Grado de postulación', example: '1ro de Primaria' })
+  @ApiProperty({
+    description: 'Grado de postulación',
+    example: '1ro de Primaria',
+  })
   @IsString()
   @IsNotEmpty()
   grade: string;
 
-  @ApiProperty({ description: 'ID de la sección asignada', example: 'section-123' })
+  @ApiProperty({
+    description: 'ID de la sección asignada',
+    example: 'section-123',
+  })
   @IsString()
   @IsNotEmpty()
   sectionId: string;
@@ -51,19 +57,32 @@ export class FormalizeEnrollmentRequest {
   @IsNotEmpty()
   guardianPhone: string;
 
-  @ApiPropertyOptional({ description: 'Correo del apoderado', example: 'juan.perez@gmail.com', type: String, nullable: true })
+  @ApiPropertyOptional({
+    description: 'Correo del apoderado',
+    example: 'juan.perez@gmail.com',
+    type: String,
+    nullable: true,
+  })
   @IsString()
   @IsOptional()
   guardianEmail?: string | null;
 
-  @ApiPropertyOptional({ description: 'Ocupación del apoderado', example: 'Ingeniero', type: String, nullable: true })
+  @ApiPropertyOptional({
+    description: 'Ocupación del apoderado',
+    example: 'Ingeniero',
+    type: String,
+    nullable: true,
+  })
   @IsString()
   @IsOptional()
   guardianOccupation?: string | null;
 }
 
 export class EnrollmentResponse {
-  @ApiProperty({ description: 'ID único de la matrícula', example: 'enrollment-123' })
+  @ApiProperty({
+    description: 'ID único de la matrícula',
+    example: 'enrollment-123',
+  })
   @Expose()
   id: string;
 
@@ -80,7 +99,10 @@ export class EnrollmentResponse {
   @Expose()
   year: number;
 
-  @ApiProperty({ description: 'Fecha de la matrícula', example: new Date().toISOString() })
+  @ApiProperty({
+    description: 'Fecha de la matrícula',
+    example: new Date().toISOString(),
+  })
   @Expose()
   date: Date;
 
@@ -88,7 +110,12 @@ export class EnrollmentResponse {
   @Expose()
   status: string;
 
-  @ApiPropertyOptional({ description: 'URL de la Ficha de Matrícula PDF', example: '/pdf/ficha-matricula-student-123.pdf', type: String, nullable: true })
+  @ApiPropertyOptional({
+    description: 'URL de la Ficha de Matrícula PDF',
+    example: '/pdf/ficha-matricula-student-123.pdf',
+    type: String,
+    nullable: true,
+  })
   @Expose()
   pdfUrl?: string | null;
 }

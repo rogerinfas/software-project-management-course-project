@@ -25,7 +25,9 @@ describe('PrismaAttendanceRuleRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PrismaAttendanceRuleRepository>(PrismaAttendanceRuleRepository);
+    repository = module.get<PrismaAttendanceRuleRepository>(
+      PrismaAttendanceRuleRepository,
+    );
   });
 
   afterEach(() => {
@@ -33,7 +35,11 @@ describe('PrismaAttendanceRuleRepository', () => {
   });
 
   it('should return existing rule on getRule', async () => {
-    const existing = { id: 'rule-1', gracePeriodMinutes: 5, finePerMinute: 0.5 };
+    const existing = {
+      id: 'rule-1',
+      gracePeriodMinutes: 5,
+      finePerMinute: 0.5,
+    };
     mockPrisma.attendanceRule.findFirst.mockResolvedValue(existing);
 
     const result = await repository.getRule();
@@ -54,11 +60,22 @@ describe('PrismaAttendanceRuleRepository', () => {
   });
 
   it('should update existing rule on updateRule', async () => {
-    const existing = { id: 'rule-1', gracePeriodMinutes: 5, finePerMinute: 0.5 };
+    const existing = {
+      id: 'rule-1',
+      gracePeriodMinutes: 5,
+      finePerMinute: 0.5,
+    };
     mockPrisma.attendanceRule.findFirst.mockResolvedValue(existing);
-    mockPrisma.attendanceRule.update.mockResolvedValue({ id: 'rule-1', gracePeriodMinutes: 10, finePerMinute: 0.8 });
+    mockPrisma.attendanceRule.update.mockResolvedValue({
+      id: 'rule-1',
+      gracePeriodMinutes: 10,
+      finePerMinute: 0.8,
+    });
 
-    const result = await repository.updateRule({ gracePeriodMinutes: 10, finePerMinute: 0.8 });
+    const result = await repository.updateRule({
+      gracePeriodMinutes: 10,
+      finePerMinute: 0.8,
+    });
 
     expect(result.gracePeriodMinutes).toBe(10);
     expect(result.finePerMinute).toBe(0.8);
@@ -66,9 +83,16 @@ describe('PrismaAttendanceRuleRepository', () => {
 
   it('should create new rule on updateRule if none exists', async () => {
     mockPrisma.attendanceRule.findFirst.mockResolvedValue(null);
-    mockPrisma.attendanceRule.create.mockResolvedValue({ id: 'rule-1', gracePeriodMinutes: 10, finePerMinute: 0.8 });
+    mockPrisma.attendanceRule.create.mockResolvedValue({
+      id: 'rule-1',
+      gracePeriodMinutes: 10,
+      finePerMinute: 0.8,
+    });
 
-    const result = await repository.updateRule({ gracePeriodMinutes: 10, finePerMinute: 0.8 });
+    const result = await repository.updateRule({
+      gracePeriodMinutes: 10,
+      finePerMinute: 0.8,
+    });
 
     expect(result.id).toBe('rule-1');
   });

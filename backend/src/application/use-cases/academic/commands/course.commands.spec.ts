@@ -33,11 +33,17 @@ describe('Course Commands', () => {
       const handler = new CreateCourseCommandHandler(courseRepository);
       const command = new CreateCourseCommand('Math', 'Description');
 
-      await expect(handler.execute(command)).rejects.toThrow(CourseAlreadyExistsException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        CourseAlreadyExistsException,
+      );
     });
 
     it('should create and return a course entity', async () => {
-      const created = new CourseEntity({ id: 'c-1', name: 'Math', description: 'Description' });
+      const created = new CourseEntity({
+        id: 'c-1',
+        name: 'Math',
+        description: 'Description',
+      });
       courseRepository.findByName.mockResolvedValue(null);
       courseRepository.create.mockResolvedValue(created);
 
@@ -46,7 +52,10 @@ describe('Course Commands', () => {
       const result = await handler.execute(command);
 
       expect(result).toBe(created);
-      expect(courseRepository.create).toHaveBeenCalledWith({ name: 'Math', description: 'Description' });
+      expect(courseRepository.create).toHaveBeenCalledWith({
+        name: 'Math',
+        description: 'Description',
+      });
     });
   });
 
@@ -57,7 +66,9 @@ describe('Course Commands', () => {
       const handler = new UpdateCourseCommandHandler(courseRepository);
       const command = new UpdateCourseCommand('non-existent-id', 'Math');
 
-      await expect(handler.execute(command)).rejects.toThrow(CourseNotFoundException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        CourseNotFoundException,
+      );
     });
 
     it('should throw CourseAlreadyExistsException if new name is already taken by another course', async () => {
@@ -69,7 +80,9 @@ describe('Course Commands', () => {
       const handler = new UpdateCourseCommandHandler(courseRepository);
       const command = new UpdateCourseCommand('c-1', 'Science');
 
-      await expect(handler.execute(command)).rejects.toThrow(CourseAlreadyExistsException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        CourseAlreadyExistsException,
+      );
     });
 
     it('should update and return the updated course', async () => {
@@ -84,7 +97,10 @@ describe('Course Commands', () => {
       const result = await handler.execute(command);
 
       expect(result).toBe(updated);
-      expect(courseRepository.update).toHaveBeenCalledWith('c-1', { name: 'Math II', description: 'New Desc' });
+      expect(courseRepository.update).toHaveBeenCalledWith('c-1', {
+        name: 'Math II',
+        description: 'New Desc',
+      });
     });
   });
 
@@ -95,7 +111,9 @@ describe('Course Commands', () => {
       const handler = new DeleteCourseCommandHandler(courseRepository);
       const command = new DeleteCourseCommand('non-existent-id');
 
-      await expect(handler.execute(command)).rejects.toThrow(CourseNotFoundException);
+      await expect(handler.execute(command)).rejects.toThrow(
+        CourseNotFoundException,
+      );
     });
 
     it('should delete course if found', async () => {

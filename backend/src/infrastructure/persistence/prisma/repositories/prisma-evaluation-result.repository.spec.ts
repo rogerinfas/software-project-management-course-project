@@ -26,7 +26,9 @@ describe('PrismaEvaluationResultRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PrismaEvaluationResultRepository>(PrismaEvaluationResultRepository);
+    repository = module.get<PrismaEvaluationResultRepository>(
+      PrismaEvaluationResultRepository,
+    );
   });
 
   afterEach(() => {
@@ -34,16 +36,27 @@ describe('PrismaEvaluationResultRepository', () => {
   });
 
   it('should create an evaluation result', async () => {
-    mockPrisma.evaluationResult.create.mockResolvedValue({ id: 'e-1', prospectId: 'p-1', aptitude: EvaluationStatus.FIT });
+    mockPrisma.evaluationResult.create.mockResolvedValue({
+      id: 'e-1',
+      prospectId: 'p-1',
+      aptitude: EvaluationStatus.FIT,
+    });
 
-    const result = await repository.create({ prospectId: 'p-1', aptitude: EvaluationStatus.FIT });
+    const result = await repository.create({
+      prospectId: 'p-1',
+      aptitude: EvaluationStatus.FIT,
+    });
 
     expect(result).toBeInstanceOf(EvaluationResultEntity);
     expect(result.id).toBe('e-1');
   });
 
   it('should find by prospect id', async () => {
-    mockPrisma.evaluationResult.findUnique.mockResolvedValue({ id: 'e-1', prospectId: 'p-1', aptitude: EvaluationStatus.FIT });
+    mockPrisma.evaluationResult.findUnique.mockResolvedValue({
+      id: 'e-1',
+      prospectId: 'p-1',
+      aptitude: EvaluationStatus.FIT,
+    });
 
     const result = await repository.findByProspectId('p-1');
 
@@ -51,9 +64,15 @@ describe('PrismaEvaluationResultRepository', () => {
   });
 
   it('should update evaluation result', async () => {
-    mockPrisma.evaluationResult.update.mockResolvedValue({ id: 'e-1', prospectId: 'p-1', aptitude: EvaluationStatus.UNFIT });
+    mockPrisma.evaluationResult.update.mockResolvedValue({
+      id: 'e-1',
+      prospectId: 'p-1',
+      aptitude: EvaluationStatus.UNFIT,
+    });
 
-    const result = await repository.update('p-1', { aptitude: EvaluationStatus.UNFIT });
+    const result = await repository.update('p-1', {
+      aptitude: EvaluationStatus.UNFIT,
+    });
 
     expect(result.aptitude).toBe(EvaluationStatus.UNFIT);
   });

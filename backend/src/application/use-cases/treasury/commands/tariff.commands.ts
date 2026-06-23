@@ -1,6 +1,8 @@
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { ITariffRepository } from '../../../../domain/repositories/tariff.repository.interface';
+import type { ITariffRepository } from '../../../../domain/repositories/tariff.repository.interface';
 import { TariffEntity } from '../../../../domain/entities/tariff.entity';
 import { TariffNotFoundException } from '../../../../domain/exceptions/treasury-domain.exceptions';
 import { TariffType, EducationalLevel } from '@prisma/client';
@@ -17,7 +19,7 @@ export class CreateTariffCommand implements ICommand {
 @CommandHandler(CreateTariffCommand)
 export class CreateTariffCommandHandler implements ICommandHandler<CreateTariffCommand> {
   constructor(
-    @Inject('ITariffRepository')
+    @Inject(TARIFF_REPOSITORY)
     private readonly tariffRepository: ITariffRepository,
   ) {}
 
@@ -44,7 +46,7 @@ export class UpdateTariffCommand implements ICommand {
 @CommandHandler(UpdateTariffCommand)
 export class UpdateTariffCommandHandler implements ICommandHandler<UpdateTariffCommand> {
   constructor(
-    @Inject('ITariffRepository')
+    @Inject(TARIFF_REPOSITORY)
     private readonly tariffRepository: ITariffRepository,
   ) {}
 
@@ -69,7 +71,7 @@ export class DeleteTariffCommand implements ICommand {
 @CommandHandler(DeleteTariffCommand)
 export class DeleteTariffCommandHandler implements ICommandHandler<DeleteTariffCommand> {
   constructor(
-    @Inject('ITariffRepository')
+    @Inject(TARIFF_REPOSITORY)
     private readonly tariffRepository: ITariffRepository,
   ) {}
 

@@ -9,4 +9,3 @@ export * from './evaluation.request';
 export * from './evaluation.response';
 export * from './interaction.request';
 export * from './interaction.response';
-

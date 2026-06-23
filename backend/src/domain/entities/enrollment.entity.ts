@@ -1,7 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { BaseAggregateRootEntity } from '../../config/entities/base-entities/blacklist-strategy/base.entity';
 import { BaseEntityType } from '../../config/entities/base-entities/base-entity.types';
+import { EnrollmentStatus } from '@prisma/client';
 import { StudentEntity } from './student.entity';
 
 export interface EnrollmentType extends BaseEntityType {
@@ -9,7 +17,7 @@ export interface EnrollmentType extends BaseEntityType {
   student?: StudentEntity;
   year: number;
   date: Date;
-  status: string;
+  status: EnrollmentStatus;
   pdfUrl?: string | null;
 }
 
@@ -35,12 +43,19 @@ export class EnrollmentEntity
   @IsNotEmpty()
   date: Date;
 
-  @ApiProperty({ description: 'Estado de la matrícula (ej. activa, retirada)' })
-  @IsString()
+  @ApiProperty({
+    enum: EnrollmentStatus,
+    description: 'Estado de la matrícula',
+  })
+  @IsEnum(EnrollmentStatus)
   @IsNotEmpty()
-  status: string;
+  status: EnrollmentStatus;
 
-  @ApiProperty({ description: 'URL de la Ficha de Matrícula generada en PDF', required: false, nullable: true })
+  @ApiProperty({
+    description: 'URL de la Ficha de Matrícula generada en PDF',
+    required: false,
+    nullable: true,
+  })
   @IsString()
   @IsOptional()
   pdfUrl?: string | null;
