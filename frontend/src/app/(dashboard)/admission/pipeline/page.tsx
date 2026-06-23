@@ -49,6 +49,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { backend } from "@/lib/api/types/backend";
+import type { components } from "@/lib/api/types/api";
+
+type Stage = components["schemas"]["AdmissionStageResponse"];
+type Prospect = components["schemas"]["ProspectResponse"];
+type Interaction = components["schemas"]["ProspectInteractionResponse"];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -213,12 +218,12 @@ export default function PipelinePage() {
 
   const stages = React.useMemo(() => {
     if (!stagesData) return [];
-    return [...(stagesData as any)].sort((a: any, b: any) => a.order - b.order);
+    return [...stagesData].sort((a, b) => a.order - b.order) as Stage[];
   }, [stagesData]);
 
   const prospects = React.useMemo(() => {
     if (!stages) return [];
-    return (stages as any).flatMap((s: any) => s.prospects || []);
+    return stages.flatMap((s) => s.prospects || []) as Prospect[];
   }, [stages]);
 
   // Mutations
@@ -264,7 +269,7 @@ export default function PipelinePage() {
 
   const history = React.useMemo(() => {
     if (!interactionsData) return [];
-    return [...(interactionsData as any)].sort((a: any, b: any) => (a.date < b.date ? 1 : -1));
+    return [...interactionsData].sort((a, b) => (a.date < b.date ? 1 : -1)) as Interaction[];
   }, [interactionsData]);
 
   // Inline edit state variables

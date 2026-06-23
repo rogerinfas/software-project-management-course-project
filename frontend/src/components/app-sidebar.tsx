@@ -98,17 +98,6 @@ const nav = [
       { href: "/staff/pre-payroll", title: "Pre-planilla", icon: FileText },
     ],
   },
-  {
-    label: "Sistema",
-    items: [{ href: "/login", title: "Login (mock)", icon: School }],
-  },
-  {
-    label: "Extras",
-    items: [
-      { href: "/academic/curriculum", title: "Ir a malla", icon: GraduationCap },
-    ],
-    hidden: true,
-  },
 ];
 
 export function AppSidebar() {
@@ -143,9 +132,7 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        {nav
-          .filter((g) => !g.hidden)
-          .map((group) => (
+        {nav.map((group) => (
             <SidebarGroup key={group.label}>
               <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
               <SidebarGroupContent>
