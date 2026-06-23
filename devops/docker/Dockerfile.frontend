@@ -6,7 +6,7 @@ ENV HUSKY=0
 # ── Frontend dependencies ─────────────────────────────────────────────────────
 FROM base AS frontend-deps
 WORKDIR /app/frontend
-COPY frontend/package.json frontend/pnpm-lock.yaml frontend/.npmrc ./
+COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # ── Frontend builder ──────────────────────────────────────────────────────────
