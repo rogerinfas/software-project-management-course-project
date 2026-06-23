@@ -170,115 +170,55 @@
 %                    C A R Á T U L A
 %------------------------------------------------------------
 \begin{titlepage}
-
-  % Fondo decorativo con TikZ
-  \begin{tikzpicture}[remember picture, overlay]
-    % Barra superior azul oscuro
-    \fill[lasalleDark] (current page.north west)
-      rectangle ([yshift=-3.2cm] current page.north east);
-    % Barra inferior azul
-    \fill[lasalleBlue] (current page.south west)
-      rectangle ([yshift=2.2cm] current page.south east);
-    % Acento diagonal (superior derecho)
-    \fill[lasalleBlue!60]
-      ([xshift=-5cm] current page.north east) --
-      (current page.north east) --
-      ([yshift=-3.2cm] current page.north east) -- cycle;
-    % Acento diagonal (inferior izquierdo)
-    \fill[lasalleDark!80]
-      (current page.south west) --
-      ([xshift=5cm] current page.south west) --
-      ([yshift=2.2cm] current page.south west) -- cycle;
-    % Círculo decorativo de fondo
-    \fill[lasalleBlue!10]
-      ([xshift=-3cm, yshift=3cm] current page.center) circle (8cm);
-  \end{tikzpicture}
-
-  \vspace*{0.3cm}
-
-  %— Logo + Nombre Universidad —
   \begin{center}
-    \includegraphics[width=4.2cm]{assets/logo-lasalle.png}\\[0.5em]
-    {\color{white}\Large\bfseries Universidad LaSalle Bolivia}\\[0.2em]
-    {\color{white!80}\normalsize Facultad de Ingeniería}
+    %— LOGO DE LA UNIVERSIDAD —
+    \vspace*{1cm}
+    \includegraphics[width=3.5cm]{assets/logo-lasalle.png}\\[1.5em]
+    {\large\scshape Universidad LaSalle Bolivia}\\[0.4em]
+    {\small\color{accentGray}\scshape Facultad de Ingeniería --- Carrera de Ingeniería de Sistemas}
+    
+    \vspace{2.5cm}
+    
+    %— TÍTULO PRINCIPAL —
+    {\color{lasalleDark}\rule{\linewidth}{1.5pt}}\\[1.2em]
+    {\fontsize{24}{30}\selectfont\bfseries Sistema de Gestión Escolar}\\[0.4em]
+    {\fontsize{18}{22}\selectfont\color{lasalleBlue}\textit{Colegio Santa Beatriz}}\\[0.8em]
+    {\large\color{accentGray}\scshape Documento de Diseño de Pruebas}\\[0.8em]
+    {\color{lasalleDark}\rule{\linewidth}{1.5pt}}
+    
+    \vspace{2.5cm}
+    
+    %— AUTORES / DATOS DE LA ENTREGA —
+    \begin{minipage}[t]{0.45\textwidth}
+      \begin{flushleft} \large
+        \textbf{Integrantes:}\\
+        \smallskip
+        \normalsize
+        Roger\\
+        Favio\\
+        Fabricio\\
+        Yhony
+      \end{flushleft}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.45\textwidth}
+      \begin{flushright} \large
+        \textbf{Curso y Gestión:}\\
+        \smallskip
+        \normalsize
+        Gestión de Proyectos de Software\\
+        Semestre I -- 2025\\
+        \vspace{0.8em}
+        \textbf{Fecha:}\\
+        \today
+      \end{flushright}
+    \end{minipage}
+    
+    \vfill
+    
+    %— PIE DE PÁGINA —
+    {\color{accentGray}\small La Paz, Bolivia --- 2025}
   \end{center}
-
-  \vspace{1.8cm}
-
-  %— Separador —
-  {\color{lasalleBlue}\rule{\linewidth}{2pt}}
-  \vspace{0.4cm}
-
-  %— Tipo de documento —
-  \begin{center}
-    {\color{accentGray}\large\scshape Documento de Diseño de Pruebas}\\[0.3em]
-    {\color{accentGray}\normalsize \textit{Software Test Documentation --- STD}}
-  \end{center}
-
-  \vspace{0.3cm}
-  {\color{lasalleBlue!60}\rule{\linewidth}{1pt}}
-  \vspace{0.6cm}
-
-  %— Título principal —
-  \begin{center}
-    {\color{lasalleDark}\fontsize{22}{28}\selectfont\bfseries
-      Sistema de Gestión Escolar\\[0.3em]
-      \textit{Colegio Santa Beatriz}}
-  \end{center}
-
-  \vspace{0.8cm}
-
-  %— Caja del equipo —
-  \begin{center}
-  \begin{tcolorbox}[
-    enhanced,
-    width=0.82\textwidth,
-    colback=lasalleLight,
-    colframe=lasalleBlue,
-    arc=6pt,
-    boxrule=1.5pt,
-    title={\faUsers\ \textbf{Equipo de Desarrollo}},
-    fonttitle=\bfseries\large,
-    coltitle=white,
-    colbacktitle=lasalleBlue,
-    attach boxed title to top center={yshift=-3mm},
-    top=6mm,
-  ]
-    \begin{center}
-      \renewcommand{\arraystretch}{1.6}
-      \begin{tabular}{cl}
-        \faUserTie      & \textbf{Roger}    \\
-        \faUserGraduate & \textbf{Favio}    \\
-        \faUserGraduate & \textbf{Fabricio} \\
-        \faUserGraduate & \textbf{Yhony}    \\
-      \end{tabular}
-    \end{center}
-  \end{tcolorbox}
-  \end{center}
-
-  \vspace{0.6cm}
-
-  %— Metadatos del curso —
-  \begin{center}
-    \renewcommand{\arraystretch}{1.6}
-    \begin{tabular}{>{\color{accentGray}\bfseries}r l}
-      \faBook\ Curso:       & Gestión de Proyectos de Software \\
-      \faUniversity\ Gestión: & 2025 -- I \\
-      \faCalendar*\ Fecha:  & \today    \\
-      \faTag\ Versión:        & 1.0.0     \\
-    \end{tabular}
-  \end{center}
-
-  \vfill
-
-  %— Pie de carátula (sobre barra inferior) —
-  \begin{center}
-    {\color{white}\small\itshape
-      Universidad LaSalle Bolivia $\cdot$
-      Gestión de Proyectos de Software $\cdot$
-      2025}
-  \end{center}
-
 \end{titlepage}
 
 %------------------------------------------------------------
