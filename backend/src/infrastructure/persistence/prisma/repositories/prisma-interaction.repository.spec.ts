@@ -26,7 +26,9 @@ describe('PrismaProspectInteractionRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PrismaProspectInteractionRepository>(PrismaProspectInteractionRepository);
+    repository = module.get<PrismaProspectInteractionRepository>(
+      PrismaProspectInteractionRepository,
+    );
   });
 
   afterEach(() => {
@@ -34,16 +36,35 @@ describe('PrismaProspectInteractionRepository', () => {
   });
 
   it('should create an interaction', async () => {
-    mockPrisma.prospectInteraction.create.mockResolvedValue({ id: 'i-1', prospectId: 'p-1', type: 'Call', summary: 'Called', author: 'Admin', date: new Date() });
+    mockPrisma.prospectInteraction.create.mockResolvedValue({
+      id: 'i-1',
+      prospectId: 'p-1',
+      type: 'Call',
+      summary: 'Called',
+      author: 'Admin',
+      date: new Date(),
+    });
 
-    const result = await repository.create({ prospectId: 'p-1', type: 'Call', summary: 'Called', author: 'Admin' });
+    const result = await repository.create({
+      prospectId: 'p-1',
+      type: 'Call',
+      summary: 'Called',
+      author: 'Admin',
+    });
 
     expect(result).toBeInstanceOf(ProspectInteractionEntity);
     expect(result.id).toBe('i-1');
   });
 
   it('should find by id', async () => {
-    mockPrisma.prospectInteraction.findUnique.mockResolvedValue({ id: 'i-1', prospectId: 'p-1', type: 'Call', summary: 'Called', author: 'Admin', date: new Date() });
+    mockPrisma.prospectInteraction.findUnique.mockResolvedValue({
+      id: 'i-1',
+      prospectId: 'p-1',
+      type: 'Call',
+      summary: 'Called',
+      author: 'Admin',
+      date: new Date(),
+    });
 
     const result = await repository.findById('i-1');
 
@@ -51,7 +72,14 @@ describe('PrismaProspectInteractionRepository', () => {
   });
 
   it('should update interaction', async () => {
-    mockPrisma.prospectInteraction.update.mockResolvedValue({ id: 'i-1', prospectId: 'p-1', type: 'Call', summary: 'Updated', author: 'Admin', date: new Date() });
+    mockPrisma.prospectInteraction.update.mockResolvedValue({
+      id: 'i-1',
+      prospectId: 'p-1',
+      type: 'Call',
+      summary: 'Updated',
+      author: 'Admin',
+      date: new Date(),
+    });
 
     const result = await repository.update('i-1', { summary: 'Updated' });
 
@@ -59,7 +87,9 @@ describe('PrismaProspectInteractionRepository', () => {
   });
 
   it('should find by prospect id', async () => {
-    mockPrisma.prospectInteraction.findMany.mockResolvedValue([{ id: 'i-1', prospectId: 'p-1' }]);
+    mockPrisma.prospectInteraction.findMany.mockResolvedValue([
+      { id: 'i-1', prospectId: 'p-1' },
+    ]);
 
     const result = await repository.findByProspectId('p-1');
 

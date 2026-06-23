@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-import { IGuardianRepository } from '../../../../domain/repositories/guardian.repository.interface';
+import type { IGuardianRepository } from '../../../../domain/repositories/guardian.repository.interface';
 import { GuardianEntity } from '../../../../domain/entities/guardian.entity';
 import { StudentEntity } from '../../../../domain/entities/student.entity';
 import { PaginatedResult } from '../../../../domain/repositories/prospect.repository.interface';
