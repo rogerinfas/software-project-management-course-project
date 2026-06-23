@@ -57,6 +57,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
           break;
         default:
           status = HttpStatus.BAD_REQUEST;
+          this.logger.warn(
+            `⚠️ DomainException con código no mapeado: "${exception.code}". Se responde con 400. Considerar agregar este código al ExceptionFilter.`,
+          );
           break;
       }
       message = exception.message;

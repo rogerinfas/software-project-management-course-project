@@ -33,7 +33,13 @@ describe('TreasuryController (Unit)', () => {
 
   describe('tariffs', () => {
     it('should return all tariffs', async () => {
-      const tariff = new TariffEntity({ id: 't-1', concept: 'Concept', amount: 100.0, type: TariffType.EXTRA, level: EducationalLevel.PRIMARY });
+      const tariff = new TariffEntity({
+        id: 't-1',
+        concept: 'Concept',
+        amount: 100.0,
+        type: TariffType.EXTRA,
+        level: EducationalLevel.PRIMARY,
+      });
       queryBus.execute.mockResolvedValue([tariff]);
 
       const result = await controller.getTariffs();
@@ -42,19 +48,38 @@ describe('TreasuryController (Unit)', () => {
     });
 
     it('should create tariff', async () => {
-      const tariff = new TariffEntity({ id: 't-1', concept: 'Concept', amount: 100.0, type: TariffType.EXTRA, level: EducationalLevel.PRIMARY });
+      const tariff = new TariffEntity({
+        id: 't-1',
+        concept: 'Concept',
+        amount: 100.0,
+        type: TariffType.EXTRA,
+        level: EducationalLevel.PRIMARY,
+      });
       commandBus.execute.mockResolvedValue(tariff);
 
-      const result = await controller.createTariff({ concept: 'Concept', amount: 100.0, type: TariffType.EXTRA, level: EducationalLevel.PRIMARY });
+      const result = await controller.createTariff({
+        concept: 'Concept',
+        amount: 100.0,
+        type: TariffType.EXTRA,
+        level: EducationalLevel.PRIMARY,
+      });
 
       expect(result).toEqual(tariff.toDto());
     });
 
     it('should update tariff', async () => {
-      const tariff = new TariffEntity({ id: 't-1', concept: 'New Concept', amount: 100.0, type: TariffType.EXTRA, level: EducationalLevel.PRIMARY });
+      const tariff = new TariffEntity({
+        id: 't-1',
+        concept: 'New Concept',
+        amount: 100.0,
+        type: TariffType.EXTRA,
+        level: EducationalLevel.PRIMARY,
+      });
       commandBus.execute.mockResolvedValue(tariff);
 
-      const result = await controller.updateTariff('t-1', { concept: 'New Concept' });
+      const result = await controller.updateTariff('t-1', {
+        concept: 'New Concept',
+      });
 
       expect(result).toEqual(tariff.toDto());
     });
@@ -70,7 +95,15 @@ describe('TreasuryController (Unit)', () => {
 
   describe('charges', () => {
     it('should return all charges', async () => {
-      const charge = new ChargeEntity({ id: 'ch-1', studentId: 'stud-1', tariffId: 'tariff-1', originalAmount: 100.0, pendingAmount: 100.0, dueDate: new Date(), status: 'PENDING' });
+      const charge = new ChargeEntity({
+        id: 'ch-1',
+        studentId: 'stud-1',
+        tariffId: 'tariff-1',
+        originalAmount: 100.0,
+        pendingAmount: 100.0,
+        dueDate: new Date(),
+        status: 'PENDING',
+      });
       queryBus.execute.mockResolvedValue([charge]);
 
       const result = await controller.getCharges('stud-1', 'PENDING');
@@ -79,10 +112,21 @@ describe('TreasuryController (Unit)', () => {
     });
 
     it('should create charge', async () => {
-      const charge = new ChargeEntity({ id: 'ch-1', studentId: 'stud-1', tariffId: 'tariff-1', originalAmount: 100.0, pendingAmount: 100.0, dueDate: new Date(), status: 'PENDING' });
+      const charge = new ChargeEntity({
+        id: 'ch-1',
+        studentId: 'stud-1',
+        tariffId: 'tariff-1',
+        originalAmount: 100.0,
+        pendingAmount: 100.0,
+        dueDate: new Date(),
+        status: 'PENDING',
+      });
       commandBus.execute.mockResolvedValue(charge);
 
-      const result = await controller.createCharge({ studentId: 'stud-1', tariffId: 'tariff-1' });
+      const result = await controller.createCharge({
+        studentId: 'stud-1',
+        tariffId: 'tariff-1',
+      });
 
       expect(result).toEqual(charge.toDto());
     });
@@ -90,7 +134,9 @@ describe('TreasuryController (Unit)', () => {
     it('should generate bulk charges', async () => {
       commandBus.execute.mockResolvedValue(5);
 
-      const result = await controller.generateBulkCharges({ tariffId: 'tariff-1' });
+      const result = await controller.generateBulkCharges({
+        tariffId: 'tariff-1',
+      });
 
       expect(result).toEqual({ count: 5 });
     });
@@ -106,7 +152,14 @@ describe('TreasuryController (Unit)', () => {
 
   describe('payments', () => {
     it('should return all payments', async () => {
-      const payment = new PaymentEntity({ id: 'p-1', chargeId: 'ch-1', studentId: 'stud-1', totalAmount: 100.0, method: PaymentMethod.CASH, timestamp: new Date() });
+      const payment = new PaymentEntity({
+        id: 'p-1',
+        chargeId: 'ch-1',
+        studentId: 'stud-1',
+        totalAmount: 100.0,
+        method: PaymentMethod.CASH,
+        timestamp: new Date(),
+      });
       queryBus.execute.mockResolvedValue([payment]);
 
       const result = await controller.getPayments('stud-1', 'ch-1');
@@ -115,10 +168,21 @@ describe('TreasuryController (Unit)', () => {
     });
 
     it('should register payment', async () => {
-      const payment = new PaymentEntity({ id: 'p-1', chargeId: 'ch-1', studentId: 'stud-1', totalAmount: 100.0, method: PaymentMethod.CASH, timestamp: new Date() });
+      const payment = new PaymentEntity({
+        id: 'p-1',
+        chargeId: 'ch-1',
+        studentId: 'stud-1',
+        totalAmount: 100.0,
+        method: PaymentMethod.CASH,
+        timestamp: new Date(),
+      });
       commandBus.execute.mockResolvedValue(payment);
 
-      const result = await controller.registerPayment({ chargeId: 'ch-1', amount: 100.0, method: PaymentMethod.CASH });
+      const result = await controller.registerPayment({
+        chargeId: 'ch-1',
+        amount: 100.0,
+        method: PaymentMethod.CASH,
+      });
 
       expect(result).toEqual(payment.toDto());
     });
