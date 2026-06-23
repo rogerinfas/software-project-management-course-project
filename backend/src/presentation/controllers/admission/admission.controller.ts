@@ -304,14 +304,7 @@ export class AdmissionController {
     const result = await this.commandBus.execute<
       UpdateInteractionCommand,
       ProspectInteractionEntity
-    >(
-      new UpdateInteractionCommand(
-        id,
-        dto.type,
-        dto.summary,
-        dto.author,
-      ),
-    );
+    >(new UpdateInteractionCommand(id, dto.type, dto.summary, dto.author));
     return result.toDto();
   }
 }
