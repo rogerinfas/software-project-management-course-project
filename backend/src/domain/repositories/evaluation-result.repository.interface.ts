@@ -1,13 +1,13 @@
 import { EvaluationResultEntity } from '../entities/evaluation-result.entity';
 
-export abstract class IEvaluationResultRepository {
-  abstract findByProspectId(
+export interface IEvaluationResultRepository {
+  findByProspectId(
     prospectId: string,
   ): Promise<EvaluationResultEntity | null>;
-  abstract create(
+  create(
     evaluation: Partial<EvaluationResultEntity>,
   ): Promise<EvaluationResultEntity>;
-  abstract update(
+  update(
     prospectId: string,
     evaluation: Partial<EvaluationResultEntity>,
   ): Promise<EvaluationResultEntity>;
