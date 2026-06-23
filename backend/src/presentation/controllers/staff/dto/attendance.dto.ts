@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class RegisterAttendanceDto {
   @ApiProperty({ description: 'ID del perfil de personal' })
@@ -12,7 +17,9 @@ export class RegisterAttendanceDto {
   @IsNotEmpty()
   type: string;
 
-  @ApiProperty({ description: 'Fecha y hora de marcación opcional (si no, actual)' })
+  @ApiProperty({
+    description: 'Fecha y hora de marcación opcional (si no, actual)',
+  })
   @IsDateString()
   @IsOptional()
   timestamp?: string;

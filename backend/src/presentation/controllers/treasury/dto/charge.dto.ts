@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Expose } from 'class-transformer';
 import { StudentResponse } from '../../enrollment/dto/student.dto';
 import { TariffResponse } from './tariff.dto';
@@ -15,19 +20,30 @@ export class CreateChargeDto {
   @IsNotEmpty()
   tariffId: string;
 
-  @ApiProperty({ description: 'Fecha de vencimiento', example: '2026-06-05T00:00:00.000Z', required: false })
+  @ApiProperty({
+    description: 'Fecha de vencimiento',
+    example: '2026-06-05T00:00:00.000Z',
+    required: false,
+  })
   @IsDateString()
   @IsOptional()
   dueDate?: string;
 }
 
 export class GenerateBulkChargesDto {
-  @ApiProperty({ description: 'ID de la tarifa a aplicar', example: 'tariff-123' })
+  @ApiProperty({
+    description: 'ID de la tarifa a aplicar',
+    example: 'tariff-123',
+  })
   @IsString()
   @IsNotEmpty()
   tariffId: string;
 
-  @ApiProperty({ description: 'Fecha de vencimiento para los cargos', example: '2026-06-05T00:00:00.000Z', required: false })
+  @ApiProperty({
+    description: 'Fecha de vencimiento para los cargos',
+    example: '2026-06-05T00:00:00.000Z',
+    required: false,
+  })
   @IsDateString()
   @IsOptional()
   dueDate?: string;
@@ -62,7 +78,11 @@ export class ChargeResponse {
   @Expose()
   pendingAmount: number;
 
-  @ApiProperty({ description: 'Fecha de vencimiento', example: '2026-06-05T00:00:00.000Z', nullable: true })
+  @ApiProperty({
+    description: 'Fecha de vencimiento',
+    example: '2026-06-05T00:00:00.000Z',
+    nullable: true,
+  })
   @Expose()
   dueDate?: Date | null;
 
