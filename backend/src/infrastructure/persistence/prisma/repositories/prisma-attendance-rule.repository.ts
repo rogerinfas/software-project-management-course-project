@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { IAttendanceRuleRepository } from '../../../../domain/repositories/attendance-rule.repository.interface';
+import type { IAttendanceRuleRepository } from '../../../../domain/repositories/attendance-rule.repository.interface';
 import { AttendanceRuleEntity } from '../../../../domain/entities/attendance-rule.entity';
 
 @Injectable()
@@ -26,7 +26,9 @@ export class PrismaAttendanceRuleRepository implements IAttendanceRuleRepository
     return this.mapToEntity(record);
   }
 
-  async updateRule(rule: Partial<AttendanceRuleEntity>): Promise<AttendanceRuleEntity> {
+  async updateRule(
+    rule: Partial<AttendanceRuleEntity>,
+  ): Promise<AttendanceRuleEntity> {
     const existing = await this.prisma.attendanceRule.findFirst();
     let record;
     if (existing) {
@@ -40,8 +42,10 @@ export class PrismaAttendanceRuleRepository implements IAttendanceRuleRepository
     } else {
       record = await this.prisma.attendanceRule.create({
         data: {
-          gracePeriodMinutes: rule.gracePeriodMinutes !== undefined ? rule.gracePeriodMinutes : 5,
-          finePerMinute: rule.finePerMinute !== undefined ? rule.finePerMinute : 0.5,
+          gracePeriodMinutes:
+            rule.gracePeriodMinutes !== undefined ? rule.gracePeriodMinutes : 5,
+          finePerMinute:
+            rule.finePerMinute !== undefined ? rule.finePerMinute : 0.5,
         },
       });
     }

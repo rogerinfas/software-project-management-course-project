@@ -27,7 +27,9 @@ describe('PrismaAttendanceRecordRepository', () => {
       ],
     }).compile();
 
-    repository = module.get<PrismaAttendanceRecordRepository>(PrismaAttendanceRecordRepository);
+    repository = module.get<PrismaAttendanceRecordRepository>(
+      PrismaAttendanceRecordRepository,
+    );
   });
 
   afterEach(() => {
@@ -36,8 +38,19 @@ describe('PrismaAttendanceRecordRepository', () => {
 
   it('should create an attendance record', async () => {
     const timestamp = new Date();
-    const data = { staffId: 's-1', type: 'entry', timestamp, delayMinutes: 0, fineAmount: 0.0, method: 'FACIAL' };
-    mockPrisma.attendanceRecord.create.mockResolvedValue({ id: 'r-1', ...data, staff: null });
+    const data = {
+      staffId: 's-1',
+      type: 'entry',
+      timestamp,
+      delayMinutes: 0,
+      fineAmount: 0.0,
+      method: 'FACIAL',
+    };
+    mockPrisma.attendanceRecord.create.mockResolvedValue({
+      id: 'r-1',
+      ...data,
+      staff: null,
+    });
 
     const result = await repository.create(data);
 
@@ -46,7 +59,16 @@ describe('PrismaAttendanceRecordRepository', () => {
   });
 
   it('should find record by id', async () => {
-    mockPrisma.attendanceRecord.findUnique.mockResolvedValue({ id: 'r-1', staffId: 's-1', type: 'entry', timestamp: new Date(), delayMinutes: 0, fineAmount: 0.0, method: 'FACIAL', staff: null });
+    mockPrisma.attendanceRecord.findUnique.mockResolvedValue({
+      id: 'r-1',
+      staffId: 's-1',
+      type: 'entry',
+      timestamp: new Date(),
+      delayMinutes: 0,
+      fineAmount: 0.0,
+      method: 'FACIAL',
+      staff: null,
+    });
 
     const result = await repository.findById('r-1');
 
@@ -54,7 +76,9 @@ describe('PrismaAttendanceRecordRepository', () => {
   });
 
   it('should find records by staff id', async () => {
-    mockPrisma.attendanceRecord.findMany.mockResolvedValue([{ id: 'r-1', staffId: 's-1', staff: null }]);
+    mockPrisma.attendanceRecord.findMany.mockResolvedValue([
+      { id: 'r-1', staffId: 's-1', staff: null },
+    ]);
 
     const result = await repository.findByStaffId('s-1');
 
@@ -62,7 +86,16 @@ describe('PrismaAttendanceRecordRepository', () => {
   });
 
   it('should update attendance record', async () => {
-    mockPrisma.attendanceRecord.update.mockResolvedValue({ id: 'r-1', staffId: 's-1', type: 'exit', timestamp: new Date(), delayMinutes: 0, fineAmount: 0.0, method: 'FACIAL', staff: null });
+    mockPrisma.attendanceRecord.update.mockResolvedValue({
+      id: 'r-1',
+      staffId: 's-1',
+      type: 'exit',
+      timestamp: new Date(),
+      delayMinutes: 0,
+      fineAmount: 0.0,
+      method: 'FACIAL',
+      staff: null,
+    });
 
     const result = await repository.update('r-1', { type: 'exit' });
 
@@ -74,11 +107,15 @@ describe('PrismaAttendanceRecordRepository', () => {
 
     await repository.delete('r-1');
 
-    expect(mockPrisma.attendanceRecord.delete).toHaveBeenCalledWith({ where: { id: 'r-1' } });
+    expect(mockPrisma.attendanceRecord.delete).toHaveBeenCalledWith({
+      where: { id: 'r-1' },
+    });
   });
 
   it('should find all attendance records', async () => {
-    mockPrisma.attendanceRecord.findMany.mockResolvedValue([{ id: 'r-1', staff: null }]);
+    mockPrisma.attendanceRecord.findMany.mockResolvedValue([
+      { id: 'r-1', staff: null },
+    ]);
 
     const result = await repository.findAll();
 
