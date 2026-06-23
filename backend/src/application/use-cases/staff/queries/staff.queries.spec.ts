@@ -33,7 +33,16 @@ describe('Staff Queries', () => {
 
   describe('GetStaffProfilesQueryHandler', () => {
     it('should return all profiles', async () => {
-      const list = [new StaffProfileEntity({ id: 's-1', userId: 'u-1', specialty: 'Math', entryTime: '08:00', exitTime: '16:00', gracePeriod: 5 })];
+      const list = [
+        new StaffProfileEntity({
+          id: 's-1',
+          userId: 'u-1',
+          specialty: 'Math',
+          entryTime: '08:00',
+          exitTime: '16:00',
+          gracePeriod: 5,
+        }),
+      ];
       staffRepository.findAll.mockResolvedValue(list);
 
       const handler = new GetStaffProfilesQueryHandler(staffRepository);
@@ -45,7 +54,14 @@ describe('Staff Queries', () => {
 
   describe('GetStaffProfileByIdQueryHandler', () => {
     it('should return a profile by ID', async () => {
-      const staff = new StaffProfileEntity({ id: 's-1', userId: 'u-1', specialty: 'Math', entryTime: '08:00', exitTime: '16:00', gracePeriod: 5 });
+      const staff = new StaffProfileEntity({
+        id: 's-1',
+        userId: 'u-1',
+        specialty: 'Math',
+        entryTime: '08:00',
+        exitTime: '16:00',
+        gracePeriod: 5,
+      });
       staffRepository.findById.mockResolvedValue(staff);
 
       const handler = new GetStaffProfileByIdQueryHandler(staffRepository);
@@ -57,7 +73,17 @@ describe('Staff Queries', () => {
 
   describe('GetAttendanceRecordsQueryHandler', () => {
     it('should return all records if no staffId provided', async () => {
-      const list = [new AttendanceRecordEntity({ id: 'r-1', staffId: 's-1', type: 'entry', timestamp: new Date(), delayMinutes: 0, fineAmount: 0.0, method: 'FACIAL' })];
+      const list = [
+        new AttendanceRecordEntity({
+          id: 'r-1',
+          staffId: 's-1',
+          type: 'entry',
+          timestamp: new Date(),
+          delayMinutes: 0,
+          fineAmount: 0.0,
+          method: 'FACIAL',
+        }),
+      ];
       recordRepository.findAll.mockResolvedValue(list);
 
       const handler = new GetAttendanceRecordsQueryHandler(recordRepository);
@@ -67,11 +93,23 @@ describe('Staff Queries', () => {
     });
 
     it('should return filtered records if staffId provided', async () => {
-      const list = [new AttendanceRecordEntity({ id: 'r-1', staffId: 's-1', type: 'entry', timestamp: new Date(), delayMinutes: 0, fineAmount: 0.0, method: 'FACIAL' })];
+      const list = [
+        new AttendanceRecordEntity({
+          id: 'r-1',
+          staffId: 's-1',
+          type: 'entry',
+          timestamp: new Date(),
+          delayMinutes: 0,
+          fineAmount: 0.0,
+          method: 'FACIAL',
+        }),
+      ];
       recordRepository.findByStaffId.mockResolvedValue(list);
 
       const handler = new GetAttendanceRecordsQueryHandler(recordRepository);
-      const result = await handler.execute(new GetAttendanceRecordsQuery('s-1'));
+      const result = await handler.execute(
+        new GetAttendanceRecordsQuery('s-1'),
+      );
 
       expect(result).toBe(list);
       expect(recordRepository.findByStaffId).toHaveBeenCalledWith('s-1');
@@ -80,7 +118,11 @@ describe('Staff Queries', () => {
 
   describe('GetAttendanceRuleQueryHandler', () => {
     it('should return attendance rule', async () => {
-      const rule = new AttendanceRuleEntity({ id: 'rule-1', gracePeriodMinutes: 5, finePerMinute: 0.5 });
+      const rule = new AttendanceRuleEntity({
+        id: 'rule-1',
+        gracePeriodMinutes: 5,
+        finePerMinute: 0.5,
+      });
       ruleRepository.getRule.mockResolvedValue(rule);
 
       const handler = new GetAttendanceRuleQueryHandler(ruleRepository);

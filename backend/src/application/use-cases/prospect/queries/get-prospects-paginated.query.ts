@@ -1,7 +1,16 @@
+import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
+import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
+import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
+import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
+import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
+import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
 import { IQuery, IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import {
+import type {
   IProspectRepository,
+} from '../../../../domain/repositories/prospect.repository.interface';
+import {
   PaginatedResult,
 } from '../../../../domain/repositories/prospect.repository.interface';
 import { ProspectEntity } from '../../../../domain/entities/prospect.entity';
@@ -15,11 +24,9 @@ export class GetProspectsPaginatedQuery implements IQuery {
 }
 
 @QueryHandler(GetProspectsPaginatedQuery)
-export class GetProspectsPaginatedQueryHandler
-  implements IQueryHandler<GetProspectsPaginatedQuery>
-{
+export class GetProspectsPaginatedQueryHandler implements IQueryHandler<GetProspectsPaginatedQuery> {
   constructor(
-    @Inject('IProspectRepository')
+    @Inject(PROSPECT_REPOSITORY)
     private readonly repository: IProspectRepository,
   ) {}
 
