@@ -28,43 +28,6 @@ export const getBackendUrl = (): string => {
 
 export const BACKEND_URL = getBackendUrl();
 
-export const backendUrl = (
-  baseUrl: string,
-  version?: string,
-  endpoint?: string,
-  prefix?: string,
-) => {
-  if (baseUrl.endsWith("/")) {
-    baseUrl = baseUrl.slice(0, -1);
-  }
-  if (prefix) {
-    if (prefix.startsWith("/")) {
-      prefix = prefix.slice(1);
-    }
-    if (prefix.endsWith("/")) {
-      prefix = prefix.slice(0, -1);
-    }
-  }
-  if (version && version.startsWith("/")) {
-    version = version.slice(1);
-  }
-  if (endpoint && endpoint.startsWith("/")) {
-    endpoint = endpoint.slice(1);
-  }
-
-  let url = baseUrl;
-  if (prefix) {
-    url += `/${prefix}`;
-  }
-  if (version) {
-    url += `/${version}`;
-  }
-  if (endpoint) {
-    url += `/${endpoint}`;
-  }
-  return url;
-};
-
 export const enhancedFetch = async (
   input: RequestInfo | URL,
   init?: RequestInit,
@@ -76,7 +39,7 @@ export const enhancedFetch = async (
 };
 
 const fetchClient = createFetchClient<paths>({
-  baseUrl: backendUrl(BACKEND_URL),
+  baseUrl: BACKEND_URL,
   fetch: enhancedFetch,
 });
 
