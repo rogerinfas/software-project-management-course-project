@@ -1,6 +1,7 @@
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
+import type { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
 import { UserEntity } from '../../../../domain/entities/user.entity';
 import { UserNotFoundException } from '../../../../domain/exceptions/user.exceptions';
 
@@ -14,7 +15,7 @@ export class UpdateUserCommand implements ICommand {
 @CommandHandler(UpdateUserCommand)
 export class UpdateUserCommandHandler implements ICommandHandler<UpdateUserCommand> {
   constructor(
-    @Inject('IUserRepository')
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
   ) {}
 

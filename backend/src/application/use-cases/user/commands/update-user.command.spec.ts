@@ -1,4 +1,7 @@
-import { UpdateUserCommand, UpdateUserCommandHandler } from './update-user.command';
+import {
+  UpdateUserCommand,
+  UpdateUserCommandHandler,
+} from './update-user.command';
 import { UserEntity } from '../../../../domain/entities/user.entity';
 import { UserNotFoundException } from '../../../../domain/exceptions/user.exceptions';
 
@@ -16,9 +19,13 @@ describe('UpdateUserCommandHandler', () => {
 
   it('should throw UserNotFoundException if user is not found', async () => {
     userRepository.findById.mockResolvedValue(null);
-    const command = new UpdateUserCommand('non-existent-id', { name: 'New Name' });
+    const command = new UpdateUserCommand('non-existent-id', {
+      name: 'New Name',
+    });
 
-    await expect(handler.execute(command)).rejects.toThrow(UserNotFoundException);
+    await expect(handler.execute(command)).rejects.toThrow(
+      UserNotFoundException,
+    );
     expect(userRepository.findById).toHaveBeenCalledWith('non-existent-id');
   });
 
@@ -33,6 +40,8 @@ describe('UpdateUserCommandHandler', () => {
 
     expect(result).toBe(updatedUser);
     expect(userRepository.findById).toHaveBeenCalledWith('user-1');
-    expect(userRepository.update).toHaveBeenCalledWith('user-1', { name: 'New Name' });
+    expect(userRepository.update).toHaveBeenCalledWith('user-1', {
+      name: 'New Name',
+    });
   });
 });

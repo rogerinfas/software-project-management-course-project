@@ -1,6 +1,7 @@
+import { USER_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
-import { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
+import type { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
 import { UserNotFoundException } from '../../../../domain/exceptions/user.exceptions';
 
 export class DeleteUserCommand implements ICommand {
@@ -10,7 +11,7 @@ export class DeleteUserCommand implements ICommand {
 @CommandHandler(DeleteUserCommand)
 export class DeleteUserCommandHandler implements ICommandHandler<DeleteUserCommand> {
   constructor(
-    @Inject('IUserRepository')
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
   ) {}
 

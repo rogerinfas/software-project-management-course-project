@@ -1,4 +1,7 @@
-import { GetUserByEmailQuery, GetUserByEmailQueryHandler } from './get-user-by-email.query';
+import {
+  GetUserByEmailQuery,
+  GetUserByEmailQueryHandler,
+} from './get-user-by-email.query';
 import { UserEntity } from '../../../../domain/entities/user.entity';
 
 describe('GetUserByEmailQueryHandler', () => {
@@ -18,7 +21,9 @@ describe('GetUserByEmailQueryHandler', () => {
     const result = await handler.execute(query);
 
     expect(result).toBeNull();
-    expect(userRepository.findByEmail).toHaveBeenCalledWith('non-existent@example.com');
+    expect(userRepository.findByEmail).toHaveBeenCalledWith(
+      'non-existent@example.com',
+    );
   });
 
   it('should return user if found by email', async () => {
