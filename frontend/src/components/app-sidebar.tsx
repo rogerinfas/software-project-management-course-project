@@ -44,9 +44,26 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
+// Roles disponibles en el sistema (espejo del enum Prisma)
+type Role = "ADMIN" | "ADMISSION" | "TREASURY" | "TEACHER" | "STAFF";
+
+// Todos los roles — atajo para grupos visibles para todos
+const ALL_ROLES: Role[] = ["ADMIN", "ADMISSION", "TREASURY", "TEACHER", "STAFF"];
+
+/**
+ * Mapeo de visibilidad de módulos por rol.
+ * Fuente de verdad: backend/roles.md
+ *
+ * ADMIN     → todo
+ * ADMISSION → M1 (Admisión) + M2 (Matrícula)
+ * TREASURY  → M4 (Tesorería)
+ * TEACHER   → M3 (Académica & Comunicación)
+ * STAFF     → M2 (Matrícula)
+ */
 const nav = [
   {
     label: "General",
+    roles: ALL_ROLES,
     items: [
       { href: "/", title: "Panel", icon: LayoutDashboard },
       { href: "/landing", title: "Landing pública", icon: Globe2 },
@@ -54,8 +71,8 @@ const nav = [
   },
   {
     label: "Admisión (M1)",
+    roles: ["ADMIN", "ADMISSION"] as Role[],
     items: [
-
       { href: "/admission/pipeline", title: "CRM / Pipeline", icon: UserPlus },
       { href: "/admission/appointments", title: "Agenda de Citas", icon: CalendarCheck },
       { href: "/admission/documents", title: "Documentos", icon: FolderOpen },
@@ -64,6 +81,7 @@ const nav = [
   },
   {
     label: "Matrícula (M2)",
+    roles: ["ADMIN", "ADMISSION", "STAFF"] as Role[],
     items: [
       { href: "/enrollment/guardians", title: "Gestión de Apoderados", icon: UserCheck },
       { href: "/enrollment/formalization", title: "Formalización / Asignación", icon: ClipboardList },
@@ -73,6 +91,7 @@ const nav = [
   },
   {
     label: "Académica & Comunicación (M3)",
+    roles: ["ADMIN", "TEACHER"] as Role[],
     items: [
       { href: "/academic/curriculum", title: "Malla curricular", icon: BookOpen },
       { href: "/academic/teacher-load", title: "Carga docente", icon: GraduationCap },
@@ -83,6 +102,7 @@ const nav = [
   },
   {
     label: "Tesorería (M4)",
+    roles: ["ADMIN", "TREASURY"] as Role[],
     items: [
       { href: "/treasury/tariffs", title: "Tarifario", icon: Wallet },
       { href: "/treasury/collections", title: "Cobranzas", icon: Coins },
@@ -91,8 +111,18 @@ const nav = [
   },
 ];
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  /** Rol del usuario activo, obtenido de /api/auth/get-session */
+  role?: Role;
+}
+
+export function AppSidebar({ role }: AppSidebarProps) {
   const pathname = usePathname();
+
+  // Filtrar grupos según el rol. Si no hay rol (carga), mostrar solo General.
+  const visibleGroups = nav.filter((group) =>
+    role ? group.roles.includes(role) : group.label === "General"
+  );
 
   return (
     <Sidebar collapsible="icon">
@@ -123,7 +153,7 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        {nav.map((group) => (
+        {visibleGroups.map((group) => (
             <SidebarGroup key={group.label}>
               <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
               <SidebarGroupContent>
