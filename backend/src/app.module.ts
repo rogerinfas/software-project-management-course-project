@@ -5,7 +5,6 @@ import { AdmissionModule } from './admission.module';
 import { EnrollmentModule } from './enrollment.module';
 import { AcademicModule } from './academic.module';
 import { TreasuryModule } from './treasury.module';
-import { StaffModule } from './staff.module';
 
 @Module({
   imports: [
@@ -15,7 +14,6 @@ import { StaffModule } from './staff.module';
     EnrollmentModule,
     AcademicModule,
     TreasuryModule,
-    StaffModule,
   ],
   controllers: [],
   providers: [],

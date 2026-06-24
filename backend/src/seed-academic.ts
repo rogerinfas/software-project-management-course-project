@@ -104,26 +104,7 @@ async function main() {
     } else {
       console.log(`ℹ️ Usuario docente ya existe: ${user.name}`);
     }
-
-    let staff = await prisma.staffProfile.findUnique({
-      where: { userId: user.id },
-    });
-
-    if (!staff) {
-      staff = await prisma.staffProfile.create({
-        data: {
-          userId: user.id,
-          specialty: item.specialty,
-          entryTime: item.entryTime,
-          exitTime: item.exitTime,
-          gracePeriod: 5,
-        },
-      });
-      console.log(`✅ Perfil de personal creado para: ${user.name}`);
-    } else {
-      console.log(`ℹ️ Perfil de personal ya existe para: ${user.name}`);
-    }
-    staffIds.push(staff.id);
+    staffIds.push(user.id);
   }
 
   // 3. Obtener Secciones
