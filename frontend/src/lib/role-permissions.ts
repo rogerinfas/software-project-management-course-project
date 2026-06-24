@@ -26,7 +26,7 @@ export const ROUTE_PERMISSIONS: { prefix: string; roles: Role[] }[] = [
 /**
  * Devuelve true si el rol tiene permiso para acceder a la ruta.
  * Las rutas que no coinciden con ningún prefijo protegido son accesibles para
- * cualquier usuario autenticado (ej: "/", "/landing").
+ * cualquier usuario autenticado (ej: "/", "/dashboard").
  */
 export function isRouteAllowed(pathname: string, role: Role): boolean {
   const match = ROUTE_PERMISSIONS.find((r) =>

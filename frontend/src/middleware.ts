@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 export default async function proxy(request: NextRequest) {
   // Las rutas que no necesitan protección (landing, login, api)
-  const publicPaths = ["/login", "/landing", "/api/"];
+  const publicPaths = ["/login", "/api/"];
   const isPublicPath = publicPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   ) || request.nextUrl.pathname === "/";
