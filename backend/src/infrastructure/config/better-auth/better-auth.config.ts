@@ -46,11 +46,12 @@ export const auth = betterAuth({
         attributes: {
           sameSite: 'none',
           secure: true,
-          domain: process.env.WEB_URL && process.env.WEB_URL.includes('celebrali.com') 
-            ? '.celebrali.com' 
-            : undefined,
-        }
-      }
-    }
-  }
+          domain:
+            process.env.WEB_URL && process.env.WEB_URL.includes('celebrali.com')
+              ? '.celebrali.com'
+              : undefined,
+        },
+      },
+    },
+  },
 });

@@ -38,7 +38,7 @@ model User {
   accounts Account[]
   sessions Session[]
 
-  staffProfile StaffProfile?
+  schedules Schedule[]
 
   @@map("user")
 }
@@ -233,13 +233,13 @@ model Course {
 }
 
 model Schedule {
-  id        String       @id @default(cuid())
+  id        String   @id @default(cuid())
   sectionId String
-  section   Section      @relation(fields: [sectionId], references: [id])
+  section   Section  @relation(fields: [sectionId], references: [id])
   courseId  String
-  course    Course       @relation(fields: [courseId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
   staffId   String
-  staff     StaffProfile @relation(fields: [staffId], references: [id])
+  staff     User     @relation(fields: [staffId], references: [id])
   day       Int // 1-7 (Lunes-Domingo)
   startTime String // HH:mm
   endTime   String // HH:mm
@@ -307,39 +307,4 @@ enum PaymentMethod {
   TRANSFER
 }
 
-// ── M5: PERSONAL Y ASISTENCIA (Staff & Attendance) ───────────────────────────
 
-model StaffProfile {
-  id          String             @id @default(cuid())
-  userId      String             @unique
-  user        User               @relation(fields: [userId], references: [id])
-  specialty   String // Especialidad del docente o administrativo
-  cvUrl       String?
-  entryTime   String             @default("08:00")
-  exitTime    String             @default("16:00")
-  gracePeriod Int                @default(5) // Minutos de gracia
-  attendance  AttendanceRecord[]
-  schedules   Schedule[]
-}
-
-model AttendanceRecord {
-  id           String       @id @default(cuid())
-  staffId      String
-  staff        StaffProfile @relation(fields: [staffId], references: [id])
-  type         String // entry, exit
-  timestamp    DateTime     @default(now())
-  method       String       @default("FACIAL")
-  delayMinutes Int          @default(0) // Minutos de tardanza
-  fineAmount   Float        @default(0.0)
-}
-
-// NOTE: AttendanceRule es un modelo de configuración global (singleton).
-// La aplicación debe garantizar que solo exista un registro a nivel de servicio.
-// Considerar agregar una columna única (ej. `singleton Boolean @unique @default(true)`)
-// en una futura migración si se requiere restricción a nivel de BD.
-model AttendanceRule {
-  id                 String  @id @default(cuid())
-  isSingleton        Boolean @unique @default(true)
-  gracePeriodMinutes Int     @default(5)
-  finePerMinute      Float   @default(0.5)
-}

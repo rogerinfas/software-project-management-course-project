@@ -517,79 +517,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/staff/profiles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Obtener todos los perfiles de personal */
-        get: operations["StaffController_getProfiles"];
-        put?: never;
-        /** Registrar un nuevo perfil de personal */
-        post: operations["StaffController_createProfile"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/staff/profiles/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Obtener perfil de personal por ID */
-        get: operations["StaffController_getProfileById"];
-        /** Actualizar perfil de personal */
-        put: operations["StaffController_updateProfile"];
-        post?: never;
-        /** Eliminar un perfil de personal */
-        delete: operations["StaffController_deleteProfile"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/staff/attendance": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Obtener historial de asistencia completo o filtrado */
-        get: operations["StaffController_getAttendance"];
-        put?: never;
-        /** Registrar marcación de asistencia (biometría) */
-        post: operations["StaffController_registerAttendance"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/staff/rules": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Obtener reglas globales de asistencia */
-        get: operations["StaffController_getRules"];
-        /** Actualizar reglas globales de asistencia */
-        put: operations["StaffController_updateRules"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/auth/sign-in/social": {
         parameters: {
             query?: never;
@@ -2310,7 +2237,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-06-23T16:03:45.817Z
+             * @example 2026-06-24T15:30:35.657Z
              */
             timestamp: string;
             /**
@@ -2381,13 +2308,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-06-23T16:03:45.920Z
+             * @example 2026-06-24T15:30:35.764Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-06-23T16:03:45.920Z
+             * @example 2026-06-24T15:30:35.764Z
              */
             updatedAt: string;
         };
@@ -2439,7 +2366,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Appointment date and time
-             * @example 2026-06-23T16:03:46.417Z
+             * @example 2026-06-24T15:30:36.381Z
              */
             date: string;
             /**
@@ -2457,7 +2384,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-06-23T16:03:46.417Z
+             * @example 2026-06-24T15:30:36.381Z
              */
             createdAt: string;
         };
@@ -2486,7 +2413,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Evaluation process date
-             * @example 2026-06-23T16:03:46.421Z
+             * @example 2026-06-24T15:30:36.385Z
              */
             date: string;
             /**
@@ -2541,7 +2468,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-06-23T16:03:46.421Z
+             * @example 2026-06-24T15:30:36.385Z
              */
             createdAt: string;
         };
@@ -2606,7 +2533,7 @@ export interface components {
             prospectId: string;
             /**
              * @description Appointment date and time in ISO format
-             * @example 2026-06-23T16:03:46.428Z
+             * @example 2026-06-24T15:30:36.392Z
              */
             date: string;
             /**
@@ -2662,7 +2589,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Date and time of the interaction
-             * @example 2026-06-23T16:03:46.438Z
+             * @example 2026-06-24T15:30:36.402Z
              */
             date: string;
         };
@@ -2963,7 +2890,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Fecha de la matrícula
-             * @example 2026-06-23T16:03:46.618Z
+             * @example 2026-06-24T15:30:36.572Z
              */
             date: string;
             /**
@@ -3471,261 +3398,6 @@ export interface components {
              * @enum {string}
              */
             method: "CASH" | "CARD" | "TRANSFER";
-        };
-        CreateStaffProfileDto: {
-            /** @description ID de usuario asignado al perfil */
-            userId: string;
-            /** @description Especialidad profesional */
-            specialty: string;
-            /** @description URL del CV o expediente */
-            cvUrl?: string;
-            /**
-             * @description Hora de entrada (HH:mm)
-             * @default 08:00
-             */
-            entryTime: string;
-            /**
-             * @description Hora de salida (HH:mm)
-             * @default 16:00
-             */
-            exitTime: string;
-            /**
-             * @description Minutos de gracia permitidos
-             * @default 5
-             */
-            gracePeriod: number;
-        };
-        UserEntity: {
-            /**
-             * @description Unique identifier for the entity
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            id: string;
-            /**
-             * @description Indicates whether the entity is active or not
-             * @example true
-             */
-            isActive: boolean;
-            /**
-             * Format: date-time
-             * @description Timestamp when the entity was created
-             * @example 2026-06-23T16:03:45.979Z
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the entity was last updated
-             * @example 2026-06-23T16:03:45.979Z
-             */
-            updatedAt: string;
-            /**
-             * @description Timestamp when the entity was deleted (for soft delete)
-             * @example null
-             */
-            deletedAt?: Record<string, never>;
-            /**
-             * @description User email address
-             * @example user@example.com
-             */
-            email: string;
-            /**
-             * @description Whether the email has been verified
-             * @example true
-             */
-            emailVerified: boolean;
-            /**
-             * @description User full name
-             * @example John Doe
-             */
-            name?: Record<string, never>;
-            /** @description URL to the user avatar image */
-            image?: Record<string, never>;
-            /**
-             * @description User role in the system
-             * @example ADMIN
-             * @enum {string}
-             */
-            role: "ADMIN" | "TEACHER" | "STAFF" | "ADMISSION" | "TREASURY";
-        };
-        StaffProfileEntity: {
-            /**
-             * @description Unique identifier for the entity
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            id: string;
-            /**
-             * @description Indicates whether the entity is active or not
-             * @example true
-             */
-            isActive: boolean;
-            /**
-             * Format: date-time
-             * @description Timestamp when the entity was created
-             * @example 2026-06-23T16:03:45.979Z
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the entity was last updated
-             * @example 2026-06-23T16:03:45.979Z
-             */
-            updatedAt: string;
-            /**
-             * @description Timestamp when the entity was deleted (for soft delete)
-             * @example null
-             */
-            deletedAt?: Record<string, never>;
-            /** @description ID de usuario asociado */
-            userId: string;
-            user?: components["schemas"]["UserEntity"] | null;
-            /** @description Especialidad profesional */
-            specialty: string;
-            /** @description URL del CV o expediente */
-            cvUrl?: Record<string, never> | null;
-            /**
-             * @description Hora de entrada (HH:mm)
-             * @default 08:00
-             */
-            entryTime: string;
-            /**
-             * @description Hora de salida (HH:mm)
-             * @default 16:00
-             */
-            exitTime: string;
-            /**
-             * @description Minutos de gracia permitidos
-             * @default 5
-             */
-            gracePeriod: number;
-        };
-        UpdateStaffProfileDto: {
-            /** @description Especialidad profesional */
-            specialty?: string;
-            /** @description URL del CV o expediente */
-            cvUrl?: string;
-            /** @description Hora de entrada (HH:mm) */
-            entryTime?: string;
-            /** @description Hora de salida (HH:mm) */
-            exitTime?: string;
-            /** @description Minutos de gracia permitidos */
-            gracePeriod?: number;
-        };
-        RegisterAttendanceDto: {
-            /** @description ID del perfil de personal */
-            staffId: string;
-            /** @description Tipo de marcación (entry, exit) */
-            type: string;
-            /** @description Fecha y hora de marcación opcional (si no, actual) */
-            timestamp: string;
-            /**
-             * @description Método utilizado
-             * @default FACIAL
-             */
-            method: string;
-        };
-        AttendanceRecordEntity: {
-            /**
-             * @description Unique identifier for the entity
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            id: string;
-            /**
-             * @description Indicates whether the entity is active or not
-             * @example true
-             */
-            isActive: boolean;
-            /**
-             * Format: date-time
-             * @description Timestamp when the entity was created
-             * @example 2026-06-23T16:03:45.979Z
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the entity was last updated
-             * @example 2026-06-23T16:03:45.979Z
-             */
-            updatedAt: string;
-            /**
-             * @description Timestamp when the entity was deleted (for soft delete)
-             * @example null
-             */
-            deletedAt?: Record<string, never>;
-            /** @description ID de perfil de personal */
-            staffId: string;
-            staff?: components["schemas"]["StaffProfileEntity"] | null;
-            /** @description Tipo de marcación (entry, exit) */
-            type: string;
-            /**
-             * Format: date-time
-             * @description Timestamp de marcación
-             */
-            timestamp: string;
-            /**
-             * @description Método de marcación
-             * @default FACIAL
-             */
-            method: string;
-            /**
-             * @description Minutos de tardanza calculados
-             * @default 0
-             */
-            delayMinutes: number;
-            /**
-             * @description Monto de multa calculado
-             * @default 0
-             */
-            fineAmount: number;
-        };
-        AttendanceRuleEntity: {
-            /**
-             * @description Unique identifier for the entity
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            id: string;
-            /**
-             * @description Indicates whether the entity is active or not
-             * @example true
-             */
-            isActive: boolean;
-            /**
-             * Format: date-time
-             * @description Timestamp when the entity was created
-             * @example 2026-06-23T16:03:45.979Z
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @description Timestamp when the entity was last updated
-             * @example 2026-06-23T16:03:45.979Z
-             */
-            updatedAt: string;
-            /**
-             * @description Timestamp when the entity was deleted (for soft delete)
-             * @example null
-             */
-            deletedAt?: Record<string, never>;
-            /**
-             * @description Identificador para asegurar singleton
-             * @default true
-             */
-            isSingleton: boolean;
-            /**
-             * @description Minutos de gracia permitidos globalmente
-             * @default 5
-             */
-            gracePeriodMinutes: number;
-            /**
-             * @description Monto de multa cobrado por minuto de tardanza
-             * @default 0.5
-             */
-            finePerMinute: number;
-        };
-        UpdateAttendanceRulesDto: {
-            /** @description Minutos de tolerancia globales */
-            gracePeriodMinutes: number;
-            /** @description Multa cobrada por minuto de tardanza */
-            finePerMinute: number;
         };
         User: {
             id?: string;
@@ -5009,199 +4681,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaymentResponse"];
-                };
-            };
-        };
-    };
-    StaffController_getProfiles: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["StaffProfileEntity"][];
-                };
-            };
-        };
-    };
-    StaffController_createProfile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateStaffProfileDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["StaffProfileEntity"];
-                };
-            };
-        };
-    };
-    StaffController_getProfileById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["StaffProfileEntity"];
-                };
-            };
-        };
-    };
-    StaffController_updateProfile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateStaffProfileDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["StaffProfileEntity"];
-                };
-            };
-        };
-    };
-    StaffController_deleteProfile: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    StaffController_getAttendance: {
-        parameters: {
-            query: {
-                staffId: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AttendanceRecordEntity"][];
-                };
-            };
-        };
-    };
-    StaffController_registerAttendance: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RegisterAttendanceDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AttendanceRecordEntity"];
-                };
-            };
-        };
-    };
-    StaffController_getRules: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AttendanceRuleEntity"];
-                };
-            };
-        };
-    };
-    StaffController_updateRules: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateAttendanceRulesDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AttendanceRuleEntity"];
                 };
             };
         };

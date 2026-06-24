@@ -89,15 +89,6 @@ const nav = [
       { href: "/treasury/receipts", title: "Comprobantes", icon: Receipt },
     ],
   },
-  {
-    label: "Personal & Asistencia (M5)",
-    items: [
-      { href: "/staff/hr", title: "RR.HH.", icon: UserCog },
-      { href: "/staff/facial-recognition", title: "Reconocimiento facial", icon: Fingerprint },
-      { href: "/staff/rules", title: "Reglas y sanciones", icon: Gavel },
-      { href: "/staff/pre-payroll", title: "Pre-planilla", icon: FileText },
-    ],
-  },
 ];
 
 export function AppSidebar() {

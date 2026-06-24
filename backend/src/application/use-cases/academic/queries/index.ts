@@ -53,19 +53,29 @@ export class GetSchedulesQueryHandler implements IQueryHandler<GetSchedulesQuery
     if (query.staffId) where.staffId = query.staffId;
     if (query.day) where.day = query.day;
 
-    return this.prisma.schedule.findMany({
+    const results = await this.prisma.schedule.findMany({
       where,
       include: {
         section: true,
         course: true,
-        staff: {
-          include: {
-            user: true,
-          },
-        },
+        staff: true,
       },
       orderBy: [{ day: 'asc' }, { startTime: 'asc' }],
     });
+
+    return results.map((r) => ({
+      ...r,
+      staff: r.staff
+        ? {
+            id: r.staff.id,
+            specialty: 'Docente',
+            user: {
+              name: r.staff.name,
+              email: r.staff.email,
+            },
+          }
+        : null,
+    }));
   }
 }
 
@@ -110,22 +120,24 @@ export class GetTeachersQueryHandler implements IQueryHandler<GetTeachersQuery> 
   constructor(private readonly prisma: PrismaService) {}
 
   async execute() {
-    // Buscar todos los perfiles de docentes
-    return this.prisma.staffProfile.findMany({
+    const teachers = await this.prisma.user.findMany({
       where: {
-        user: {
-          role: 'TEACHER',
-        },
-      },
-      include: {
-        user: true,
+        role: 'TEACHER',
       },
       orderBy: {
-        user: {
-          name: 'asc',
-        },
+        name: 'asc',
       },
     });
+    return teachers.map((t) => ({
+      id: t.id,
+      specialty: 'Docente',
+      user: {
+        id: t.id,
+        name: t.name,
+        email: t.email,
+        role: t.role,
+      },
+    }));
   }
 }
 

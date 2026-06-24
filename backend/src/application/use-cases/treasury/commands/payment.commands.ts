@@ -3,7 +3,6 @@ import { PAYMENT_REPOSITORY } from '../../../../config/constants/tokens';
 import { USER_REPOSITORY } from '../../../../config/constants/tokens';
 import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
 import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
-import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
 import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
 import { SCHEDULE_REPOSITORY } from '../../../../config/constants/tokens';
 import { PROSPECT_REPOSITORY } from '../../../../config/constants/tokens';

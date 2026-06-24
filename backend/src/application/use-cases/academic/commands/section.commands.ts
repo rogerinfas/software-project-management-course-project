@@ -2,7 +2,6 @@ import { SECTION_REPOSITORY } from '../../../../config/constants/tokens';
 import { USER_REPOSITORY } from '../../../../config/constants/tokens';
 import { TARIFF_REPOSITORY } from '../../../../config/constants/tokens';
 import { STUDENT_REPOSITORY } from '../../../../config/constants/tokens';
-import { STAFF_PROFILE_REPOSITORY } from '../../../../config/constants/tokens';
 import { ICommand, ICommandHandler, CommandHandler } from '@nestjs/cqrs';
 import { Inject } from '@nestjs/common';
 import type { ISectionRepository } from '../../../../domain/repositories/section.repository.interface';
