@@ -66,12 +66,12 @@ async function bootstrap() {
   try {
     const openAPISchema = await (auth.api as any).generateOpenAPISchema();
     if (openAPISchema) {
-      const betterAuthPaths = (openAPISchema as any).paths || {};
-      const betterAuthComponents = (openAPISchema as any).components || {};
+      const betterAuthPaths = openAPISchema.paths || {};
+      const betterAuthComponents = openAPISchema.components || {};
       const betterAuthSchemas = betterAuthComponents.schemas || {};
       const betterAuthSecuritySchemes =
         betterAuthComponents.securitySchemes || {};
-      const betterAuthTags = (openAPISchema as any).tags || [];
+      const betterAuthTags = openAPISchema.tags || [];
 
       // Agregar prefijo /api/auth a los paths de Better Auth
       const prefixedBetterAuthPaths: Record<string, any> = {};

@@ -1,4 +1,4 @@
-import { PrismaClient, EducationalLevel, Role } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 import 'dotenv/config';
