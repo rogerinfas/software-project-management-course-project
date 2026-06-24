@@ -76,10 +76,8 @@ export function LoginView() {
     onSuccess: async () => {
       toast.success("¡Inicio de sesión exitoso!");
       
-      // Invalidate current session query to refresh UI state
-      await queryClient.invalidateQueries({
-        queryKey: ["get", "/api/auth/get-session"],
-      });
+      // Clear cache to remove stale unauthenticated session state and force loading state on redirect
+      queryClient.clear();
 
       router.refresh();
       router.push("/");
