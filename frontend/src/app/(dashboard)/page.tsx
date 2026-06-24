@@ -9,7 +9,6 @@ import {
   UsersIcon, 
   BookOpenIcon, 
   CoinsIcon, 
-  FingerprintIcon,
   ArrowRightIcon,
   SparklesIcon,
   CheckCircle2Icon,
@@ -60,16 +59,6 @@ const MODULE_STATUS = [
     status: "ready",
     statusLabel: "Fase 4 Lista",
     badgeColor: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-  },
-  {
-    code: "M5",
-    title: "Personal y asistencia",
-    href: "/staff/facial-recognition",
-    description: "Mecanismo de reconocimiento facial, pre-planilla y asistencia.",
-    icon: FingerprintIcon,
-    status: "ready",
-    statusLabel: "Fase 5 Lista",
-    badgeColor: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
   }
 ];
 
@@ -84,19 +73,19 @@ export default function UnderConstructionPage() {
 
         <div className="flex flex-col md:flex-row items-center gap-6 lg:gap-10 relative z-10">
           <div className="p-4 rounded-2xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 shadow-inner flex items-center justify-center shrink-0">
-            <CheckCircle2Icon className="size-12 md:size-16 animate-pulse" />
+            <CheckCircle2Icon className="size-12 md:size-16" />
           </div>
 
           <div className="space-y-3 text-center md:text-left flex-1">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
               <SparklesIcon className="size-3" />
-              Fase de Migración Completada
+              Intranet Administrativa
             </div>
             <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">
-              Módulos del EDT Unificados
+              IEP Madre Santa Beatriz
             </h1>
             <p className="text-sm md:text-base text-muted-foreground max-w-2xl">
-              ¡Excelente! Hemos unificado exitosamente todas las maquetas, flujos interactivos y reglas de negocio del prototipo original en el frontend Next.js. Todos los módulos se encuentran listos, integrados con el backend NestJS y plenamente operativos.
+              Bienvenido al sistema de administración general. Utiliza el panel lateral o las tarjetas a continuación para acceder a la gestión de admisión, matrícula de alumnos, horarios académicos y control de tesorería.
             </p>
           </div>
         </div>
@@ -109,7 +98,7 @@ export default function UnderConstructionPage() {
           Mapa de Ruta e Integración
         </h2>
         
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
           {MODULE_STATUS.map((m) => {
             const Icon = m.icon;
             return (
@@ -166,17 +155,17 @@ export default function UnderConstructionPage() {
         </div>
       </div>
 
-      {/* Nota Técnica del Equipo */}
+      {/* Estado del Entorno */}
       <Card className="border bg-card/20 backdrop-blur-sm overflow-hidden">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <CheckCircle2Icon className="size-4 text-emerald-500" />
-            Estado del Entorno y Conectividad
+            Conectividad del Servidor
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 pt-0">
           <p className="text-xs text-muted-foreground">
-            El frontend Next.js está conectado de forma exitosa al backend NestJS en el puerto <strong className="text-foreground font-semibold">5000</strong> utilizando TanStack Query. Las cookies de autenticación, CORS y la base de datos PostgreSQL se encuentran plenamente operativas y sincronizadas.
+            Conexión activa con el servidor en el puerto <strong className="text-foreground font-semibold">5000</strong>. Todos los servicios de base de datos y autenticación están en línea y sincronizados.
           </p>
         </CardContent>
       </Card>
