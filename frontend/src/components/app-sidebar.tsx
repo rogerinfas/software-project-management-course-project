@@ -10,6 +10,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Coins,
+  ExternalLink,
   FileBadge,
   FileText,
   Fingerprint,
@@ -24,6 +25,7 @@ import {
   School,
   ScrollText,
   Settings2,
+  Terminal,
   UserCheck,
   UserCog,
   UserPlus,
@@ -44,9 +46,32 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
+// Roles disponibles en el sistema (espejo del enum Prisma)
+type Role = "ADMIN" | "ADMISSION" | "TREASURY" | "TEACHER" | "STAFF";
+
+// Todos los roles — atajo para grupos visibles para todos
+const ALL_ROLES: Role[] = ["ADMIN", "ADMISSION", "TREASURY", "TEACHER", "STAFF"];
+
+// URL del backend — usada para el link directo a los API docs
+const BACKEND_DOCS_URL =
+  (typeof process !== "undefined" && process.env.NEXT_PUBLIC_BACKEND_URL
+    ? process.env.NEXT_PUBLIC_BACKEND_URL
+    : "http://localhost:5000") + "/api/docs";
+
+/**
+ * Mapeo de visibilidad de módulos por rol.
+ * Fuente de verdad: backend/roles.md
+ *
+ * ADMIN     → todo
+ * ADMISSION → M1 (Admisión) + M2 (Matrícula)
+ * TREASURY  → M4 (Tesorería)
+ * TEACHER   → M3 (Académica & Comunicación)
+ * STAFF     → M2 (Matrícula)
+ */
 const nav = [
   {
     label: "General",
+    roles: ALL_ROLES,
     items: [
       { href: "/", title: "Panel", icon: LayoutDashboard },
       { href: "/landing", title: "Landing pública", icon: Globe2 },
@@ -54,8 +79,8 @@ const nav = [
   },
   {
     label: "Admisión (M1)",
+    roles: ["ADMIN", "ADMISSION"] as Role[],
     items: [
-
       { href: "/admission/pipeline", title: "CRM / Pipeline", icon: UserPlus },
       { href: "/admission/appointments", title: "Agenda de Citas", icon: CalendarCheck },
       { href: "/admission/documents", title: "Documentos", icon: FolderOpen },
@@ -64,6 +89,7 @@ const nav = [
   },
   {
     label: "Matrícula (M2)",
+    roles: ["ADMIN", "ADMISSION", "STAFF"] as Role[],
     items: [
       { href: "/enrollment/guardians", title: "Gestión de Apoderados", icon: UserCheck },
       { href: "/enrollment/formalization", title: "Formalización / Asignación", icon: ClipboardList },
@@ -73,6 +99,7 @@ const nav = [
   },
   {
     label: "Académica & Comunicación (M3)",
+    roles: ["ADMIN", "TEACHER"] as Role[],
     items: [
       { href: "/academic/curriculum", title: "Malla curricular", icon: BookOpen },
       { href: "/academic/teacher-load", title: "Carga docente", icon: GraduationCap },
@@ -83,16 +110,39 @@ const nav = [
   },
   {
     label: "Tesorería (M4)",
+    roles: ["ADMIN", "TREASURY"] as Role[],
     items: [
       { href: "/treasury/tariffs", title: "Tarifario", icon: Wallet },
       { href: "/treasury/collections", title: "Cobranzas", icon: Coins },
       { href: "/treasury/receipts", title: "Comprobantes", icon: Receipt },
     ],
   },
+  {
+    label: "Administración",
+    roles: ["ADMIN"] as Role[],
+    items: [
+      {
+        href: BACKEND_DOCS_URL,
+        title: "Probar Backend (API Docs)",
+        icon: Terminal,
+        external: true,
+      },
+    ],
+  },
 ];
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  /** Rol del usuario activo, obtenido de /api/auth/get-session */
+  role?: Role;
+}
+
+export function AppSidebar({ role }: AppSidebarProps) {
   const pathname = usePathname();
+
+  // Filtrar grupos según el rol. Si no hay rol (carga), mostrar solo General.
+  const visibleGroups = nav.filter((group) =>
+    role ? group.roles.includes(role) : group.label === "General"
+  );
 
   return (
     <Sidebar collapsible="icon">
@@ -123,34 +173,59 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        {nav.map((group) => (
-            <SidebarGroup key={group.label}>
-              <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {group.items.map((item) => {
-                    const Icon = item.icon;
-                    const active =
-                      item.href === "/"
-                        ? pathname === "/"
-                        : pathname.startsWith(item.href);
+        {visibleGroups.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const isExternal = "external" in item && item.external;
+
+                  // Items externos: abrir en nueva pestaña sin pasar por el router de Next.js
+                  if (isExternal) {
                     return (
                       <SidebarMenuItem key={item.href}>
                         <SidebarMenuButton
-                          isActive={active}
                           tooltip={item.title}
-                          render={<Link href={item.href} />}
+                          render={
+                            <a
+                              href={item.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            />
+                          }
                         >
                           <Icon />
                           <span>{item.title}</span>
+                          <ExternalLink className="ml-auto size-3 opacity-50 shrink-0" />
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          ))}
+                  }
+
+                  // Items internos: navegación normal con Next.js Link
+                  const active =
+                    item.href === "/"
+                      ? pathname === "/"
+                      : pathname.startsWith(item.href);
+                  return (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton
+                        isActive={active}
+                        tooltip={item.title}
+                        render={<Link href={item.href} />}
+                      >
+                        <Icon />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
