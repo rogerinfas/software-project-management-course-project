@@ -12,20 +12,17 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Verificamos si existe la cookie de better-auth.
-  // Su nombre por defecto es `better-auth.session_token`
-  const sessionCookieName = "better-auth.session_token";
-  const sessionToken = request.cookies.get(sessionCookieName)?.value;
+  // Better Auth puede emitir la cookie con o sin el prefijo __Secure- según el contexto HTTPS.
+  // Buscamos ambas variantes para máxima compatibilidad.
+  const sessionToken =
+    request.cookies.get("better-auth.session_token")?.value ??
+    request.cookies.get("__Secure-better-auth.session_token")?.value;
 
   if (!sessionToken) {
     // Si no hay cookie, redirigimos al login
     const loginUrl = new URL("/login", request.url);
     return NextResponse.redirect(loginUrl);
   }
-
-  // Opcionalmente, se podría validar el token contra el backend aquí,
-  // pero solo comprobar la existencia de la cookie ya mitiga el flash de UI
-  // y la validación final se hace en el layout.tsx en el cliente o SSR.
 
   return NextResponse.next();
 }
