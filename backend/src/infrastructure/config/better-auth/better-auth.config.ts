@@ -44,12 +44,8 @@ export const auth = betterAuth({
     cookies: {
       sessionToken: {
         attributes: {
-          sameSite: 'none',
-          secure: true,
-          domain:
-            process.env.WEB_URL && process.env.WEB_URL.includes('celebrali.com')
-              ? '.celebrali.com'
-              : undefined,
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production',
         },
       },
     },
