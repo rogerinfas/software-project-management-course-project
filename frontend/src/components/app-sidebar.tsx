@@ -10,6 +10,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Coins,
+  ExternalLink,
   FileBadge,
   FileText,
   Fingerprint,
@@ -24,6 +25,7 @@ import {
   School,
   ScrollText,
   Settings2,
+  Terminal,
   UserCheck,
   UserCog,
   UserPlus,
@@ -49,6 +51,12 @@ type Role = "ADMIN" | "ADMISSION" | "TREASURY" | "TEACHER" | "STAFF";
 
 // Todos los roles — atajo para grupos visibles para todos
 const ALL_ROLES: Role[] = ["ADMIN", "ADMISSION", "TREASURY", "TEACHER", "STAFF"];
+
+// URL del backend — usada para el link directo a los API docs
+const BACKEND_DOCS_URL =
+  (typeof process !== "undefined" && process.env.NEXT_PUBLIC_BACKEND_URL
+    ? process.env.NEXT_PUBLIC_BACKEND_URL
+    : "http://localhost:5000") + "/api/docs";
 
 /**
  * Mapeo de visibilidad de módulos por rol.
@@ -109,6 +117,18 @@ const nav = [
       { href: "/treasury/receipts", title: "Comprobantes", icon: Receipt },
     ],
   },
+  {
+    label: "Administración",
+    roles: ["ADMIN"] as Role[],
+    items: [
+      {
+        href: BACKEND_DOCS_URL,
+        title: "Probar Backend (API Docs)",
+        icon: Terminal,
+        external: true,
+      },
+    ],
+  },
 ];
 
 interface AppSidebarProps {
@@ -154,33 +174,58 @@ export function AppSidebar({ role }: AppSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         {visibleGroups.map((group) => (
-            <SidebarGroup key={group.label}>
-              <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {group.items.map((item) => {
-                    const Icon = item.icon;
-                    const active =
-                      item.href === "/"
-                        ? pathname === "/"
-                        : pathname.startsWith(item.href);
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const isExternal = "external" in item && item.external;
+
+                  // Items externos: abrir en nueva pestaña sin pasar por el router de Next.js
+                  if (isExternal) {
                     return (
                       <SidebarMenuItem key={item.href}>
                         <SidebarMenuButton
-                          isActive={active}
                           tooltip={item.title}
-                          render={<Link href={item.href} />}
+                          render={
+                            <a
+                              href={item.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            />
+                          }
                         >
                           <Icon />
                           <span>{item.title}</span>
+                          <ExternalLink className="ml-auto size-3 opacity-50 shrink-0" />
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          ))}
+                  }
+
+                  // Items internos: navegación normal con Next.js Link
+                  const active =
+                    item.href === "/"
+                      ? pathname === "/"
+                      : pathname.startsWith(item.href);
+                  return (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton
+                        isActive={active}
+                        tooltip={item.title}
+                        render={<Link href={item.href} />}
+                      >
+                        <Icon />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
