@@ -69,8 +69,8 @@ const nav = [
     label: "General",
     roles: ALL_ROLES,
     items: [
-      { href: "/", title: "Panel", icon: LayoutDashboard },
-      { href: "/landing", title: "Landing pública", icon: Globe2 },
+      { href: "/dashboard", title: "Panel", icon: LayoutDashboard },
+      { href: "/", title: "Landing pública", icon: Globe2 },
     ],
   },
   {
@@ -202,8 +202,8 @@ export function AppSidebar({ role }: AppSidebarProps) {
 
                   // Items internos: navegación normal con Next.js Link
                   const active =
-                    item.href === "/"
-                      ? pathname === "/"
+                    item.href === "/dashboard"
+                      ? pathname === "/dashboard"
                       : pathname.startsWith(item.href);
                   return (
                     <SidebarMenuItem key={item.href}>
