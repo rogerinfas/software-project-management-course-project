@@ -45,12 +45,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-
-// Roles disponibles en el sistema (espejo del enum Prisma)
-type Role = "ADMIN" | "ADMISSION" | "TREASURY" | "TEACHER" | "STAFF";
-
-// Todos los roles — atajo para grupos visibles para todos
-const ALL_ROLES: Role[] = ["ADMIN", "ADMISSION", "TREASURY", "TEACHER", "STAFF"];
+import { type Role, ALL_ROLES } from "@/lib/role-permissions";
 
 // URL del backend — usada para el link directo a los API docs
 const BACKEND_DOCS_URL =
@@ -60,7 +55,8 @@ const BACKEND_DOCS_URL =
 
 /**
  * Mapeo de visibilidad de módulos por rol.
- * Fuente de verdad: backend/roles.md
+ * Los prefijos de ruta y roles permitidos se definen en @/lib/role-permissions.
+ * Esta configuración controla únicamente la visibilidad en el sidebar.
  *
  * ADMIN     → todo
  * ADMISSION → M1 (Admisión) + M2 (Matrícula)

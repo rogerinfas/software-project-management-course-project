@@ -12,6 +12,7 @@ import {
   ChevronDownIcon
 } from "lucide-react";
 import { toast } from "sonner";
+import { isRouteAllowed, type Role } from "@/lib/role-permissions";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import {
@@ -89,12 +90,21 @@ export default function DashboardLayout({
     },
   });
 
-  // Client-side redirection if unauthorized
+  // Client-side redirection: sin sesión → login, ruta no permitida → dashboard
   React.useEffect(() => {
-    if (!isLoading && (!sessionData || error)) {
+    if (isLoading) return;
+
+    if (!sessionData || error) {
       router.push("/login");
+      return;
     }
-  }, [sessionData, isLoading, error, router]);
+
+    const role = (sessionData as any).user?.role as Role | undefined;
+    if (role && !isRouteAllowed(pathname, role)) {
+      toast.warning("No tienes permiso para acceder a esta sección.");
+      router.replace("/");
+    }
+  }, [sessionData, isLoading, error, pathname, router]);
 
   if (isLoading) {
     return (
