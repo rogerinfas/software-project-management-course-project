@@ -20,7 +20,7 @@ describe('Academic Queries', () => {
       course: { findMany: jest.fn() },
       schedule: { findMany: jest.fn() },
       communication: { findMany: jest.fn() },
-      staffProfile: { findMany: jest.fn() },
+      user: { findMany: jest.fn() },
       section: { findMany: jest.fn() },
     };
   });
@@ -59,7 +59,7 @@ describe('Academic Queries', () => {
         include: {
           section: true,
           course: true,
-          staff: { include: { user: true } },
+          staff: true,
         },
         orderBy: [{ day: 'asc' }, { startTime: 'asc' }],
       });
@@ -88,16 +88,15 @@ describe('Academic Queries', () => {
   });
 
   describe('GetTeachersQueryHandler', () => {
-    it('should return teacher staff profiles', async () => {
+    it('should return teacher user profiles', async () => {
       const handler = new GetTeachersQueryHandler(prisma);
-      prisma.staffProfile.findMany.mockResolvedValue([]);
+      prisma.user.findMany.mockResolvedValue([]);
 
       await handler.execute();
 
-      expect(prisma.staffProfile.findMany).toHaveBeenCalledWith({
-        where: { user: { role: 'TEACHER' } },
-        include: { user: true },
-        orderBy: { user: { name: 'asc' } },
+      expect(prisma.user.findMany).toHaveBeenCalledWith({
+        where: { role: 'TEACHER' },
+        orderBy: { name: 'asc' },
       });
     });
   });
