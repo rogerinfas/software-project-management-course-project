@@ -45,7 +45,7 @@ const ROUTE_TRANSLATIONS: Record<string, string> = {
 
 // Function to format the current breadcrumb/section title based on path
 function getSectionTitle(pathname: string): string {
-  if (pathname === "/") return "Inicio";
+  if (pathname === "/dashboard") return "Inicio";
   
   const parts = pathname.split("/").filter(Boolean);
   return parts
@@ -102,7 +102,7 @@ export default function DashboardLayout({
     const role = (sessionData as any).user?.role as Role | undefined;
     if (role && !isRouteAllowed(pathname, role)) {
       toast.warning("No tienes permiso para acceder a esta sección.");
-      router.replace("/");
+      router.replace("/dashboard");
     }
   }, [sessionData, isLoading, error, pathname, router]);
 

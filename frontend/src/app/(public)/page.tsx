@@ -94,7 +94,7 @@ export default function LandingPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 h-16 md:px-8">
-          <Link href="/landing" className="flex items-center gap-3 group">
+          <Link href="/" className="flex items-center gap-3 group">
             <div className="relative">
               <Image
                 src="/logo-iep-madre-santa-beatriz.png"
@@ -120,7 +120,7 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-4">
             <Link
-              href="/"
+              href="/dashboard"
               className={cn(buttonVariants({ size: "sm", variant: "default" }), "shadow-lg shadow-primary/20 cursor-pointer")}
             >
               Intranet
@@ -314,7 +314,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-4 md:px-8">
           <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4 mb-16">
             <div className="space-y-4">
-              <Link href="/landing" className="flex items-center gap-3 group">
+              <Link href="/" className="flex items-center gap-3 group">
                 <Image
                   src="/logo-iep-madre-santa-beatriz.png"
                   alt="IEP Madre Santa Beatriz"
@@ -337,7 +337,7 @@ export default function LandingPage() {
                 <Link href="#inicio" className="hover:text-primary transition-colors">Inicio</Link>
                 <Link href="#comunicados" className="hover:text-primary transition-colors">Comunicados</Link>
                 <Link href="#admision" className="hover:text-primary transition-colors">Admisión 2026</Link>
-                <Link href="/" className="hover:text-primary transition-colors">Acceso Intranet</Link>
+                <Link href="/dashboard" className="hover:text-primary transition-colors">Acceso Intranet</Link>
               </nav>
             </div>
             <div className="space-y-4">

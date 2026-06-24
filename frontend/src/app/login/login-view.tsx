@@ -80,7 +80,7 @@ export function LoginView() {
       queryClient.clear();
 
       router.refresh();
-      router.push("/");
+      router.push("/dashboard");
     },
     onError: (error: any) => {
       console.error("Login Error details:", error);
