@@ -5,7 +5,6 @@ import {
   GetSchedulesQueryHandler,
   GetCommunicationsQuery,
   GetCommunicationsQueryHandler,
-  GetTeachersQuery,
   GetTeachersQueryHandler,
   GetSectionsQuery,
   GetSectionsQueryHandler,
