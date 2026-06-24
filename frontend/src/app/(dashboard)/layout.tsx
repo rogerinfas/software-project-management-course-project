@@ -116,7 +116,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar role={user.role as any} />
       <SidebarInset className="min-h-svh flex flex-col">
         {/* Header premium con trigger, titulo dinámico, toggle theme y menú de usuario */}
         <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b bg-card/50 backdrop-blur-md px-4 sticky top-0 z-10">
