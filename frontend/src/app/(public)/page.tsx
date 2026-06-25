@@ -17,7 +17,11 @@ import {
   Camera,
   MessageCircle,
   Globe,
+  Loader2,
 } from "lucide-react";
+
+import { backend } from "@/lib/api/types/backend";
+
 
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -84,10 +88,47 @@ const STATIC_BULLETINS = [
 ];
 
 export default function LandingPage() {
-  const hoy = new Date().toISOString().slice(0, 10);
-  const publicos = STATIC_BULLETINS
-    .filter((b) => b.visibilidad === "publico" && b.vigenteHasta >= hoy)
-    .sort((a, b) => (a.publicadoEn < b.publicadoEn ? 1 : -1));
+  const { data: communications, isLoading } = backend.useQuery(
+    "get",
+    "/api/academic/communications",
+    {
+      params: {
+        query: {
+          category: undefined,
+          search: undefined,
+        } as any,
+      },
+    }
+  );
+
+  const hoy = new Date();
+  const publicos = (communications ?? [])
+    .filter((b) => {
+      if (b.isVisible === false) return false;
+      if (b.expiresAt) {
+        const expDate = new Date(b.expiresAt as any);
+        if (expDate < hoy) return false;
+      }
+      return true;
+    })
+    .map((b) => {
+      let cat: BulletinCategory = "administrativo";
+      const dbCat = b.category.toLowerCase();
+      if (dbCat === "urgente") cat = "urgencia";
+      else if (dbCat === "evento") cat = "evento";
+      else if (dbCat === "academico") cat = "academico";
+      else if (dbCat === "informativo" || dbCat === "administrativo") cat = "administrativo";
+
+      return {
+        id: b.id,
+        titulo: b.title,
+        cuerpo: b.content,
+        categoria: cat,
+        publicadoEn: new Date((b.createdAt as any) || "").toISOString().slice(0, 10),
+        autor: "Dirección",
+      };
+    });
+
 
   return (
     <div className="bg-background min-h-screen font-sans selection:bg-primary/10">
@@ -224,7 +265,12 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {publicos.length === 0 ? (
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-3xl">
+                <Loader2 className="size-12 text-primary animate-spin mb-4" />
+                <p className="text-muted-foreground font-medium">Cargando comunicados...</p>
+              </div>
+            ) : publicos.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
                 <MessageSquare className="size-12 text-muted-foreground/50 mb-4" />
                 <p className="text-muted-foreground font-medium">No hay avisos vigentes en este momento.</p>
