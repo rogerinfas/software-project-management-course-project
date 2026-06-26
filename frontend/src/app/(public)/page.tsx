@@ -9,7 +9,6 @@ import {
   MapPin,
   Phone,
   Users,
-  ArrowRight,
   GraduationCap,
   Calendar,
   MessageSquare,
@@ -24,7 +23,7 @@ import { backend } from "@/lib/api/types/backend";
 
 
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -51,42 +50,6 @@ const CATEGORY_COLOR: Record<BulletinCategory, string> = {
   urgencia: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
 };
 
-const STATIC_BULLETINS = [
-  {
-    id: "bul-1",
-    titulo: "Reunión general de padres — mayo",
-    cuerpo:
-      "Se convoca a los padres de familia a la reunión presencial en el auditorio principal para la entrega de información del primer bimestre y coordinación académica.",
-    categoria: "administrativo" as BulletinCategory,
-    visibilidad: "publico",
-    publicadoEn: "2026-05-05",
-    vigenteHasta: "2026-05-30",
-    autor: "Dirección",
-  },
-  {
-    id: "bul-2",
-    titulo: "Salida pedagógica de Inicial al Parque de la Identidad",
-    cuerpo:
-      "Las docentes de Inicial 5 años comunican la salida pedagógica. Se solicita enviar la autorización firmada y la lista de materiales requeridos.",
-    categoria: "academico" as BulletinCategory,
-    visibilidad: "publico",
-    publicadoEn: "2026-05-07",
-    vigenteHasta: "2026-05-25",
-    autor: "Coordinación Inicial",
-  },
-  {
-    id: "bul-3",
-    titulo: "Aniversario del colegio — semana cultural",
-    cuerpo:
-      "Celebramos la semana cultural por el aniversario institucional con olimpiadas de matemática, concursos literarios y danzas por grado.",
-    categoria: "evento" as BulletinCategory,
-    visibilidad: "publico",
-    publicadoEn: "2026-05-10",
-    vigenteHasta: "2026-06-10",
-    autor: "Dirección",
-  },
-];
-
 export default function LandingPage() {
   const { data: communications, isLoading } = backend.useQuery(
     "get",
@@ -94,9 +57,9 @@ export default function LandingPage() {
     {
       params: {
         query: {
-          category: undefined,
-          search: undefined,
-        } as any,
+          category: "",
+          search: "",
+        },
       },
     }
   );
@@ -106,7 +69,7 @@ export default function LandingPage() {
     .filter((b) => {
       if (b.isVisible === false) return false;
       if (b.expiresAt) {
-        const expDate = new Date(b.expiresAt as any);
+        const expDate = new Date(b.expiresAt as unknown as string);
         if (expDate < hoy) return false;
       }
       return true;
@@ -124,7 +87,7 @@ export default function LandingPage() {
         titulo: b.title,
         cuerpo: b.content,
         categoria: cat,
-        publicadoEn: new Date((b.createdAt as any) || "").toISOString().slice(0, 10),
+        publicadoEn: new Date(b.createdAt).toISOString().slice(0, 10),
         autor: "Dirección",
       };
     });
