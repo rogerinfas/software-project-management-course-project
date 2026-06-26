@@ -6913,7 +6913,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-06-24T16:02:46.141Z"
+            "example": "2026-06-26T14:16:21.396Z"
           },
           "path": {
             "type": "string",
@@ -7018,13 +7018,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-06-24T16:02:46.270Z"
+            "example": "2026-06-26T14:16:21.525Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-06-24T16:02:46.270Z"
+            "example": "2026-06-26T14:16:21.525Z"
           }
         },
         "required": [
@@ -7134,7 +7134,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Appointment date and time",
-            "example": "2026-06-24T16:02:46.690Z"
+            "example": "2026-06-26T14:16:21.957Z"
           },
           "type": {
             "type": "string",
@@ -7158,7 +7158,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-06-24T16:02:46.690Z"
+            "example": "2026-06-26T14:16:21.957Z"
           }
         },
         "required": [
@@ -7201,7 +7201,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Evaluation process date",
-            "example": "2026-06-24T16:02:46.690Z"
+            "example": "2026-06-26T14:16:21.958Z"
           },
           "evaluatorId": {
             "type": "object",
@@ -7288,7 +7288,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-06-24T16:02:46.691Z"
+            "example": "2026-06-26T14:16:21.958Z"
           }
         },
         "required": [
@@ -7428,7 +7428,7 @@
           "date": {
             "type": "string",
             "description": "Appointment date and time in ISO format",
-            "example": "2026-06-24T16:02:46.692Z"
+            "example": "2026-06-26T14:16:21.959Z"
           },
           "type": {
             "type": "string",
@@ -7502,7 +7502,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Date and time of the interaction",
-            "example": "2026-06-24T16:02:46.693Z"
+            "example": "2026-06-26T14:16:21.960Z"
           }
         },
         "required": [
@@ -7955,7 +7955,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Fecha de la matrícula",
-            "example": "2026-06-24T16:02:46.704Z"
+            "example": "2026-06-26T14:16:21.973Z"
           },
           "status": {
             "type": "string",
