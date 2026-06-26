@@ -517,7 +517,7 @@ export default function ApoderadosPage() {
                 )}
               </div>
               <p className="text-[10px] text-muted-foreground italic">
-                * Campos obligatorios. Para simular deudas pasadas y ver el bloqueo de matrícula en acción, introduce un DNI que termine en "99".
+                * Campos obligatorios. Para simular deudas pasadas y ver el bloqueo de matrícula en acción, introduce un DNI que termine en &quot;99&quot;.
               </p>
             </div>
             <DialogFooter>
