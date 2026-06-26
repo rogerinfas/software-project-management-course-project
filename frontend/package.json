@@ -6,7 +6,7 @@
     "dev": "next dev -p 2000",
     "build": "next build",
     "start": "next start -p 2000",
-    "lint": "next lint",
+    "lint": "eslint .",
     "generate": "openapi-typescript ../backend/generated/openapi-schema.json -o ./src/lib/api/types/api.ts"
   },
   "dependencies": {

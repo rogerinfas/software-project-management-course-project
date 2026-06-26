@@ -9,7 +9,6 @@ import {
   MapPin,
   Phone,
   Users,
-  ArrowRight,
   GraduationCap,
   Calendar,
   MessageSquare,
@@ -17,10 +16,14 @@ import {
   Camera,
   MessageCircle,
   Globe,
+  Loader2,
 } from "lucide-react";
 
+import { backend } from "@/lib/api/types/backend";
+
+
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -47,47 +50,48 @@ const CATEGORY_COLOR: Record<BulletinCategory, string> = {
   urgencia: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20",
 };
 
-const STATIC_BULLETINS = [
-  {
-    id: "bul-1",
-    titulo: "Reunión general de padres — mayo",
-    cuerpo:
-      "Se convoca a los padres de familia a la reunión presencial en el auditorio principal para la entrega de información del primer bimestre y coordinación académica.",
-    categoria: "administrativo" as BulletinCategory,
-    visibilidad: "publico",
-    publicadoEn: "2026-05-05",
-    vigenteHasta: "2026-05-30",
-    autor: "Dirección",
-  },
-  {
-    id: "bul-2",
-    titulo: "Salida pedagógica de Inicial al Parque de la Identidad",
-    cuerpo:
-      "Las docentes de Inicial 5 años comunican la salida pedagógica. Se solicita enviar la autorización firmada y la lista de materiales requeridos.",
-    categoria: "academico" as BulletinCategory,
-    visibilidad: "publico",
-    publicadoEn: "2026-05-07",
-    vigenteHasta: "2026-05-25",
-    autor: "Coordinación Inicial",
-  },
-  {
-    id: "bul-3",
-    titulo: "Aniversario del colegio — semana cultural",
-    cuerpo:
-      "Celebramos la semana cultural por el aniversario institucional con olimpiadas de matemática, concursos literarios y danzas por grado.",
-    categoria: "evento" as BulletinCategory,
-    visibilidad: "publico",
-    publicadoEn: "2026-05-10",
-    vigenteHasta: "2026-06-10",
-    autor: "Dirección",
-  },
-];
-
 export default function LandingPage() {
-  const hoy = new Date().toISOString().slice(0, 10);
-  const publicos = STATIC_BULLETINS
-    .filter((b) => b.visibilidad === "publico" && b.vigenteHasta >= hoy)
-    .sort((a, b) => (a.publicadoEn < b.publicadoEn ? 1 : -1));
+  const { data: communications, isLoading } = backend.useQuery(
+    "get",
+    "/api/academic/communications",
+    {
+      params: {
+        query: {
+          category: "",
+          search: "",
+        },
+      },
+    }
+  );
+
+  const hoy = new Date();
+  const publicos = (communications ?? [])
+    .filter((b) => {
+      if (b.isVisible === false) return false;
+      if (b.expiresAt) {
+        const expDate = new Date(b.expiresAt as unknown as string);
+        if (expDate < hoy) return false;
+      }
+      return true;
+    })
+    .map((b) => {
+      let cat: BulletinCategory = "administrativo";
+      const dbCat = b.category.toLowerCase();
+      if (dbCat === "urgente") cat = "urgencia";
+      else if (dbCat === "evento") cat = "evento";
+      else if (dbCat === "academico") cat = "academico";
+      else if (dbCat === "informativo" || dbCat === "administrativo") cat = "administrativo";
+
+      return {
+        id: b.id,
+        titulo: b.title,
+        cuerpo: b.content,
+        categoria: cat,
+        publicadoEn: new Date(b.createdAt).toISOString().slice(0, 10),
+        autor: "Dirección",
+      };
+    });
+
 
   return (
     <div className="bg-background min-h-screen font-sans selection:bg-primary/10">
@@ -224,7 +228,12 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {publicos.length === 0 ? (
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-3xl">
+                <Loader2 className="size-12 text-primary animate-spin mb-4" />
+                <p className="text-muted-foreground font-medium">Cargando comunicados...</p>
+              </div>
+            ) : publicos.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-3xl border-2 border-dashed">
                 <MessageSquare className="size-12 text-muted-foreground/50 mb-4" />
                 <p className="text-muted-foreground font-medium">No hay avisos vigentes en este momento.</p>
