@@ -276,6 +276,30 @@
               "example": "Carlos",
               "type": "string"
             }
+          },
+          {
+            "name": "aptitude",
+            "required": false,
+            "in": "query",
+            "description": "Filter by evaluation aptitude (e.g. FIT, UNFIT, PENDING)",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "FIT",
+                "UNFIT",
+                "PENDING"
+              ]
+            }
+          },
+          {
+            "name": "includeFormalized",
+            "required": false,
+            "in": "query",
+            "description": "Include formalized prospects (students)",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
@@ -832,6 +856,102 @@
           }
         },
         "summary": "Formalize a student enrollment (registers student, guardian & enrollment)",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      }
+    },
+    "/api/enrollment/formalization/student": {
+      "post": {
+        "operationId": "EnrollmentController_createStudentFromProspect",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStudentFromProspectRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Student created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a student profile from a prospect",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      }
+    },
+    "/api/enrollment/formalization/guardian": {
+      "post": {
+        "operationId": "EnrollmentController_assignGuardianToStudent",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignGuardianToStudentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Guardian assigned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuardianResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Assign or create a guardian for an existing student",
+        "tags": [
+          "Enrollment (Matrícula)"
+        ]
+      }
+    },
+    "/api/enrollment/formalization/section": {
+      "post": {
+        "operationId": "EnrollmentController_assignSectionToStudent",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnrollStudentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Student enrolled successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnrollmentResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enroll an existing student into a section",
         "tags": [
           "Enrollment (Matrícula)"
         ]
@@ -6913,7 +7033,7 @@
           "timestamp": {
             "type": "string",
             "description": "Timestamp when the error occurred",
-            "example": "2026-06-30T16:08:34.590Z"
+            "example": "2026-06-30T18:08:03.490Z"
           },
           "path": {
             "type": "string",
@@ -7018,13 +7138,13 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-06-30T16:08:34.762Z"
+            "example": "2026-06-30T18:08:03.597Z"
           },
           "updatedAt": {
             "format": "date-time",
             "type": "string",
             "description": "Last update date",
-            "example": "2026-06-30T16:08:34.762Z"
+            "example": "2026-06-30T18:08:03.597Z"
           }
         },
         "required": [
@@ -7134,7 +7254,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Appointment date and time",
-            "example": "2026-06-30T16:08:35.187Z"
+            "example": "2026-06-30T18:08:03.954Z"
           },
           "type": {
             "type": "string",
@@ -7158,7 +7278,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-06-30T16:08:35.187Z"
+            "example": "2026-06-30T18:08:03.954Z"
           }
         },
         "required": [
@@ -7201,7 +7321,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Evaluation process date",
-            "example": "2026-06-30T16:08:35.187Z"
+            "example": "2026-06-30T18:08:03.955Z"
           },
           "evaluatorId": {
             "type": "object",
@@ -7284,11 +7404,16 @@
               }
             ]
           },
+          "isFormalized": {
+            "type": "boolean",
+            "description": "Indicates if prospect was formalized into a student",
+            "example": false
+          },
           "createdAt": {
             "format": "date-time",
             "type": "string",
             "description": "Creation date",
-            "example": "2026-06-30T16:08:35.188Z"
+            "example": "2026-06-30T18:08:03.955Z"
           }
         },
         "required": [
@@ -7299,6 +7424,7 @@
           "level",
           "priority",
           "stage",
+          "isFormalized",
           "createdAt"
         ]
       },
@@ -7428,7 +7554,7 @@
           "date": {
             "type": "string",
             "description": "Appointment date and time in ISO format",
-            "example": "2026-06-30T16:08:35.188Z"
+            "example": "2026-06-30T18:08:03.956Z"
           },
           "type": {
             "type": "string",
@@ -7502,7 +7628,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Date and time of the interaction",
-            "example": "2026-06-30T16:08:35.190Z"
+            "example": "2026-06-30T18:08:03.958Z"
           }
         },
         "required": [
@@ -7955,7 +8081,7 @@
             "format": "date-time",
             "type": "string",
             "description": "Fecha de la matrícula",
-            "example": "2026-06-30T16:08:35.201Z"
+            "example": "2026-06-30T18:08:03.970Z"
           },
           "status": {
             "type": "string",
@@ -7975,6 +8101,100 @@
           "year",
           "date",
           "status"
+        ]
+      },
+      "CreateStudentFromProspectRequest": {
+        "type": "object",
+        "properties": {
+          "prospectId": {
+            "type": "string",
+            "example": "prospect-id-123"
+          },
+          "dni": {
+            "type": "string",
+            "example": "12345678"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Juan"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Pérez"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "INITIAL",
+              "PRIMARY",
+              "SECONDARY"
+            ],
+            "example": "PRIMARY"
+          },
+          "grade": {
+            "type": "string",
+            "example": "1° primaria"
+          }
+        },
+        "required": [
+          "prospectId",
+          "dni",
+          "firstName",
+          "lastName",
+          "level",
+          "grade"
+        ]
+      },
+      "AssignGuardianToStudentRequest": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "example": "student-id-123"
+          },
+          "guardianDni": {
+            "type": "string",
+            "example": "87654321"
+          },
+          "guardianName": {
+            "type": "string",
+            "example": "María Pérez"
+          },
+          "guardianPhone": {
+            "type": "string",
+            "example": "+51 987654321"
+          },
+          "guardianEmail": {
+            "type": "string",
+            "example": "maria@example.com"
+          },
+          "guardianOccupation": {
+            "type": "string",
+            "example": "Ingeniera"
+          }
+        },
+        "required": [
+          "studentId",
+          "guardianDni",
+          "guardianName",
+          "guardianPhone"
+        ]
+      },
+      "EnrollStudentRequest": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "example": "student-id-123"
+          },
+          "sectionId": {
+            "type": "string",
+            "example": "section-id-123"
+          }
+        },
+        "required": [
+          "studentId",
+          "sectionId"
         ]
       },
       "PaginatedEnrollmentsResponse": {
