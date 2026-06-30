@@ -1,7 +1,20 @@
 "use client";
-
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Award,
   CheckCircle,
@@ -23,7 +36,7 @@ import { backend } from "@/lib/api/types/backend";
 
 
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants, Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -51,6 +64,66 @@ const CATEGORY_COLOR: Record<BulletinCategory, string> = {
 };
 
 export default function LandingPage() {
+  const [newOpen, setNewOpen] = useState(false);
+  const [nombre, setNombre] = useState("");
+  const [celular, setCelular] = useState("");
+  const [nivel, setNivel] = useState<"INITIAL" | "PRIMARY" | "SECONDARY">("PRIMARY");
+  const [grado, setGrado] = useState("1° primaria");
+
+  const GRADOS_POR_NIVEL = {
+    INITIAL: ["3 años", "4 años", "5 años"],
+    PRIMARY: [
+      "1° primaria",
+      "2° primaria",
+      "3° primaria",
+      "4° primaria",
+      "5° primaria",
+      "6° primaria",
+    ],
+    SECONDARY: [
+      "1° secundaria",
+      "2° secundaria",
+      "3° secundaria",
+      "4° secundaria",
+      "5° secundaria",
+    ],
+  };
+
+  const handleNivelChange = (newNivel: string | null) => {
+    if (!newNivel) return;
+    const typedNivel = newNivel as "INITIAL" | "PRIMARY" | "SECONDARY";
+    setNivel(typedNivel);
+    setGrado(GRADOS_POR_NIVEL[typedNivel][0]);
+  };
+
+  const createProspectMutation = backend.useMutation("post", "/api/admission/prospects", {
+    onSuccess: () => {
+      toast.success("¡Registro exitoso! Nos pondremos en contacto pronto.");
+      setNewOpen(false);
+      setNombre("");
+      setCelular("");
+      setNivel("PRIMARY");
+      setGrado("1° primaria");
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Ocurrió un error en el registro");
+    },
+  });
+
+  const onSubmitProspect = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nombre || !celular) return toast.error("Completa todos los campos requeridos");
+    createProspectMutation.mutate({
+      body: {
+        name: nombre,
+        phone: celular,
+        targetGrade: grado,
+        level: nivel,
+        priority: "MEDIUM",
+      },
+    });
+  };
+
   const { data: communications, isLoading } = backend.useQuery(
     "get",
     "/api/academic/communications",
@@ -302,12 +375,89 @@ export default function LandingPage() {
                   </ul>
                 </div>
                 <div className="flex flex-col gap-4">
-                  <Link
-                    href="/admision/pipeline"
-                    className={cn(buttonVariants({ size: "lg", variant: "secondary" }), "h-14 px-10 text-base font-bold shadow-xl cursor-pointer flex items-center justify-center")}
-                  >
-                    Registrarse como Prospecto
-                  </Link>
+                  <Dialog open={newOpen} onOpenChange={setNewOpen}>
+                    <DialogTrigger 
+                      className={cn(buttonVariants({ size: "lg", variant: "secondary" }), "h-14 px-10 text-base font-bold shadow-xl flex items-center justify-center w-full sm:w-auto")}
+                    >
+                      Registrarse como Prospecto
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <form onSubmit={onSubmitProspect}>
+                        <DialogHeader>
+                          <DialogTitle>Registro de Prospecto</DialogTitle>
+                          <DialogDescription>
+                            Déjanos tus datos para iniciar el proceso de admisión. Un asesor se comunicará contigo a la brevedad.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4 text-foreground">
+                          <div className="space-y-2">
+                            <Label htmlFor="nombre">Nombre Completo</Label>
+                            <Input
+                              id="nombre"
+                              value={nombre}
+                              onChange={(e) => setNombre(e.target.value)}
+                              placeholder="Ej. Juan Pérez"
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="celular">Celular de Contacto</Label>
+                            <Input
+                              id="celular"
+                              value={celular}
+                              onChange={(e) => setCelular(e.target.value)}
+                              placeholder="Ej. 987654321"
+                              required
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Nivel Educativo</Label>
+                              <Select value={nivel} onValueChange={handleNivelChange}>
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="INITIAL">Inicial</SelectItem>
+                                  <SelectItem value="PRIMARY">Primaria</SelectItem>
+                                  <SelectItem value="SECONDARY">Secundaria</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Grado de Interés</Label>
+                              <Select value={grado} onValueChange={(val) => val && setGrado(val)}>
+                                <SelectTrigger>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {GRADOS_POR_NIVEL[nivel].map((g) => (
+                                    <SelectItem key={g} value={g}>
+                                      {g}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={() => setNewOpen(false)}
+                            disabled={createProspectMutation.isPending}
+                          >
+                            Cancelar
+                          </Button>
+                          <Button type="submit" disabled={createProspectMutation.isPending}>
+                            {createProspectMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Registrar
+                          </Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                   <p className="text-center text-xs text-primary-foreground/60 font-medium">
                     Urb. La Estrella s/n J. L. B. y R., Arequipa, Peru.
                   </p>
