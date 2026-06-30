@@ -1,4 +1,5 @@
 import { ProspectEntity } from '../entities/prospect.entity';
+import { EvaluationStatus } from '@prisma/client';
 
 export interface PaginatedResult<T> {
   data: T[];
@@ -22,5 +23,7 @@ export interface IProspectRepository {
     page: number,
     size: number,
     search?: string,
+    aptitude?: EvaluationStatus,
+    includeFormalized?: boolean,
   ): Promise<PaginatedResult<ProspectEntity>>;
 }

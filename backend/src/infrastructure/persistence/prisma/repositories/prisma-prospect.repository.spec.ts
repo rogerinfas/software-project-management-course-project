@@ -19,6 +19,9 @@ describe('PrismaProspectRepository', () => {
       count: jest.fn(),
       findMany: jest.fn(),
     },
+    student: {
+      findMany: jest.fn().mockResolvedValue([]),
+    },
     $transaction: jest.fn(),
   };
 

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { BaseAggregateRootEntity } from '../../config/entities/base-entities/blacklist-strategy/base.entity';
 import { BaseEntityType } from '../../config/entities/base-entities/base-entity.types';
@@ -16,8 +16,9 @@ export interface StudentType extends BaseEntityType {
   grade: string;
   sectionId?: string | null;
   section?: SectionEntity | null;
-  guardianId: string;
-  guardian?: GuardianEntity;
+  guardianId?: string | null;
+  guardian?: GuardianEntity | null;
+  prospectId?: string | null;
   enrollments?: EnrollmentEntity[];
 }
 
@@ -71,12 +72,17 @@ export class StudentEntity
   @ApiProperty({ type: () => SectionEntity, required: false, nullable: true })
   section?: SectionEntity | null;
 
-  @ApiProperty({ description: 'ID del apoderado' })
+  @ApiPropertyOptional({ description: 'ID del apoderado' })
   @IsString()
-  @IsNotEmpty()
-  guardianId: string;
+  @IsOptional()
+  guardianId?: string | null;
 
-  @ApiProperty({ type: () => GuardianEntity, required: false })
+  @ApiPropertyOptional({ description: 'ID del prospecto asociado' })
+  @IsString()
+  @IsOptional()
+  prospectId?: string | null;
+
+  @ApiProperty({ type: () => GuardianEntity, required: false, nullable: true })
   guardian?: GuardianEntity;
 
   @ApiProperty({ type: () => [EnrollmentEntity], required: false })

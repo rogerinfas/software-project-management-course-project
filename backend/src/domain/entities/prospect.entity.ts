@@ -18,6 +18,7 @@ export interface ProspectType extends BaseEntityType {
   priority: ProspectPriority;
   stage: ProspectStage;
   appointments?: AppointmentEntity[];
+  isFormalized?: boolean;
   evaluation?: EvaluationResultEntity | null;
 }
 
@@ -64,6 +65,9 @@ export class ProspectEntity
     nullable: true,
   })
   evaluation?: EvaluationResultEntity | null;
+
+  @ApiProperty({ required: false })
+  isFormalized?: boolean;
 
   constructor(partial: Partial<ProspectType>) {
     super(partial);

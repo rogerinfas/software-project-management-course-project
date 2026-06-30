@@ -233,6 +233,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/enrollment/formalization/student": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a student profile from a prospect */
+        post: operations["EnrollmentController_createStudentFromProspect"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/enrollment/formalization/guardian": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assign or create a guardian for an existing student */
+        post: operations["EnrollmentController_assignGuardianToStudent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/enrollment/formalization/section": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Enroll an existing student into a section */
+        post: operations["EnrollmentController_assignSectionToStudent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/enrollment/documents": {
         parameters: {
             query?: never;
@@ -2237,7 +2288,7 @@ export interface components {
             error?: Record<string, never>;
             /**
              * @description Timestamp when the error occurred
-             * @example 2026-06-24T15:30:35.657Z
+             * @example 2026-06-30T17:50:29.657Z
              */
             timestamp: string;
             /**
@@ -2308,13 +2359,13 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-06-24T15:30:35.764Z
+             * @example 2026-06-30T17:50:29.779Z
              */
             createdAt: string;
             /**
              * Format: date-time
              * @description Last update date
-             * @example 2026-06-24T15:30:35.764Z
+             * @example 2026-06-30T17:50:29.779Z
              */
             updatedAt: string;
         };
@@ -2366,7 +2417,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Appointment date and time
-             * @example 2026-06-24T15:30:36.381Z
+             * @example 2026-06-30T17:50:30.162Z
              */
             date: string;
             /**
@@ -2384,7 +2435,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-06-24T15:30:36.381Z
+             * @example 2026-06-30T17:50:30.162Z
              */
             createdAt: string;
         };
@@ -2413,7 +2464,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Evaluation process date
-             * @example 2026-06-24T15:30:36.385Z
+             * @example 2026-06-30T17:50:30.163Z
              */
             date: string;
             /**
@@ -2466,9 +2517,14 @@ export interface components {
             /** @description Evaluation result if processed */
             evaluation?: components["schemas"]["EvaluationResultResponse"];
             /**
+             * @description Indicates if prospect was formalized into a student
+             * @example false
+             */
+            isFormalized: boolean;
+            /**
              * Format: date-time
              * @description Creation date
-             * @example 2026-06-24T15:30:36.385Z
+             * @example 2026-06-30T17:50:30.163Z
              */
             createdAt: string;
         };
@@ -2533,7 +2589,7 @@ export interface components {
             prospectId: string;
             /**
              * @description Appointment date and time in ISO format
-             * @example 2026-06-24T15:30:36.392Z
+             * @example 2026-06-30T17:50:30.164Z
              */
             date: string;
             /**
@@ -2589,7 +2645,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Date and time of the interaction
-             * @example 2026-06-24T15:30:36.402Z
+             * @example 2026-06-30T17:50:30.166Z
              */
             date: string;
         };
@@ -2890,7 +2946,7 @@ export interface components {
             /**
              * Format: date-time
              * @description Fecha de la matrícula
-             * @example 2026-06-24T15:30:36.572Z
+             * @example 2026-06-30T17:50:30.180Z
              */
             date: string;
             /**
@@ -2903,6 +2959,43 @@ export interface components {
              * @example /pdf/ficha-matricula-student-123.pdf
              */
             pdfUrl?: string | null;
+        };
+        CreateStudentFromProspectRequest: {
+            /** @example prospect-id-123 */
+            prospectId: string;
+            /** @example 12345678 */
+            dni: string;
+            /** @example Juan */
+            firstName: string;
+            /** @example Pérez */
+            lastName: string;
+            /**
+             * @example PRIMARY
+             * @enum {string}
+             */
+            level: "INITIAL" | "PRIMARY" | "SECONDARY";
+            /** @example 1° primaria */
+            grade: string;
+        };
+        AssignGuardianToStudentRequest: {
+            /** @example student-id-123 */
+            studentId: string;
+            /** @example 87654321 */
+            guardianDni: string;
+            /** @example María Pérez */
+            guardianName: string;
+            /** @example +51 987654321 */
+            guardianPhone: string;
+            /** @example maria@example.com */
+            guardianEmail?: string;
+            /** @example Ingeniera */
+            guardianOccupation?: string;
+        };
+        EnrollStudentRequest: {
+            /** @example student-id-123 */
+            studentId: string;
+            /** @example section-id-123 */
+            sectionId: string;
         };
         PaginatedEnrollmentsResponse: {
             data: components["schemas"]["EnrollmentResponse"][];
@@ -3672,6 +3765,10 @@ export interface operations {
                 size?: number;
                 /** @description Search by prospect name */
                 search?: string;
+                /** @description Filter by evaluation aptitude (e.g. FIT, UNFIT, PENDING) */
+                aptitude?: "FIT" | "UNFIT" | "PENDING";
+                /** @description Include formalized prospects (students) */
+                includeFormalized?: boolean;
             };
             header?: never;
             path?: never;
@@ -4042,6 +4139,78 @@ export interface operations {
         };
         responses: {
             /** @description Enrollment completed successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnrollmentResponse"];
+                };
+            };
+        };
+    };
+    EnrollmentController_createStudentFromProspect: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateStudentFromProspectRequest"];
+            };
+        };
+        responses: {
+            /** @description Student created successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentResponse"];
+                };
+            };
+        };
+    };
+    EnrollmentController_assignGuardianToStudent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssignGuardianToStudentRequest"];
+            };
+        };
+        responses: {
+            /** @description Guardian assigned successfully. */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GuardianResponse"];
+                };
+            };
+        };
+    };
+    EnrollmentController_assignSectionToStudent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnrollStudentRequest"];
+            };
+        };
+        responses: {
+            /** @description Student enrolled successfully. */
             201: {
                 headers: {
                     [name: string]: unknown;

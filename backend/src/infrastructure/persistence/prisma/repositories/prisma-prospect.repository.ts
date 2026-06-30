@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, EvaluationStatus } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import {
   IProspectRepository,
@@ -18,9 +18,9 @@ export class PrismaProspectRepository implements IProspectRepository {
     appointments: unknown[];
     evaluation: unknown;
     [key: string]: unknown;
-  }): ProspectEntity {
+  }, isFormalized?: boolean): ProspectEntity {
     const { appointments, evaluation, ...prospectData } = raw;
-    const entity = new ProspectEntity(prospectData as Partial<ProspectEntity>);
+    const entity = new ProspectEntity({ ...(prospectData as Partial<ProspectEntity>), isFormalized });
     entity.appointments = appointments.map(
       (app) => new AppointmentEntity(app as Partial<AppointmentEntity>),
     );
@@ -79,10 +79,29 @@ export class PrismaProspectRepository implements IProspectRepository {
     page: number,
     size: number,
     search?: string,
+    aptitude?: EvaluationStatus,
+    includeFormalized?: boolean,
   ): Promise<PaginatedResult<ProspectEntity>> {
-    const where: Prisma.ProspectWhereInput = search
-      ? { name: { contains: search, mode: 'insensitive' } }
-      : {};
+    const where: Prisma.ProspectWhereInput = {};
+    if (search) {
+      where.name = { contains: search, mode: 'insensitive' };
+    }
+    if (aptitude) {
+      where.evaluation = { aptitude };
+    }
+
+    // Exclude prospects that have already been converted to students
+    const formalizedStudents = await this.prisma.student.findMany({
+      where: { prospectId: { not: null } },
+      select: { prospectId: true },
+    });
+    const formalizedProspectIds = formalizedStudents
+      .map((s) => s.prospectId)
+      .filter(Boolean) as string[];
+
+    if (!includeFormalized && formalizedProspectIds.length > 0) {
+      where.id = { notIn: formalizedProspectIds };
+    }
 
     const [total, prospects] = await this.prisma.$transaction([
       this.prisma.prospect.count({ where }),
@@ -98,7 +117,7 @@ export class PrismaProspectRepository implements IProspectRepository {
     const totalPages = Math.ceil(total / size);
 
     return {
-      data: prospects.map((p) => this.toEntity(p)),
+      data: prospects.map((p) => this.toEntity(p, formalizedProspectIds.includes(p.id))),
       meta: {
         total,
         page,
