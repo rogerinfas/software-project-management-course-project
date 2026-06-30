@@ -1,0 +1,274 @@
+import * as React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ShieldAlert, Users2, Pencil, Check, X, Loader2 } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+
+interface StudentTabsProps {
+  activeStudent: any;
+  siblings: any[];
+  editId: string | null;
+  setEditId: (id: string | null) => void;
+  editDni: string;
+  setEditDni: (val: string) => void;
+  editName: string;
+  setEditName: (val: string) => void;
+  editTel: string;
+  setEditTel: (val: string) => void;
+  editCorreo: string;
+  setEditCorreo: (val: string) => void;
+  editOcup: string;
+  setEditOcup: (val: string) => void;
+  updateMutation: any;
+}
+
+export function StudentTabs({
+  activeStudent,
+  siblings,
+  editId,
+  setEditId,
+  editDni,
+  setEditDni,
+  editName,
+  setEditName,
+  editTel,
+  setEditTel,
+  editCorreo,
+  setEditCorreo,
+  editOcup,
+  setEditOcup,
+  updateMutation,
+}: StudentTabsProps) {
+  function startEdit(g: any) {
+    setEditId(g.id);
+    setEditDni(g.dni);
+    setEditName(g.name);
+    setEditTel(g.phone);
+    setEditCorreo(g.email || "");
+    setEditOcup(g.occupation || "");
+  }
+
+  function saveEdit() {
+    if (!editId) return;
+    if (!editName.trim() || !editDni.trim()) {
+      toast.error("El nombre y DNI son obligatorios");
+      return;
+    }
+    updateMutation.mutate({
+      params: { path: { id: editId } },
+      body: {
+        dni: editDni,
+        name: editName,
+        phone: editTel,
+        email: editCorreo || undefined,
+        occupation: editOcup || undefined,
+      },
+    });
+  }
+
+  return (
+    <Tabs defaultValue="datos" className="w-full space-y-4">
+      <TabsList className="bg-muted/30 border border-border/60 p-1 rounded-xl">
+        <TabsTrigger value="datos" className="rounded-lg font-semibold text-xs tracking-tight cursor-pointer px-4">Datos del Estudiante</TabsTrigger>
+        <TabsTrigger value="apoderados" className="rounded-lg font-semibold text-xs tracking-tight cursor-pointer px-4">Apoderados Legales</TabsTrigger>
+        <TabsTrigger value="hermanos" className="rounded-lg font-semibold text-xs tracking-tight cursor-pointer px-4">Vinculación Familiar ({siblings.length})</TabsTrigger>
+      </TabsList>
+
+      {/* ── Datos del alumno ── */}
+      <TabsContent value="datos" className="space-y-4 pt-2">
+        <Card className="bg-card border-border/80">
+          <CardHeader>
+            <CardTitle className="font-bold text-lg font-sans text-foreground">
+              {activeStudent.firstName} {activeStudent.lastName}
+            </CardTitle>
+            <CardDescription className="font-mono text-xs">
+              Código de Estudiante: <span className="text-primary font-bold">{activeStudent.code || "NUEVO"}</span>
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 text-sm font-sans md:grid-cols-2">
+            <div className="bg-muted/20 border border-border/40 rounded-xl p-4 flex flex-col gap-1">
+              <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Documento Nacional de Identidad</span>
+              <span className="font-mono text-base font-bold text-foreground">{activeStudent.dni}</span>
+            </div>
+            <div className="bg-muted/20 border border-border/40 rounded-xl p-4 flex flex-col gap-1">
+              <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Nivel Académico</span>
+              <span className="text-base font-bold text-foreground capitalize">
+                {activeStudent.level === "PRIMARY" ? "Primaria" : "Secundaria"}
+              </span>
+            </div>
+            <div className="bg-muted/20 border border-border/40 rounded-xl p-4 flex flex-col gap-1">
+              <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Grado Escolar</span>
+              <span className="text-base font-bold text-foreground">{activeStudent.grade}</span>
+            </div>
+            <div className="bg-muted/20 border border-border/40 rounded-xl p-4 flex flex-col gap-1">
+              <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Sección / Aula</span>
+              <span className="text-base font-bold text-foreground">
+                {activeStudent.section ? `${activeStudent.section.grade} - ${activeStudent.section.name}` : "Sin sección"}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* ── Apoderados ── */}
+      <TabsContent value="apoderados" className="space-y-4 pt-2">
+        <Card className="bg-card border-border/80">
+          <CardHeader>
+            <CardTitle className="text-base font-sans flex items-center gap-2">
+              <ShieldAlert className="size-4.5 text-primary" /> Tutores Registrados
+            </CardTitle>
+            <CardDescription className="font-sans">
+              Responsable legal y económico a cargo del alumno. Edite la información de contacto directamente.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {activeStudent.guardian ? (
+              <div className="border border-border/60 rounded-xl overflow-hidden">
+                <Table className="table-fixed">
+                  <TableHeader className="bg-muted/30 font-sans">
+                    <TableRow>
+                      <TableHead className="w-[25%]">Nombre Completo</TableHead>
+                      <TableHead className="w-[12%]">DNI</TableHead>
+                      <TableHead className="w-[14%]">Teléfono</TableHead>
+                      <TableHead className="w-[22%]">Correo Electrónico</TableHead>
+                      <TableHead className="w-[17%]">Ocupación</TableHead>
+                      <TableHead className="w-[10%] text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="font-sans">
+                    {editId === activeStudent.guardian.id ? (
+                      <TableRow className="bg-muted/20">
+                        <TableCell className="overflow-hidden">
+                          <Input
+                            className="h-8 w-full text-xs font-semibold bg-background"
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                          />
+                        </TableCell>
+                        <TableCell className="overflow-hidden">
+                          <Input
+                            className="h-8 w-full font-mono text-xs bg-background"
+                            value={editDni}
+                            onChange={(e) => setEditDni(e.target.value)}
+                            maxLength={8}
+                          />
+                        </TableCell>
+                        <TableCell className="overflow-hidden">
+                          <Input
+                            className="h-8 w-full text-xs bg-background"
+                            value={editTel}
+                            onChange={(e) => setEditTel(e.target.value)}
+                          />
+                        </TableCell>
+                        <TableCell className="overflow-hidden">
+                          <Input
+                            className="h-8 w-full text-xs bg-background"
+                            value={editCorreo}
+                            onChange={(e) => setEditCorreo(e.target.value)}
+                          />
+                        </TableCell>
+                        <TableCell className="overflow-hidden">
+                          <Input
+                            className="h-8 w-full text-xs bg-background"
+                            value={editOcup}
+                            onChange={(e) => setEditOcup(e.target.value)}
+                          />
+                        </TableCell>
+                        <TableCell className="text-right space-x-1.5">
+                          <Button
+                            size="sm"
+                            onClick={saveEdit}
+                            disabled={updateMutation.isPending}
+                            className="cursor-pointer"
+                          >
+                            {updateMutation.isPending ? <Loader2 className="size-3 animate-spin" /> : <Check className="size-3" />}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditId(null)}
+                            className="cursor-pointer"
+                          >
+                            <X className="size-3" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      <TableRow>
+                        <TableCell className="font-bold text-foreground">{activeStudent.guardian.name}</TableCell>
+                        <TableCell className="font-mono text-xs">{activeStudent.guardian.dni}</TableCell>
+                        <TableCell className="font-semibold text-xs text-foreground">{activeStudent.guardian.phone}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{activeStudent.guardian.email || "—"}</TableCell>
+                        <TableCell className="text-xs">{activeStudent.guardian.occupation || "—"}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => startEdit(activeStudent.guardian)}
+                            className="cursor-pointer"
+                          >
+                            <Pencil className="size-3" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-6 text-center border border-dashed border-border rounded-xl">
+                <Users2 className="size-8 text-muted-foreground mb-2" />
+                <span className="text-sm text-muted-foreground font-sans">Ningún apoderado asignado.</span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* ── Vinculación familiar ── */}
+      <TabsContent value="hermanos" className="space-y-4 pt-2">
+        <Card className="bg-card border-border/80">
+          <CardHeader>
+            <CardTitle className="text-base font-sans flex items-center gap-2">
+              <Users2 className="size-4.5 text-primary" /> Hermanos en la Institución
+            </CardTitle>
+            <CardDescription className="font-sans">
+              Detección automática en base al apoderado legal registrado.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="font-sans">
+            {siblings.length === 0 ? (
+              <div className="flex flex-col items-center justify-center p-8 border border-dashed border-border rounded-xl text-center">
+                <Users2 className="size-8 text-muted-foreground/60 mb-2 animate-pulse" />
+                <span className="text-sm text-muted-foreground">Este alumno no registra hermanos vinculados en la institución.</span>
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {siblings.map((h: any) => (
+                  <div key={h.id} className="border border-border/60 bg-muted/20 hover:bg-muted/40 transition-all rounded-xl p-4 flex items-center justify-between">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="font-bold text-sm text-foreground">{h.firstName} {h.lastName}</span>
+                      <span className="font-mono text-[10px] text-muted-foreground">DNI: {h.dni}</span>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <Badge variant="secondary" className="text-[10px]">
+                        {h.code || "NUEVO"}
+                      </Badge>
+                      <span className="text-[10px] text-muted-foreground">
+                        {h.section ? `${h.section.grade} - ${h.section.name}` : "Sin sección"}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  );
+}

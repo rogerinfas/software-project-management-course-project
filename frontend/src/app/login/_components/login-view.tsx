@@ -1,9 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "../_schemas/login.schema";
+import { LoginFormValues } from "../_types/login.types";
+import { useLoginMutation } from "../_hooks/login-hooks";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 import {
   BookOpen,
   EyeIcon,
@@ -15,25 +24,6 @@ import {
   SearchIcon,
   Loader2Icon,
 } from "lucide-react";
-import * as React from "react";
-import { toast } from "sonner";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
-import { backend } from "@/lib/api/types/backend";
-
-const loginSchema = z.object({
-  email: z.string().email("Correo electrónico inválido"),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
-  remember: z.boolean().optional(),
-});
 
 function DecoIcon({
   className,
@@ -56,11 +46,8 @@ function DecoIcon({
 }
 
 export function LoginView() {
-  const router = useRouter();
-  const queryClient = useQueryClient();
-  
   const [showPass, setShowPass] = React.useState(false);
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm({
+  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -70,29 +57,9 @@ export function LoginView() {
   });
 
   const remember = watch("remember");
+  const loginMutation = useLoginMutation();
 
-  // Connection with Better Auth via OpenAPI React Query Mutation
-  const loginMutation = backend.useMutation("post", "/api/auth/sign-in/email", {
-    onSuccess: async () => {
-      toast.success("¡Inicio de sesión exitoso!");
-      
-      // Clear cache to remove stale unauthenticated session state and force loading state on redirect
-      queryClient.clear();
-
-      router.refresh();
-      router.push("/dashboard");
-    },
-    onError: (error: any) => {
-      console.error("Login Error details:", error);
-      const errorMessage =
-          error && typeof error === "object" && "message" in error
-              ? (error.message as string)
-              : "Credenciales incorrectas o error en el servidor";
-      toast.error(errorMessage);
-    },
-  });
-
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: LoginFormValues) => {
     loginMutation.mutate({
       body: {
         email: data.email,
@@ -211,7 +178,7 @@ export function LoginView() {
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-red-500 text-xs font-semibold mt-1">{errors.email.message}</p>
+                    <p className="text-red-500 text-xs font-semibold mt-1">{String(errors.email.message)}</p>
                   )}
                 </div>
 
@@ -234,7 +201,7 @@ export function LoginView() {
                     <button
                       type="button"
                       onClick={() => setShowPass((v) => !v)}
-                      className="text-muted-foreground hover:text-foreground absolute right-0 bottom-2 p-0.5 transition-colors"
+                      className="text-muted-foreground hover:text-foreground absolute right-0 bottom-2 p-0.5 transition-colors cursor-pointer"
                       aria-label={
                         showPass ? "Ocultar contraseña" : "Mostrar contraseña"
                       }
@@ -247,7 +214,7 @@ export function LoginView() {
                     </button>
                   </div>
                   {errors.password && (
-                    <p className="text-red-500 text-xs font-semibold mt-1">{errors.password.message}</p>
+                    <p className="text-red-500 text-xs font-semibold mt-1">{String(errors.password.message)}</p>
                   )}
                 </div>
 
