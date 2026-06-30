@@ -100,17 +100,17 @@ enum ProspectStage {
 }
 
 model Prospect {
-  id             String                @id @default(cuid())
-  name           String
-  phone          String
-  targetGrade    String // Grado al que postula
-  level          EducationalLevel
-  priority       ProspectPriority      @default(MEDIUM)
-  stage          ProspectStage         @default(ENTREVISTA)
-  appointments   Appointment[]
-  evaluation     EvaluationResult?
-  interactions   ProspectInteraction[]
-  createdAt      DateTime              @default(now())
+  id           String                @id @default(cuid())
+  name         String
+  phone        String
+  targetGrade  String // Grado al que postula
+  level        EducationalLevel
+  priority     ProspectPriority      @default(MEDIUM)
+  stage        ProspectStage         @default(ENTREVISTA)
+  appointments Appointment[]
+  evaluation   EvaluationResult?
+  interactions ProspectInteraction[]
+  createdAt    DateTime              @default(now())
 }
 
 enum EducationalLevel {
@@ -182,8 +182,9 @@ model Student {
   grade       String
   sectionId   String?
   section     Section?         @relation(fields: [sectionId], references: [id])
-  guardianId  String
-  guardian    Guardian         @relation(fields: [guardianId], references: [id])
+  guardianId  String?
+  guardian    Guardian?        @relation(fields: [guardianId], references: [id])
+  prospectId  String?          @unique
   enrollments Enrollment[]
   charges     Charge[]
   createdAt   DateTime         @default(now())
@@ -233,13 +234,13 @@ model Course {
 }
 
 model Schedule {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   sectionId String
-  section   Section  @relation(fields: [sectionId], references: [id])
+  section   Section @relation(fields: [sectionId], references: [id])
   courseId  String
-  course    Course   @relation(fields: [courseId], references: [id])
+  course    Course  @relation(fields: [courseId], references: [id])
   staffId   String
-  staff     User     @relation(fields: [staffId], references: [id])
+  staff     User    @relation(fields: [staffId], references: [id])
   day       Int // 1-7 (Lunes-Domingo)
   startTime String // HH:mm
   endTime   String // HH:mm
@@ -306,5 +307,3 @@ enum PaymentMethod {
   CARD
   TRANSFER
 }
-
-

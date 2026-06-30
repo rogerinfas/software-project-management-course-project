@@ -79,6 +79,13 @@ export class ProspectResponse {
   evaluation?: EvaluationResultResponse | null;
 
   @ApiProperty({
+    description: 'Indicates if prospect was formalized into a student',
+    example: false,
+  })
+  @Expose()
+  isFormalized: boolean;
+
+  @ApiProperty({
     description: 'Creation date',
     example: new Date().toISOString(),
   })

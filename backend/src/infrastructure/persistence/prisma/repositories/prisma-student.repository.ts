@@ -38,7 +38,8 @@ export class PrismaStudentRepository implements IStudentRepository {
         level: student.level!,
         grade: student.grade!,
         sectionId: student.sectionId,
-        guardianId: student.guardianId!,
+        guardianId: student.guardianId,
+        prospectId: student.prospectId,
       },
       include: {
         guardian: true,
@@ -88,6 +89,7 @@ export class PrismaStudentRepository implements IStudentRepository {
         grade: student.grade,
         sectionId: student.sectionId,
         guardianId: student.guardianId,
+        prospectId: student.prospectId,
       },
       include: {
         guardian: true,
