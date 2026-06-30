@@ -16,7 +16,7 @@ export class PrismaProspectRepository implements IProspectRepository {
   /** Mapea el registro de Prisma (con include) a la entidad de dominio. */
   private toEntity(raw: {
     appointments: unknown[];
-    evaluation: unknown | null;
+    evaluation: unknown;
     [key: string]: unknown;
   }, isFormalized?: boolean): ProspectEntity {
     const { appointments, evaluation, ...prospectData } = raw;
