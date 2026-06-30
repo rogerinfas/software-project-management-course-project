@@ -69,7 +69,7 @@ export class AdmissionController {
     const results = await this.queryBus.execute<
       GetProspectsPaginatedQuery,
       PaginatedResult<ProspectEntity>
-    >(new GetProspectsPaginatedQuery(query.page, query.size, query.search));
+    >(new GetProspectsPaginatedQuery(query.page, query.size, query.search, query.aptitude, query.includeFormalized));
     return {
       data: results.data.map((r) => r.toDto()),
       meta: results.meta,
