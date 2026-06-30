@@ -3,6 +3,7 @@ import {
   EducationalLevel,
   ProspectPriority,
   ProspectStage,
+  EvaluationStatus,
 } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import {
@@ -99,4 +100,20 @@ export class GetProspectsPaginatedRequest {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter by evaluation aptitude (e.g. FIT, UNFIT, PENDING)',
+    enum: EvaluationStatus,
+  })
+  @IsOptional()
+  @IsEnum(EvaluationStatus)
+  aptitude?: EvaluationStatus;
+
+  @ApiPropertyOptional({
+    description: 'Include formalized prospects (students)',
+    example: true,
+  })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  includeFormalized?: boolean;
 }
