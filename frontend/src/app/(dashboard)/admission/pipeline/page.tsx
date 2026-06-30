@@ -23,12 +23,15 @@ import { Plus, Loader2, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import {
   Dialog,
@@ -213,9 +216,11 @@ export default function PipelinePage() {
   const [tipo, setTipo] = React.useState<string>("llamada");
   const [resumen, setResumen] = React.useState("");
 
+  const [showEnrolled, setShowEnrolled] = React.useState(false);
+
   // Queries
   const { data: prospectsData, isLoading } = backend.useQuery("get", "/api/admission/prospects", {
-    params: { query: { page: 1, size: 1000 } }
+    params: { query: { page: 1, size: 1000, includeFormalized: showEnrolled } }
   });
 
   const stages = [
@@ -442,24 +447,28 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="grid h-full lg:grid-cols-[1fr_320px] items-start">
+      {/* Contenedor principal del CRM */}
+      <div className="flex h-full flex-col gap-4 overflow-hidden border-r border-border/50 p-6 pr-4">
+        <Tabs defaultValue="active" onValueChange={(v) => setShowEnrolled(v === 'history')} className="flex flex-col h-full w-full">
       {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">CRM / Pipeline de Admisión</h1>
           <p className="text-muted-foreground text-sm">
             Tablero Kanban con arrastrar y soltar. Mueve los postulantes entre etapas de admisión.
           </p>
         </div>
-        <Dialog open={newOpen} onOpenChange={setNewOpen}>
-          <DialogTrigger
-            render={
-              <Button className="inline-flex items-center gap-2 cursor-pointer">
-                <Plus className="size-4" />
-                Nuevo Postulante
-              </Button>
-            }
-          />
+        <div className="flex items-center gap-4">
+          <Dialog open={newOpen} onOpenChange={setNewOpen}>
+            <DialogTrigger
+              render={
+                <Button className="inline-flex items-center gap-2 cursor-pointer">
+                  <Plus className="size-4" />
+                  Nuevo Postulante
+                </Button>
+              }
+            />
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Registrar postulante</DialogTitle>
@@ -521,8 +530,17 @@ export default function PipelinePage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
+      <div className="mb-6">
+        <TabsList>
+          <TabsTrigger value="active">Pipeline Activo</TabsTrigger>
+          <TabsTrigger value="history">Histórico (Matriculados)</TabsTrigger>
+        </TabsList>
+      </div>
+
+      <TabsContent value="active" className="flex-1 mt-0">
       {/* Kanban Board */}
       <DndContext
         sensors={sensors}
@@ -580,22 +598,71 @@ export default function PipelinePage() {
           )}
         </DragOverlay>
       </DndContext>
+      </TabsContent>
 
-      {/* Detalle / Interacciones */}
-      <Card className="border-border/80">
-        <CardHeader className="border-b border-border/60">
-          <CardTitle className="text-base flex items-center gap-2">
-            Historial de interacciones
-            {selected ? ` — ${selected.name}` : ""}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
+      <TabsContent value="history" className="mt-0">
+        <Card className="border-border/80">
+          <CardHeader>
+            <CardTitle>Histórico de Matriculados (Aptos)</CardTitle>
+            <CardDescription>
+              Postulantes que pasaron la evaluación académica y fueron formalizados.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead>Grado</TableHead>
+                  <TableHead>Celular</TableHead>
+                  <TableHead>Nivel</TableHead>
+                  <TableHead>Estado</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {prospects.filter((p: any) => p.isFormalized).length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-muted-foreground h-24">
+                      No hay alumnos matriculados para mostrar.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  prospects.filter((p: any) => p.isFormalized).map((p: any) => (
+                    <TableRow key={p.id} onClick={() => setSelectedId(p.id)} className={`cursor-pointer ${selectedId === p.id ? 'bg-muted/50' : ''}`}>
+                      <TableCell className="font-medium">{p.name}</TableCell>
+                      <TableCell>{p.targetGrade}</TableCell>
+                      <TableCell>{p.phone}</TableCell>
+                      <TableCell>{p.level}</TableCell>
+                      <TableCell>
+                        <Badge variant="default" className="bg-green-600/10 text-green-700 hover:bg-green-600/20 border-green-600/20">Matriculado</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </TabsContent>
+      </Tabs>
+      </div>
+
+      {/* Panel lateral: Interacciones */}
+      <div className="sticky top-14 flex h-[calc(100vh-3.5rem)] flex-col gap-4 overflow-y-auto bg-muted/10 p-6 pl-4">
+        <div className="flex flex-col gap-1 border-b border-border/50 pb-4">
+          <h2 className="text-lg font-semibold tracking-tight">Historial de interacciones</h2>
+          {selected && (
+            <p className="text-sm text-muted-foreground">{selected.name}</p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-6">
           {!selected ? (
             <p className="text-muted-foreground text-sm italic">
               Haz clic en &quot;Ver detalle&quot; en cualquier tarjeta del tablero Kanban.
             </p>
           ) : (
-            <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+            <div className="flex flex-col gap-6">
               {/* Timeline */}
               <div className="flex flex-col gap-3">
                 {history.length === 0 ? (
@@ -728,8 +795,8 @@ export default function PipelinePage() {
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
