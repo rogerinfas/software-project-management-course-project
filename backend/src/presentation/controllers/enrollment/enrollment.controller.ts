@@ -18,6 +18,9 @@ import { CreateGuardianCommand } from '../../../application/use-cases/enrollment
 import { UpdateGuardianCommand } from '../../../application/use-cases/enrollment/commands/update-guardian.command';
 import { DeleteGuardianCommand } from '../../../application/use-cases/enrollment/commands/delete-guardian.command';
 import { FormalizeEnrollmentCommand } from '../../../application/use-cases/enrollment/commands/formalize-enrollment.command';
+import { CreateStudentFromProspectCommand } from '../../../application/use-cases/enrollment/commands/create-student-from-prospect.command';
+import { AssignGuardianToStudentCommand } from '../../../application/use-cases/enrollment/commands/assign-guardian-to-student.command';
+import { EnrollStudentCommand } from '../../../application/use-cases/enrollment/commands/enroll-student.command';
 
 import { GetGuardiansQuery } from '../../../application/use-cases/enrollment/queries/get-guardians.query';
 import { GetStudentsQuery } from '../../../application/use-cases/enrollment/queries/get-students.query';
@@ -37,6 +40,9 @@ import {
   PaginatedGuardiansResponse,
   PaginatedStudentsResponse,
   PaginatedEnrollmentsResponse,
+  CreateStudentFromProspectRequest,
+  AssignGuardianToStudentRequest,
+  EnrollStudentRequest,
 } from './dto';
 
 // Domain Entities
@@ -222,6 +228,80 @@ export class EnrollmentController {
         dto.guardianPhone,
         dto.guardianEmail,
         dto.guardianOccupation,
+      ),
+    );
+    return result.toDto();
+  }
+
+  @Post('formalization/student')
+  @ApiOperation({ summary: 'Create a student profile from a prospect' })
+  @ApiResponse({
+    status: 201,
+    description: 'Student created successfully.',
+    type: StudentResponse,
+  })
+  async createStudentFromProspect(
+    @Body() dto: CreateStudentFromProspectRequest,
+  ): Promise<StudentResponse> {
+    const result = await this.commandBus.execute<
+      CreateStudentFromProspectCommand,
+      StudentEntity
+    >(
+      new CreateStudentFromProspectCommand(
+        dto.prospectId,
+        dto.dni,
+        dto.firstName,
+        dto.lastName,
+        dto.level,
+        dto.grade,
+      ),
+    );
+    return result.toDto();
+  }
+
+  @Post('formalization/guardian')
+  @ApiOperation({ summary: 'Assign or create a guardian for an existing student' })
+  @ApiResponse({
+    status: 201,
+    description: 'Guardian assigned successfully.',
+    type: GuardianResponse,
+  })
+  async assignGuardianToStudent(
+    @Body() dto: AssignGuardianToStudentRequest,
+  ): Promise<GuardianResponse> {
+    const result = await this.commandBus.execute<
+      AssignGuardianToStudentCommand,
+      GuardianEntity
+    >(
+      new AssignGuardianToStudentCommand(
+        dto.studentId,
+        dto.guardianDni,
+        dto.guardianName,
+        dto.guardianPhone,
+        dto.guardianEmail,
+        dto.guardianOccupation,
+      ),
+    );
+    return result.toDto();
+  }
+
+  @Post('formalization/section')
+  @ApiOperation({ summary: 'Enroll an existing student into a section' })
+  @ApiResponse({
+    status: 201,
+    description: 'Student enrolled successfully.',
+    type: EnrollmentResponse,
+  })
+  async assignSectionToStudent(
+    @Body() dto: EnrollStudentRequest,
+  ): Promise<EnrollmentResponse> {
+    const result = await this.commandBus.execute<
+      EnrollStudentCommand,
+      EnrollmentEntity
+    >(
+      new EnrollStudentCommand(
+        dto.studentId,
+        dto.sectionId,
       ),
     );
     return result.toDto();
