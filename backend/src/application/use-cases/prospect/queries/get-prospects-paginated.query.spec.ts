@@ -36,6 +36,8 @@ describe('GetProspectsPaginatedQueryHandler', () => {
       1,
       10,
       'search-term',
+      undefined,
+      undefined
     );
   });
 });
