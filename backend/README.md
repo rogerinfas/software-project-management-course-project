@@ -12,8 +12,9 @@ Esta guía centraliza toda la información técnica sobre el backend, base de da
 | **Documentación Scalar** | [http://localhost:5000/api/docs](http://localhost:5000/api/docs) | Documentación interactiva de última generación (Scalar). |
 | **Documentación Swagger** | [http://localhost:5000/api/swagger](http://localhost:5000/api/swagger) | Interfaz clásica de Swagger UI. |
 | **Base de Datos (PostgreSQL)** | `localhost:4900` | Servidor de base de datos relacional PostgreSQL expuesto al host. |
-| **pgAdmin 4 (Administración)** | [http://localhost:5050](http://localhost:5050) | Gestor web de PostgreSQL (Contenedor Docker). |
 | **Prisma Studio (GUI)** | [http://localhost:5555](http://localhost:5555) | Explorador y editor visual de base de datos relacional. |
+
+> Nota: `docker-compose.yml` actual solo levanta PostgreSQL. pgAdmin fue retirado (ver `git log`); usar Prisma Studio para administración visual.
 
 ---
 
