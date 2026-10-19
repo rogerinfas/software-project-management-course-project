@@ -3,11 +3,5 @@
   "private": true,
   "version": "0.1.0",
   "description": "Academic project for the Software Project Management course. Repository for planning, development, and documentation.",
-  "packageManager": "pnpm@10.26.0",
-  "scripts": {
-    "prepare": "husky"
-  },
-  "devDependencies": {
-    "husky": "^9.1.7"
-  }
+  "packageManager": "pnpm@10.26.0"
 }
