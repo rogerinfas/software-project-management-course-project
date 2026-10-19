@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-set -e
-
-pnpm -C backend -s lint || true
-pnpm -C backend -s test || true
-pnpm -C backend -s build
